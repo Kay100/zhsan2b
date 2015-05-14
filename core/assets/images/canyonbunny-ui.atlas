@@ -1,0 +1,69 @@
+
+canyonbunny-ui.png
+size: 1024,1024
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+background
+  rotate: false
+  xy: 2, 482
+  size: 801, 481
+  orig: 801, 481
+  offset: 0, 0
+  index: -1
+bunny
+  rotate: false
+  xy: 2, 12
+  size: 269, 468
+  orig: 269, 468
+  offset: 0, 0
+  index: -1
+coins
+  rotate: false
+  xy: 273, 123
+  size: 510, 357
+  orig: 510, 357
+  offset: 0, 0
+  index: -1
+info
+  rotate: false
+  xy: 615, 39
+  size: 329, 82
+  orig: 329, 82
+  offset: 0, 0
+  index: -1
+logo
+  rotate: false
+  xy: 273, 2
+  size: 340, 119
+  orig: 340, 119
+  offset: 0, 0
+  index: -1
+options-dn
+  rotate: false
+  xy: 805, 813
+  size: 150, 150
+  orig: 150, 150
+  offset: 0, 0
+  index: -1
+options-up
+  rotate: false
+  xy: 805, 661
+  size: 150, 150
+  orig: 150, 150
+  offset: 0, 0
+  index: -1
+play-dn
+  rotate: false
+  xy: 805, 509
+  size: 150, 150
+  orig: 150, 150
+  offset: 0, 0
+  index: -1
+play-up
+  rotate: false
+  xy: 805, 357
+  size: 150, 150
+  orig: 150, 150
+  offset: 0, 0
+  index: -1
