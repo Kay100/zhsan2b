@@ -51,7 +51,7 @@ public class BattleField {
 				case ATTACK:
 					if(!curTr.attackObject()){
 						if(curTr.moveToAttackPositionByOneStep()||curTr.isStepAttack()){
-							curTr.attack1();
+//							curTr.attack();
 						}
 					}
 					break;
