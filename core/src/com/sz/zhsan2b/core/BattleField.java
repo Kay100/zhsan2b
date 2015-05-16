@@ -3,7 +3,7 @@ package com.sz.zhsan2b.core;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
 
-public class BattleField {
+public class BattleField implements TroopEventHandler{
 	public enum State {
 		BATTLE,OPERATE
 	}
@@ -51,7 +51,7 @@ public class BattleField {
 				case ATTACK:
 					if(!curTr.attackObject()){
 						if(curTr.moveToAttackPositionByOneStep()||curTr.isStepAttack()){
-							curTr.attack1();
+							curTr.attack();
 						}
 					}
 					break;
@@ -139,6 +139,22 @@ public class BattleField {
 		}
 		
 		return positions;
+	}
+
+	@Override
+	public void onTroopDestroyed(Troop troop, StepAction stepAction) {
+		for(Troop tr:troopList){
+			if(tr.getOwner()!=troop.getOwner()){
+				tr.onTroopDestroyed(troop, stepAction);
+			}
+		}
+		
+	}
+
+	@Override
+	public void onAttackAfter(Troop troop, StepAction stepAction) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	
