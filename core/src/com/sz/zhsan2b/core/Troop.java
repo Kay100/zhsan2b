@@ -6,7 +6,11 @@ import com.sz.zhsan2b.core.Command.ACTION_KIND;
 import com.sz.zhsan2b.core.StepAction.FaceDirection;
 import com.sz.zhsan2b.core.StepAction.TileEffect;
 
-public class Troop {
+public class Troop implements TroopEventHandler {//增加adapter 实现hook
+	public enum TroopEvent {
+		ATTACK_BEFORE,ATTACK_AFTER,DESTROY,CAST_BEFORE,CAST_AFTER
+	}
+
 	public enum BATTLE_STATE {
 		UN_ARRANGE, NORMAL, IS_DESTROY, CHAOS, STAT_IN_FIRE
 
@@ -32,7 +36,7 @@ public class Troop {
 	private boolean isStepAttack;
 	private long currentZhanfaId;
 	private Command command;
-	private Array<Troop> affectedTroopList;
+	private Array<TroopEventHandler> troopEventHandlers;
 	private BATTLE_STATE battleState;//部队所处的状态
 	private boolean isAttackCompleted;
 	private PLAYER_TYPE owner;
@@ -60,7 +64,7 @@ public class Troop {
 		isStepAttack = false;
 		currentZhanfaId = 0;// 表示没有战法，为普通攻击
 		command = new Command(new Position(0, 0));
-		affectedTroopList = new Array<Troop>();
+		troopEventHandlers = new Array<TroopEventHandler>();
 		battleState = BATTLE_STATE.UN_ARRANGE;
 		isAttackCompleted = false;
 		owner = PLAYER_TYPE.AI;
@@ -85,52 +89,52 @@ public class Troop {
 			return false;
 		}
 		
-
+		//构造stepAction	
+		StepAction stepAction = new StepAction(id);
+		//判断是否抵挡反击,抵挡的话,step action 加入 抵挡动画
+		
 		//do attack 修改自身hp和部队状态
 		tempDamage = BattleUtils.calculateDamage(this,command.object);
 		hp -= tempDamage;
-		
-		//判断损毁
-		if(hp<=0){
-			battleState=BATTLE_STATE.IS_DESTROY;
-		}
-		
-		//增加攻击对象
-		affectedTroopList.clear();
-		if(isMultiObject){
-			Array<Troop> allTroopsInAttackRange = getAllTroopsInAttackRange();
-			if(allTroopsInAttackRange.size!=0){
-				for(Troop tr:allTroopsInAttackRange){
-					affectedTroopList.add(tr);
-				}
-			}
-
-			
-		}else{
-			affectedTroopList.add(command.object);
-		}
-		//构造stepAction	
-		StepAction stepAction = new StepAction(id);
-		
-
-		stepAction.actionKind = command.actionKind;
-		stepAction.affectedTroopList = getAffectedTroopIdList(affectedTroopList);
+		stepAction.actionKind = command.actionKind;		
 		faceDirection =BattleUtils.calculateFaceDirection(faceDirection,position,command.objectPosition);
 		stepAction.faceDirection = faceDirection;
 		stepAction.isVisible=true;
 		stepAction.militaryKindId = militaryKind.getId();
-		
 		stepAction.damageMap.put(id, tempDamage);
         addAttackEffect(stepAction.effects);
 		stepAction.objectPosition.setPosition(position);
 		
 		
 		Array<StepAction> stepActionList = getStepActionList();
-		stepActionList.add(stepAction);
-		//通知被攻击的部队
-		attackNotify(stepAction);
+		stepActionList.add(stepAction);		
+		
+        fire(TroopEvent.ATTACK_AFTER, stepAction);		
+		//判断损毁
+		if(hp<=0){
+			battleState=BATTLE_STATE.IS_DESTROY;
+			stepAction.effects.put(id,TileEffect.DESTROY);
+			fire(TroopEvent.DESTROY, stepAction);
+		}
+		
+
 		command.isCompeted=true;
-		return true;
+		return command.isCompeted;
+	}
+
+	public  void addTroopEventHandler(TroopEventHandler troopHandler) {
+
+		troopEventHandlers.add(troopHandler);
+		
+	}
+	public  void removeTroopEventHandler(TroopEventHandler troopHandler) {
+		troopEventHandlers.removeValue(troopHandler, true);
+		
+	}	
+
+	public void clearAllTroopEventHandlers() {
+		troopEventHandlers.clear();
+		
 	}
 
 	private Array<StepAction> getStepActionList() {
@@ -153,10 +157,10 @@ public class Troop {
 		return tmp;
 	}
 
-	private Array<Long> getAffectedTroopIdList(Array<Troop> affectedTroopList) {
+	private Array<Long> getAffectedTroopIdList(Array<TroopEventHandler> affectedTroopList) {
 		Array<Long> tmp = new Array<Long>();
-		for(Troop tr:affectedTroopList)
-			tmp.add(tr.id);
+		for(TroopEventHandler tr:affectedTroopList)
+			tmp.add(((Troop)tr).id);
 		return tmp;
 	}
 	/*
@@ -173,23 +177,45 @@ public class Troop {
 		return tmpList;
 	}
 
-	private void attackNotify(StepAction stepAction) {
-		if(affectedTroopList.size==0)
+	private void notify(TroopEvent event,StepAction stepAction) {
+		if(troopEventHandlers.size==0)
 			return;
-		for(Troop tr:affectedTroopList){
-			tr.beAttack(this,stepAction);
+		for(TroopEventHandler tr:troopEventHandlers){
+			switch(event){
+			case ATTACK_AFTER:
+				tr.onAttackAfter(this, stepAction);
+				break;
+			case ATTACK_BEFORE:
+				break;
+			case CAST_AFTER:
+				break;
+			case CAST_BEFORE:
+				break;
+			case DESTROY:
+				tr.onTroopDestroyed(this, stepAction);
+				break;
+			default:
+				break;
+			
+			}
+			
+			
 		}
 		
 	}
 
-	private void beAttack(Troop damageFrom, StepAction stepAction) {
+	public void beAttack(Troop damageFrom, StepAction stepAction) {
 		//判断是否抵抗 ，待实现，addStepAction  新的step，new StepAction 攻击方的用参数里的 
 		
 		//be attack 修改自身hp和部队状态
 		tempDamage =BattleUtils.calculateDamage(this, damageFrom);
 		hp-= tempDamage;
-		if(hp<=0)
+		if(hp<=0){
 			battleState=BATTLE_STATE.IS_DESTROY;
+			stepAction.effects.put(id, TileEffect.DESTROY);
+			fire(TroopEvent.DESTROY, stepAction);
+		}
+			
 		
 		stepAction.damageMap.put(id, tempDamage);
 		addBeAttackEffect(stepAction.effects);
@@ -216,6 +242,10 @@ public class Troop {
 
 	public BattleProperties getCurrentProperties() {
 		return currentProperties;
+	}
+
+	public PLAYER_TYPE getOwner() {
+		return owner;
 	}
 
 	public Position getPosition() {
@@ -280,6 +310,64 @@ public class Troop {
 		}
 		
 	}
+
+
+//已on开头的事件都是获得对方的事件，自己的事件不需要通过接口获得，直接操作对象即可。
+	@Override
+	public void onTroopDestroyed(Troop troop, StepAction stepAction) {
+		// 接收消息,将部队命令中的攻击对象清空
+		if(command.object.equals(troop)){
+			command.object=null;
+		}
+		
+	}
+
+	@Override
+	public void onAttackAfter(Troop troop, StepAction stepAction) {
+		troop.beAttack(troop, stepAction);
+		
+	}
+	
+	public void fire(TroopEvent event,StepAction stepAction){
+		switch(event){
+		case ATTACK_AFTER:
+			//增加攻击对象
+			clearAllTroopEventHandlers();
+			if(isMultiObject){
+				Array<Troop> allTroopsInAttackRange = getAllTroopsInAttackRange();
+				if(allTroopsInAttackRange.size!=0){
+					for(Troop tr:allTroopsInAttackRange){
+						addTroopEventHandler(tr);
+					}
+				}
+
+				
+			}else{
+				addTroopEventHandler(command.object);
+			}
+			stepAction.affectedTroopList = getAffectedTroopIdList(troopEventHandlers);
+			//通知被攻击的部队
+			notify(event,stepAction);			
+			break;
+		case ATTACK_BEFORE:
+			break;
+		case CAST_AFTER:
+			break;
+		case CAST_BEFORE:
+			break;
+		case DESTROY:
+			
+			clearAllTroopEventHandlers();
+			addTroopEventHandler(battleField);
+			notify(event, stepAction);
+			break;
+		default:
+			break;
+		
+		}
+		
+	}
+	
 
 
 }

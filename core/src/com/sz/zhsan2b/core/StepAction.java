@@ -11,7 +11,7 @@ public class StepAction {
 	}
 
 	public enum TileEffect {
-		NONE, RECOVER, RESIST, HUOSHI, LEITING, RAOLUAN, BOOST, CRITICAL, CHAOS, GUANCHUAN, SURROUNDED, STUNT
+		NONE, RECOVER, RESIST,DESTROY, HUOSHI, LEITING, RAOLUAN, BOOST, CRITICAL, CHAOS, GUANCHUAN, SURROUNDED, STUNT
 	}
 
 	public long actionTroopId;
@@ -19,10 +19,10 @@ public class StepAction {
 	public Position objectPosition; // 寻路算法计算出的下一步的目标位置
 	public FaceDirection faceDirection;
 	public long militaryKindId;
-	public Array<Long> affectedTroopList;
+	public Array<Long> affectedTroopList;//用于部队自身动画
 	public boolean isVisible;
 	public ArrayMap<Long, Integer> damageMap;
-	public ArrayMap<Long, TileEffect> effects;
+	public ArrayMap<Long, TileEffect> effects;//用于各种效果,里面的效果都发生在同一个step周期内
 
 	public StepAction(long actionTroopId) {
 		this(actionTroopId, ACTION_KIND.NONE, new Position(0, 0),

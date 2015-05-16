@@ -1,6 +1,5 @@
 package com.sz.zhsan2b.core;
 
-import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 
 public class Position implements Comparable<Position> {
 	public int x = 0;

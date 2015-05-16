@@ -44,7 +44,6 @@ public class Test {
         		 try {
 					copyFileUsingApacheCommonsIO(a, b);
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 
