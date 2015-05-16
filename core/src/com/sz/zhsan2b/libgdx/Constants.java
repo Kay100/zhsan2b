@@ -62,5 +62,8 @@ public static final int TROOP_MODEL_XCOUNT = 10;
 public static final int TROOP_MODEL_YCOUNT = 8;
 
 
+//step
+public static final float ONE_STEP_TIME = 1f;
+
 
 }

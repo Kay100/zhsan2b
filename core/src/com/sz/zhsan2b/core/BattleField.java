@@ -21,7 +21,8 @@ public class BattleField implements TroopEventHandler{
 
 	public void init() {
 		troopList = new Array<Troop>();
-		
+		//test,暂时是battle状态
+		state = State.BATTLE;
 		loadMaps();
 		
 	}
@@ -155,7 +156,12 @@ public class BattleField implements TroopEventHandler{
 
 	@Override
 	public void onAttackAfter(Troop troop, StepAction stepAction) {
-		// TODO Auto-generated method stub
+
+		
+	}
+	//构造一个用于测试的troopList。
+	public void testInit() {
+		
 		
 	}
 

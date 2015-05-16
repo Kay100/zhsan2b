@@ -13,8 +13,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.sz.zhsan2b.core.BattleField;
+import com.sz.zhsan2b.core.Troop;
 
 public class BattleScreen extends AbstractGameScreen {
 	private static final String TAG = BattleScreen.class.getName();
@@ -25,22 +28,46 @@ public class BattleScreen extends AbstractGameScreen {
 	private Skin skinLibgdx;
 	private Skin skinCanyonBunny;
 	
-	//actor
+	//game core(logic)
+	private final BattleField battleField = new BattleField();
+
+
+	private boolean isBattleStart;
+	
+	
+	private BattleFieldAnimationStage battleFieldAnimationStage;
+	
+	private BattleFieldOperationStage battleFieldOperationStage;
+	
+	// test actor need to delete.
 	private Image imgBackground;
 	private TroopActor troop;
 	
+	//troop actor list
+	
+	private Array<TroopActor> troopActorList;
+	
 	// debug
-	private final float DEBUG_REBUILD_INTERVAL = 20.0f;
+	private final float DEBUG_REBUILD_INTERVAL = 20f;
 	private boolean debugEnabled = false;
 	private float debugRebuildStage;	
 
 	public BattleScreen(DirectedGame game) {
 		super(game);
+		battleFieldOperationStage = new BattleFieldOperationStage(battleField);
+		battleFieldAnimationStage = new BattleFieldAnimationStage(this);
+		troopActorList = new Array<TroopActor>(20);
+		isBattleStart = true;
 	}
+	public BattleField getBattleField() {
+		return battleField;
+	}	
 
+	public Array<TroopActor> getTroopActorList() {
+		return troopActorList;
+	}
 	@Override
 	public InputProcessor getInputProcessor() {
-		// TODO Auto-generated method stub
 		return stage;
 	}
 
@@ -64,7 +91,11 @@ public class BattleScreen extends AbstractGameScreen {
 	}
 	private Table buildTroopsLayer() {
 		Table layer = new Table();
-		troop = new TroopActor();
+		
+		//构造troopActor
+		createTroopActors();
+		
+		troop = new TroopActor(null);
 		troop.addAction(sequence(
 				moveTo(655, 510),
 				delay(4.0f),
@@ -73,6 +104,16 @@ public class BattleScreen extends AbstractGameScreen {
 		layer.add(troop);
 		
 		return layer;
+	}
+
+	private void createTroopActors() {
+		TroopActor trActor;
+		for(Troop tr:battleField.getTroopList()){
+			trActor = new TroopActor(tr);
+			troopActorList.add(trActor);
+			
+		}
+		
 	}
 
 	private Table buildBackgroundLayer() {
@@ -92,7 +133,32 @@ public class BattleScreen extends AbstractGameScreen {
 				debugRebuildStage = DEBUG_REBUILD_INTERVAL;
 				rebuildStage();
 			}
-		}		
+		}	
+		//game logic plan do here.
+		switch(battleField.state){
+		case BATTLE:
+			if(isBattleStart){
+				battleField.calculateBattle();
+				isBattleStart = false;
+				battleFieldAnimationStage.initStepActionIter();
+			}else{
+				battleFieldAnimationStage.parseStepActions();
+			}
+			
+			break;
+		case OPERATE:
+			
+			break;
+		default:
+			break;
+		
+		}
+		
+		
+		
+		
+		
+		
 		// Do not update game world when paused.
 		if (!paused) {
 			// Update game world by the time that has passed
@@ -126,6 +192,9 @@ public class BattleScreen extends AbstractGameScreen {
 		worldController = new WorldController(game,stage);
 		worldRenderer = new WorldRenderer(worldController);
 		//stage.getViewport().setCamera(worldRenderer.getCamera());	
+		
+		
+		
 		Gdx.input.setCatchBackKey(true);
 
 

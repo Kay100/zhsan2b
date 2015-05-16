@@ -239,11 +239,6 @@ public class Troop implements TroopEventHandler {//增加adapter 实现hook
 
 		
 	}
-	//move
-	//return true
-	public boolean moveOneStep(){
-		return true;
-	}
 	
 	//set troop Complete
 	public void setCommandComplete(){
@@ -273,6 +268,10 @@ public class Troop implements TroopEventHandler {//增加adapter 实现hook
 	public boolean isStepAttack() {
 		return isStepAttack;
 	}
+	public long getId() {
+		return id;
+	}
+
 	//return true mean already move to the positon where troop can attack(at the end of one step move)
 	public boolean moveToAttackPositionByOneStep() {
 		//判断是否到达目的地
@@ -306,16 +305,16 @@ public class Troop implements TroopEventHandler {//增加adapter 实现hook
 					return false;
 				}
 			}
-			
-			
-			position.setPosition(nextPosition);
+
 			//add stepAction
 			StepAction stepAction = new StepAction(this.id);
 			stepAction.actionKind=ACTION_KIND.MOVE;
 			stepAction.faceDirection= BattleUtils.calculateFaceDirection(faceDirection, position, command.objectPosition);
 			stepAction.isVisible =true;
-			stepAction.objectPosition.setPosition(position);
+			stepAction.orginPosition.setPosition(position);
 			getStepActionList().add(stepAction);
+			position.setPosition(nextPosition);
+			stepAction.objectPosition.setPosition(position);
 			return false;
 		}
 		

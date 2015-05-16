@@ -17,6 +17,7 @@ public class StepAction {
 	public long actionTroopId;
 	public ACTION_KIND actionKind;
 	public Position objectPosition; // 寻路算法计算出的下一步的目标位置
+	public Position orginPosition;
 	public FaceDirection faceDirection;
 	public long militaryKindId;
 	public Array<Long> affectedTroopList;//用于部队自身动画
