@@ -89,15 +89,23 @@ public class Troop implements TroopEventHandler {//增加adapter 实现hook
 			return false;
 		}
 		
+		attack(command.object);
+		
+
+		command.isCompeted=true;
+		return command.isCompeted;
+	}
+
+	public void attack(Troop troop) {
 		//构造stepAction	
 		StepAction stepAction = new StepAction(id);
 		//判断是否抵挡反击,抵挡的话,step action 加入 抵挡动画
 		
 		//do attack 修改自身hp和部队状态
-		tempDamage = BattleUtils.calculateDamage(this,command.object);
+		tempDamage = BattleUtils.calculateDamage(this,troop);
 		hp -= tempDamage;
-		stepAction.actionKind = command.actionKind;		
-		faceDirection =BattleUtils.calculateFaceDirection(faceDirection,position,command.objectPosition);
+		stepAction.actionKind = ACTION_KIND.ATTACK;	
+		faceDirection =BattleUtils.calculateFaceDirection(faceDirection,position,troop.position);
 		stepAction.faceDirection = faceDirection;
 		stepAction.isVisible=true;
 		stepAction.militaryKindId = militaryKind.getId();
@@ -109,22 +117,20 @@ public class Troop implements TroopEventHandler {//增加adapter 实现hook
 		Array<StepAction> stepActionList = getStepActionList();
 		stepActionList.add(stepAction);		
 		
-        fire(TroopEvent.ATTACK_AFTER, stepAction);		
+        fire(TroopEvent.ATTACK_AFTER, stepAction,troop);		
 		//判断损毁
 		if(hp<=0){
 			battleState=BATTLE_STATE.IS_DESTROY;
 			stepAction.effects.put(id,TileEffect.DESTROY);
 			fire(TroopEvent.DESTROY, stepAction);
 		}
-		
-
-		command.isCompeted=true;
-		return command.isCompeted;
 	}
 
-	public  void addTroopEventHandler(TroopEventHandler troopHandler) {
-
-		troopEventHandlers.add(troopHandler);
+	public  void addTroopEventHandler(TroopEventHandler... eventHandlers) {
+		for(int i= 0;i<eventHandlers.length;i++){
+			troopEventHandlers.add(eventHandlers[i]);
+		}
+		
 		
 	}
 	public  void removeTroopEventHandler(TroopEventHandler troopHandler) {
@@ -147,15 +153,7 @@ public class Troop implements TroopEventHandler {//增加adapter 实现hook
 		
 	}
 
-	@Deprecated
-	private ArrayMap<Long, Integer> getObjectDamages(
-			Array<Troop> affectedTroopList) {
-		ArrayMap<Long, Integer> tmp = new ArrayMap<Long, Integer>();
-		for(Troop tr:affectedTroopList){
-			tmp.put(tr.id, tr.tempDamage);
-		}
-		return tmp;
-	}
+
 
 	private Array<Long> getAffectedTroopIdList(Array<TroopEventHandler> affectedTroopList) {
 		Array<Long> tmp = new Array<Long>();
@@ -176,6 +174,18 @@ public class Troop implements TroopEventHandler {//增加adapter 实现hook
 		
 		return tmpList;
 	}
+	private Troop getFirstTroopInAttackRange() {
+		
+		Troop returnTr = null;
+		for(Troop tr:battleField.getTroopList()){
+			if(tr.owner!=owner&&BattleUtils.isObjectInAttackRange(tr,this)){
+				returnTr = tr;
+				break;
+			}
+		}
+		
+		return returnTr;
+	}	
 
 	private void notify(TroopEvent event,StepAction stepAction) {
 		if(troopEventHandlers.size==0)
@@ -203,7 +213,7 @@ public class Troop implements TroopEventHandler {//增加adapter 实现hook
 		}
 		
 	}
-
+	//不能触发通知，即不能再反击。与attack逻辑有区别
 	public void beAttack(Troop damageFrom, StepAction stepAction) {
 		//判断是否抵抗 ，待实现，addStepAction  新的step，new StepAction 攻击方的用参数里的 
 		
@@ -216,7 +226,7 @@ public class Troop implements TroopEventHandler {//增加adapter 实现hook
 			fire(TroopEvent.DESTROY, stepAction);
 		}
 			
-		
+		//以后可以考虑下朝想的实现，也得做troopid的map。
 		stepAction.damageMap.put(id, tempDamage);
 		addBeAttackEffect(stepAction.effects);
 		
@@ -328,7 +338,7 @@ public class Troop implements TroopEventHandler {//增加adapter 实现hook
 		
 	}
 	
-	public void fire(TroopEvent event,StepAction stepAction){
+	public void fire(TroopEvent event,StepAction stepAction,TroopEventHandler...eventHandlers ){
 		switch(event){
 		case ATTACK_AFTER:
 			//增加攻击对象
@@ -343,7 +353,7 @@ public class Troop implements TroopEventHandler {//增加adapter 实现hook
 
 				
 			}else{
-				addTroopEventHandler(command.object);
+				addTroopEventHandler(eventHandlers);
 			}
 			stepAction.affectedTroopList = getAffectedTroopIdList(troopEventHandlers);
 			//通知被攻击的部队
@@ -367,6 +377,15 @@ public class Troop implements TroopEventHandler {//增加adapter 实现hook
 		}
 		
 	}
+
+	public void oneRandomAttack() {
+		Troop tr = getFirstTroopInAttackRange();
+		if(tr==null){
+			return;
+		}
+		attack(tr);
+	}
+
 	
 
 
