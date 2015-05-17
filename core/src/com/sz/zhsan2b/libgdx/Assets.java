@@ -11,12 +11,15 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ArrayMap;
 import com.badlogic.gdx.utils.Disposable;
+import com.sun.javafx.binding.StringFormatter;
 
 public class Assets implements Disposable, AssetErrorListener {
 
@@ -99,26 +102,73 @@ public class Assets implements Disposable, AssetErrorListener {
 	
 	public class AssetTroop {
 		//public final AtlasRegion actionDoneTroopReg;
-		public final Animation animFaceUpWalk;
-		public final Animation animFaceDownWalk;
-		public final Animation animFaceLeftWalk;
-		public final Animation animFaceRightWalk;
-		//public final Animation animAttack;
-		//public final Animation animBeAttacked;		
+		public final ArrayMap<Long,Animation> animFaceUpWalk = new ArrayMap<Long, Animation>();
+		public final ArrayMap<Long,Animation> animFaceDownWalk=new ArrayMap<Long, Animation>();
+		public final ArrayMap<Long,Animation> animFaceLeftWalk=new ArrayMap<Long, Animation>();
+		public final ArrayMap<Long,Animation> animFaceRightWalk=new ArrayMap<Long, Animation>();
+		public final ArrayMap<Long,Animation> animFaceUpAttack = new ArrayMap<Long, Animation>();
+		public final ArrayMap<Long,Animation> animFaceDownAttack=new ArrayMap<Long, Animation>();
+		public final ArrayMap<Long,Animation> animFaceLeftAttack=new ArrayMap<Long, Animation>();
+		public final ArrayMap<Long,Animation> animFaceRightAttack=new ArrayMap<Long, Animation>();
+		
+		public final ArrayMap<Long,Animation> animFaceUpBeAttacked=new ArrayMap<Long, Animation>();		
+		public final ArrayMap<Long,Animation> animFaceDownBeAttacked=new ArrayMap<Long, Animation>();		
+		public final ArrayMap<Long,Animation> animFaceLeftBeAttacked=new ArrayMap<Long, Animation>();		
+		public final ArrayMap<Long,Animation> animFaceRightBeAttacked=new ArrayMap<Long, Animation>();		
+	
 
 		public AssetTroop() {
-			Texture texture = new Texture(Gdx.files.internal("Troop/0/Move.png")); 
-	        TextureRegion[][] tmp = TextureRegion.split(texture, texture.getWidth()/Constants.TROOP_MODEL_XCOUNT, texture.getHeight()/Constants.TROOP_MODEL_YCOUNT);      
-	        TextureRegion[] faceUpRegs = getAnimationFrames(tmp, 7);
-	        TextureRegion[] faceDownRegs=getAnimationFrames(tmp, 3);
-	        TextureRegion[] faceLeftRegs=getAnimationFrames(tmp, 4);
-	        TextureRegion[] faceRigthRegs=getAnimationFrames(tmp, 0);
-	        animFaceUpWalk = new Animation(0.1f, faceUpRegs); 
-	        animFaceDownWalk = new Animation(0.1f, faceDownRegs); 
-	        animFaceLeftWalk = new Animation(0.1f, faceLeftRegs); 
-	        animFaceRightWalk = new Animation(0.1f, faceRigthRegs); 
+			//暂时测试使用，以后读数据库
+			long[] troopIds = {0,1};
+			for(long i=0,size= troopIds.length;i<size;i++){
+				//move
+				Texture texture = new Texture(Gdx.files.internal(StringUtils.replace("Troop/%1/Move.png", "%1", String.valueOf(i)))); 
+		        Array<TextureRegion[]> tempRegs = getAnimationRegsArray(texture);
+		        Animation tempAnim=new Animation(0.1f, tempRegs.get(0));
+		        tempAnim.setPlayMode(PlayMode.LOOP);
+		        animFaceUpWalk.put(i,tempAnim);
+		        tempAnim=new Animation(0.1f, tempRegs.get(1));
+		        tempAnim.setPlayMode(PlayMode.LOOP);
+		        animFaceDownWalk.put(i, tempAnim) ; 
+		        tempAnim=new Animation(0.1f, tempRegs.get(2));
+		        tempAnim.setPlayMode(PlayMode.LOOP);
+		        animFaceLeftWalk.put(i, tempAnim); 
+		        tempAnim=new Animation(0.1f, tempRegs.get(3));
+		        tempAnim.setPlayMode(PlayMode.LOOP);
+		        animFaceRightWalk.put(i, tempAnim) ; 	
+		        
+		        //attack
+		        texture = new Texture(Gdx.files.internal(StringUtils.replace("Troop/%1/Attack.png", "%1", String.valueOf(i)))); 
+		        tempRegs = getAnimationRegsArray(texture);
+		        animFaceUpAttack.put(i, new Animation(0.1f, tempRegs.get(0))); 
+		        animFaceDownAttack.put(i, new Animation(0.1f, tempRegs.get(1))) ; 
+		        animFaceLeftAttack.put(i, new Animation(0.1f, tempRegs.get(2))); 
+		        animFaceRightAttack.put(i, new Animation(0.1f, tempRegs.get(3))) ; 	
+		        
+		        //beattack
+		        texture = new Texture(Gdx.files.internal(StringUtils.replace("Troop/%1/BeAttacked.png", "%1", String.valueOf(i)))); 
+		        tempRegs = getAnimationRegsArray(texture);
+		        animFaceUpBeAttacked.put(i, new Animation(0.1f, tempRegs.get(0))); 
+		        animFaceDownBeAttacked.put(i, new Animation(0.1f, tempRegs.get(1))) ; 
+		        animFaceLeftBeAttacked.put(i, new Animation(0.1f, tempRegs.get(2))); 
+		        animFaceRightBeAttacked.put(i, new Animation(0.1f, tempRegs.get(3))) ; 			        
+		        
+			}
+
                     
 
+		}
+
+		private Array<TextureRegion[]> getAnimationRegsArray(Texture texture) {
+			TextureRegion[][] tmp = TextureRegion.split(texture, texture.getWidth()/Constants.TROOP_MODEL_XCOUNT, texture.getHeight()/Constants.TROOP_MODEL_YCOUNT);      
+			TextureRegion[] faceUpRegs = getAnimationFrames(tmp, 7);
+			TextureRegion[] faceDownRegs=getAnimationFrames(tmp, 3);
+			TextureRegion[] faceLeftRegs=getAnimationFrames(tmp, 4);
+			TextureRegion[] faceRigthRegs=getAnimationFrames(tmp, 0);
+			
+			Array<TextureRegion[]> tempRegs = new Array<TextureRegion[]>(4);
+			tempRegs.addAll(faceUpRegs,faceDownRegs,faceLeftRegs,faceRigthRegs);
+			return tempRegs;
 		}
 
 		private TextureRegion[] getAnimationFrames(TextureRegion[][] allSplitedFrames,

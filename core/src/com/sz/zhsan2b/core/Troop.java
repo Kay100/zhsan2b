@@ -111,6 +111,7 @@ public class Troop implements TroopEventHandler {//增加adapter 实现hook
 		stepAction.militaryKindId = militaryKind.getId();
 		stepAction.damageMap.put(id, tempDamage);
         addAttackEffect(stepAction.effects);
+        stepAction.orginPosition.setPosition(position);
 		stepAction.objectPosition.setPosition(position);
 		
 		
@@ -220,15 +221,19 @@ public class Troop implements TroopEventHandler {//增加adapter 实现hook
 		//be attack 修改自身hp和部队状态
 		tempDamage =BattleUtils.calculateDamage(this, damageFrom);
 		hp-= tempDamage;
+		
+		//以后可以考虑下朝想的实现，也得做troopid的map。
+		stepAction.damageMap.put(id, tempDamage);
 		if(hp<=0){
 			battleState=BATTLE_STATE.IS_DESTROY;
 			stepAction.effects.put(id, TileEffect.DESTROY);
 			fire(TroopEvent.DESTROY, stepAction);
+		}else{
+			addBeAttackEffect(stepAction.effects);
 		}
-			
-		//以后可以考虑下朝想的实现，也得做troopid的map。
-		stepAction.damageMap.put(id, tempDamage);
-		addBeAttackEffect(stepAction.effects);
+
+
+
 		
 	}
 
@@ -263,6 +268,14 @@ public class Troop implements TroopEventHandler {//增加adapter 实现hook
 
 	public void setCommand(Command command) {
 		this.command = command;
+	}
+
+	public MilitaryKind getMilitaryKind() {
+		return militaryKind;
+	}
+
+	public void setMilitaryKind(MilitaryKind militaryKind) {
+		this.militaryKind = militaryKind;
 	}
 
 	public boolean isStepAttack() {
@@ -312,6 +325,7 @@ public class Troop implements TroopEventHandler {//增加adapter 实现hook
 			stepAction.faceDirection= BattleUtils.calculateFaceDirection(faceDirection, position, command.objectPosition);
 			stepAction.isVisible =true;
 			stepAction.orginPosition.setPosition(position);
+			stepAction.militaryKindId=militaryKind.getId();
 			getStepActionList().add(stepAction);
 			position.setPosition(nextPosition);
 			stepAction.objectPosition.setPosition(position);

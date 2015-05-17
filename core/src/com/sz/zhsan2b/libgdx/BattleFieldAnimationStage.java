@@ -62,13 +62,16 @@ public class BattleFieldAnimationStage implements StepActionHandler {
 		
 	}
 	private TroopActor getCurrentStepTroopActor(long actionTroopId) {
+		return getTroopActorByTroopId(actionTroopId);
+	}
+	public  TroopActor getTroopActorByTroopId(long troopId) {
 		for(TroopActor trActor: troopActorList){
-			if(trActor.getTroop().getId()==actionTroopId){
+			if(trActor.getTroop().getId()==troopId){
 				return trActor;
 			}
 		}
 		return null;
-	}
+	}	
 	public void nextStep() {
 		stepActionIter.next();
 		

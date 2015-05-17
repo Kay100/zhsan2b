@@ -34,7 +34,7 @@ public class AnimatedImage extends Image {
 	@Override
 	public void act(float delta) {
 
-		((TextureRegionDrawable) getDrawable()).setRegion(animation.getKeyFrame(stateTime += delta, true));
+		((TextureRegionDrawable) getDrawable()).setRegion(animation.getKeyFrame(stateTime += delta, false));
 		super.act(delta);
 	}
 }

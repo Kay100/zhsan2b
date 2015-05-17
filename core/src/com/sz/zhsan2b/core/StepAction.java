@@ -47,5 +47,21 @@ public class StepAction {
 		this.damageMap = damageMap;
 		this.effects = effects;
 	}
+	
+	public void setStepAction(long actionTroopId, ACTION_KIND actionKind,
+			Position objectPosition, FaceDirection faceDirection,
+			long militaryKindId, Array<Long> affectedTroopList,
+			boolean isVisible, ArrayMap<Long, Integer> damageMap,
+			ArrayMap<Long, TileEffect> effects) {
+		this.actionTroopId = actionTroopId;
+		this.actionKind = actionKind;
+		this.objectPosition = objectPosition;
+		this.faceDirection = faceDirection;
+		this.militaryKindId = militaryKindId;
+		this.affectedTroopList = affectedTroopList;
+		this.isVisible = isVisible;
+		this.damageMap = damageMap;
+		this.effects = effects;
+	}	
 
 }
