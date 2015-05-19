@@ -61,7 +61,7 @@ public class MapBuilder {
  		// add edge weight to graph
  		for(Iterator<AbstractEdge> iter=graph.getEdgeIterator();iter.hasNext();){
  			         Edge edge = (Edge)iter.next();
-					edge.addAttribute("weight", 5);
+					edge.addAttribute("weight", new MilitaryKind(militaryKindId).getDefaultMoveWeight());
 					
  			         
  		}

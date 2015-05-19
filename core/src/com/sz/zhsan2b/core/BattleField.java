@@ -29,7 +29,8 @@ public class BattleField implements TroopEventHandler{
 	
 	private void loadMaps() {
 		maps = new ArrayMap<Long, Map>();
-		//test,build a map by militaryKindId = 1
+		//test,build a map by militaryKindId = 0,1
+		maps.put(0l, MapBuilder.buildMap(0l));
 		maps.put(1l, MapBuilder.buildMap(1l));
 		
 	}
@@ -161,6 +162,16 @@ public class BattleField implements TroopEventHandler{
 	}
 	//构造一个用于测试的troopList。
 	public void testInit() {
+		Troop troop = new Troop(this);
+		troop.getPosition().set(4, 4);
+		troop.setCommand(new Command(new Position(8, 8)));
+		troop.getCurrentProperties().ack= 20;
+		troop.getCurrentProperties().def=0;
+		troop.getCurrentProperties().hp=100;
+		troop.getCurrentProperties().isXie=true;
+		troop.getCurrentProperties().move=30;
+		troop.getCurrentProperties().range=1;
+		troop.getCurrentProperties().speed=10;
 		
 		
 	}

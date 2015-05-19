@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.sz.zhsan2b.core.BattleField;
@@ -27,6 +28,7 @@ public class BattleScreen extends AbstractGameScreen {
 	private Stage stage;
 	private Skin skinLibgdx;
 	private Skin skinCanyonBunny;
+	private Image imgBackground;
 	
 	//game core(logic)
 	private final BattleField battleField = new BattleField();
@@ -38,10 +40,7 @@ public class BattleScreen extends AbstractGameScreen {
 	private BattleFieldAnimationStage battleFieldAnimationStage;
 	
 	private BattleFieldOperationStage battleFieldOperationStage;
-	
-	// test actor need to delete.
-	private Image imgBackground;
-	private TroopActor troop;
+
 	
 	//troop actor list
 	
@@ -49,7 +48,7 @@ public class BattleScreen extends AbstractGameScreen {
 	
 	// debug
 	private final float DEBUG_REBUILD_INTERVAL = 20f;
-	private boolean debugEnabled = false;
+	private boolean debugEnabled = true;
 	private float debugRebuildStage;	
 
 	public BattleScreen(DirectedGame game) {
@@ -80,29 +79,35 @@ public class BattleScreen extends AbstractGameScreen {
 		// build all layers
 
 		Table layerTroops = buildTroopsLayer();
-		// assemble stage for menu screen
+		Table layerback = buildBackgroundLayer();
+		// assemble stage for battle screen
 		stage.clear();
 		Stack stack = new Stack();
 		stage.addActor(stack);
 		stack.setSize(Constants.WORLD_WIDTH,
 				Constants.WORLD_HEIGHT);
-		stack.add(layerTroops);
+		stack.add(layerback);
+		//stack.add(layerTroops);	
+
 		
 	}
 	private Table buildTroopsLayer() {
 		Table layer = new Table();
+		TroopActor tra =new TroopActor(new Troop(battleField));
+		layer.add(tra);
+		tra.setPosition(600, 300);
 		
-		//构造troopActor
-		createTroopActors();
-		
-		troop = new TroopActor(null);
-		troop.addAction(sequence(
-				moveTo(655, 510),
-				delay(4.0f),
-				moveBy(-70, -100, 0.5f, Interpolation.fade),
-				moveBy(-100, -50, 0.5f, Interpolation.fade)));	
-		layer.add(troop);
-		
+//		createTroopActors();
+//		for(TroopActor tra:troopActorList){
+//			tra.addAction(sequence(
+//					moveTo(1000, 510),
+//					delay(4.0f),
+//					moveBy(-70, -100, 0.5f, Interpolation.fade),
+//					moveBy(-100, -50, 0.5f, Interpolation.fade)));				
+//			layer.add(tra);
+//		}
+//	
+	
 		return layer;
 	}
 
@@ -110,6 +115,7 @@ public class BattleScreen extends AbstractGameScreen {
 		TroopActor trActor;
 		for(Troop tr:battleField.getTroopList()){
 			trActor = new TroopActor(tr);
+			trActor.setPosition(RenderUtils.translate(tr.getPosition().x), RenderUtils.translate(tr.getPosition().y));
 			troopActorList.add(trActor);
 			
 		}
@@ -122,7 +128,7 @@ public class BattleScreen extends AbstractGameScreen {
 		//imgBackground = new Image(Assets.instance.background.back.getTexture());
 		imgBackground = new Image(skinCanyonBunny, "background");
 		//System.out.println(Assets.instance.background.back.getRegionWidth());
-		//layer.add(imgBackground);
+		layer.add(imgBackground);
 		return layer;
 	}	
 	@Override
@@ -139,8 +145,9 @@ public class BattleScreen extends AbstractGameScreen {
 		case BATTLE:
 			if(isBattleStart){
 				battleField.calculateBattle();
-				isBattleStart = false;
 				battleFieldAnimationStage.initStepActionIter();
+				isBattleStart = false;
+				
 			}else{
 				battleFieldAnimationStage.parseStepActions();
 			}
@@ -184,11 +191,11 @@ public class BattleScreen extends AbstractGameScreen {
 	@Override
 	public void show() {
 		GamePreferences.instance.load();
-		//Viewport vp = new ExtendViewport(Constants.VIEWPORT_GUI_WIDTH,Constants.VIEWPORT_GUI_HEIGHT);
+		//Viewport vp = new ExtendViewport(Constants.WORLD_HEIGHT,Constants.WORLD_WIDTH);
 		//ScreenViewport 操作的是世界坐标，像素和米的比例关系
 		ScreenViewport vp = new ScreenViewport();
 		stage = new Stage(vp);	
-		vp.setUnitsPerPixel(Constants.UNITSPERPIXEL);
+		//vp.setUnitsPerPixel(Constants.UNITSPERPIXEL);
 		worldController = new WorldController(game,stage);
 		worldRenderer = new WorldRenderer(worldController);
 		//stage.getViewport().setCamera(worldRenderer.getCamera());	

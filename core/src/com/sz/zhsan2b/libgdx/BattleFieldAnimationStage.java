@@ -53,10 +53,11 @@ public class BattleFieldAnimationStage implements StepActionHandler {
 			//parse
 			if(stepActionIter.hasNext()){
 				currentStepAction = stepActionIter.next();
+				getCurrentStepTroopActor(currentStepAction.actionTroopId).parseStepAction(this);
 			}
-			getCurrentStepTroopActor(currentStepAction.actionTroopId).parseStepAction(this);
 			
-			//进行
+			
+			//进入到进行态
 			isPlanning=false;
 		}
 		

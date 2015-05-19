@@ -54,16 +54,17 @@ public class Troop implements TroopEventHandler {//增加adapter 实现hook
 	private void init() {
 		id = seq + 1;
 		seq++;
+		militaryKind = new MilitaryKind(0);//is needed for test
 		battleProperties = new BattleProperties();
-		currentProperties = new BattleProperties();
+		currentProperties = new BattleProperties(); //is needed for test
 		isArrowAttack = false;
-		position = new Position(0, 0);
+		position = new Position(0, 0); //is needed for test
 		hp = currentProperties.hp;
 		leftMove = currentProperties.move;
 		isMultiObject = false;
 		isStepAttack = false;
 		currentZhanfaId = 0;// 表示没有战法，为普通攻击
-		command = new Command(new Position(0, 0));
+		command = new Command(new Position(0, 0));//is needed for test
 		troopEventHandlers = new Array<TroopEventHandler>();
 		battleState = BATTLE_STATE.UN_ARRANGE;
 		isAttackCompleted = false;
@@ -262,12 +263,24 @@ public class Troop implements TroopEventHandler {//增加adapter 实现hook
 		return position;
 	}
 
+	public void setPosition(Position position) {
+		this.position = position;
+	}
+
 	public Command getCommand() {
 		return command;
 	}
 
 	public void setCommand(Command command) {
 		this.command = command;
+	}
+
+	public boolean isArrowAttack() {
+		return isArrowAttack;
+	}
+
+	public void setArrowAttack(boolean isArrowAttack) {
+		this.isArrowAttack = isArrowAttack;
 	}
 
 	public MilitaryKind getMilitaryKind() {
