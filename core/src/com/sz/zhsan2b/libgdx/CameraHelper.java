@@ -19,7 +19,7 @@ public class CameraHelper {
 		position = new Vector2();
 		position.x = Constants.WORLD_WIDTH/2;
 		position.y = Constants.WORLD_HEIGHT/2;
-		zoom = 1.0f;
+		zoom = 1.8f;
 	}
 
 	public void update(float deltaTime) {

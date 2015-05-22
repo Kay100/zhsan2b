@@ -6,12 +6,16 @@ import static com.badlogic.gdx.scenes.scene2d.actions.Actions.moveTo;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.run;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.actions.RunnableAction;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
+import com.sz.zhsan2b.core.Position;
 import com.sz.zhsan2b.core.StepAction;
 import com.sz.zhsan2b.core.Troop;
 
@@ -23,6 +27,7 @@ public class TroopActor extends AnimatedImage {
 	}
 
 	public static final String TAG = TroopActor.class.getName();
+	private static Logger logger = LoggerFactory.getLogger(TroopActor.class);
 	//game logic properties
 	private Troop troop;
 	private Array<TroopActor> affectedTroopList;
@@ -34,6 +39,8 @@ public class TroopActor extends AnimatedImage {
 
 	public TroopActor(Troop troop) {
 		this.troop = troop;
+		setWidth(Constants.WANGGE_UNIT_WIDTH);
+		setHeight(Constants.WANGGE_UNIT_HEIGHT);
 		init();
 
 
@@ -97,7 +104,6 @@ public class TroopActor extends AnimatedImage {
 						trA.setAnimation(RenderUtils.getTroopAnimationBy(trA.getTroop().getMilitaryKind().getId(), RenderUtils.getOppositeFaceDirection(currentStepAction.faceDirection), TROOP_ANIMATION_TYPE.WALK));
 					}
 					battleFieldAnimationStage.setPlanning(true);
-					battleFieldAnimationStage.nextStep();
 				}
 			});			
 			addAction(sequence(moveTo(x, y),delay(Constants.ONE_STEP_TIME,runAction)));
@@ -114,13 +120,17 @@ public class TroopActor extends AnimatedImage {
 			
 			RunnableAction runAction = run(new Runnable() {
 				public void run() {
-					battleFieldAnimationStage.setPlanning(true);
-					battleFieldAnimationStage.nextStep();
+	
+						battleFieldAnimationStage.setPlanning(true);
+
+
 				}
 			});
 			
 			//分析stepAction 处理朝向
 			addAction(sequence(moveTo(x,y),moveTo(toX, toY, Constants.ONE_STEP_TIME, Interpolation.linear),runAction));
+//			logger.debug(currentStepAction.orginPosition.toString());
+//			logger.debug(currentStepAction.objectPosition.toString());
 			Animation temp = RenderUtils.getTroopAnimationBy(currentStepAction.militaryKindId,currentStepAction.faceDirection,TROOP_ANIMATION_TYPE.WALK);
 			setAnimation(temp);
 		}

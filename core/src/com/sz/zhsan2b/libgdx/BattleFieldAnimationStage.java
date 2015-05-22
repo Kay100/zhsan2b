@@ -2,13 +2,17 @@ package com.sz.zhsan2b.libgdx;
 
 import java.util.Iterator;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.badlogic.gdx.utils.Array;
 import com.sz.zhsan2b.core.BattleField;
+import com.sz.zhsan2b.core.BattleField.State;
 import com.sz.zhsan2b.core.StepAction;
 import com.sz.zhsan2b.core.StepActionHandler;
 
 public class BattleFieldAnimationStage implements StepActionHandler {
-
+	private static Logger logger = LoggerFactory.getLogger(TroopActor.class);
 	private final Array<StepAction> stepActionList = new Array<StepAction>(100);
 	private StepAction currentStepAction;
 
@@ -54,6 +58,8 @@ public class BattleFieldAnimationStage implements StepActionHandler {
 			if(stepActionIter.hasNext()){
 				currentStepAction = stepActionIter.next();
 				getCurrentStepTroopActor(currentStepAction.actionTroopId).parseStepAction(this);
+			}else{
+				transferToOperate();
 			}
 			
 			
@@ -73,8 +79,13 @@ public class BattleFieldAnimationStage implements StepActionHandler {
 		}
 		return null;
 	}	
-	public void nextStep() {
-		stepActionIter.next();
+
+	public boolean isDisplayFinished() {
+		
+		return !stepActionIter.hasNext();
+	}
+	public void transferToOperate() {
+		this.battleField.state=State.OPERATE;
 		
 	}
 }

@@ -26,13 +26,13 @@ public class StepAction {
 	public ArrayMap<Long, TileEffect> effects;//用于各种效果,里面的效果都发生在同一个step周期内
 
 	public StepAction(long actionTroopId) {
-		this(actionTroopId, ACTION_KIND.NONE, new Position(0, 0),
+		this(actionTroopId, ACTION_KIND.NONE, new Position(0, 0), new Position(0, 0),
 				FaceDirection.RIGHT, 0, new Array<Long>(), true,
 				new ArrayMap<Long, Integer>(), new ArrayMap<Long, TileEffect>());
 	}
 
 	public StepAction(long actionTroopId, ACTION_KIND actionKind,
-			Position objectPosition, FaceDirection faceDirection,
+			Position objectPosition,Position orginPosition, FaceDirection faceDirection,
 			long militaryKindId, Array<Long> affectedTroopList,
 			boolean isVisible, ArrayMap<Long, Integer> damageMap,
 			ArrayMap<Long, TileEffect> effects) {
@@ -40,6 +40,7 @@ public class StepAction {
 		this.actionTroopId = actionTroopId;
 		this.actionKind = actionKind;
 		this.objectPosition = objectPosition;
+		this.orginPosition=orginPosition;
 		this.faceDirection = faceDirection;
 		this.militaryKindId = militaryKindId;
 		this.affectedTroopList = affectedTroopList;
@@ -62,6 +63,18 @@ public class StepAction {
 		this.isVisible = isVisible;
 		this.damageMap = damageMap;
 		this.effects = effects;
+	}
+
+	@Override
+	public String toString() {
+		return "StepAction [actionTroopId=" + actionTroopId + ", actionKind="
+				+ actionKind + ", objectPosition=" + objectPosition
+				+ ", orginPosition=" + orginPosition + ", faceDirection="
+				+ faceDirection + ", militaryKindId=" + militaryKindId
+				+ ", affectedTroopList=" + affectedTroopList + ", isVisible="
+				+ isVisible + ", damageMap=" + damageMap + ", effects="
+				+ effects + "]";
 	}	
+	
 
 }

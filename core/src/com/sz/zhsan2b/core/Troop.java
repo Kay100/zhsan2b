@@ -1,5 +1,8 @@
 package com.sz.zhsan2b.core;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
 import com.sz.zhsan2b.core.Command.ACTION_KIND;
@@ -15,7 +18,7 @@ public class Troop implements TroopEventHandler {//增加adapter 实现hook
 		UN_ARRANGE, NORMAL, IS_DESTROY, CHAOS, STAT_IN_FIRE
 
 	}
-
+	private static Logger logger = LoggerFactory.getLogger(Troop.class);
 	private static long seq = 0;
 
 	// properties
@@ -45,33 +48,37 @@ public class Troop implements TroopEventHandler {//增加adapter 实现hook
 	private BattleField battleField;
 
 	public Troop(BattleField battleField) {
-		this.battleField = battleField;
-		battleField.getTroopList().add(this);
-		init();
+
+
+		this(new MilitaryKind(0), new BattleProperties(), new Position(0, 0), new Command(new Position(0, 0)), PLAYER_TYPE.AI, battleField);
 
 	}
 
-	private void init() {
+	public Troop(MilitaryKind militaryKind, BattleProperties battleProperties,
+			Position position, Command command, PLAYER_TYPE owner,
+			BattleField battleField) {
 		id = seq + 1;
 		seq++;
-		militaryKind = new MilitaryKind(0);//is needed for test
-		battleProperties = new BattleProperties();
-		currentProperties = new BattleProperties(); //is needed for test
+		this.militaryKind = militaryKind;
+		this.battleProperties = battleProperties;
+		this.position = position;
+		this.command = command;
+		this.owner = owner;
+		this.battleField = battleField;
+		battleField.getTroopList().add(this);
+		currentProperties=new BattleProperties(battleProperties);
 		isArrowAttack = false;
-		position = new Position(0, 0); //is needed for test
 		hp = currentProperties.hp;
 		leftMove = currentProperties.move;
 		isMultiObject = false;
 		isStepAttack = false;
 		currentZhanfaId = 0;// 表示没有战法，为普通攻击
-		command = new Command(new Position(0, 0));//is needed for test
 		troopEventHandlers = new Array<TroopEventHandler>();
 		battleState = BATTLE_STATE.UN_ARRANGE;
 		isAttackCompleted = false;
-		owner = PLAYER_TYPE.AI;
 		faceDirection = FaceDirection.RIGHT;
-
 	}
+
 	// attack
 	// return true 表示已经顺利完成了对目标的攻击  
 	/*
@@ -323,6 +330,7 @@ public class Troop implements TroopEventHandler {//增加adapter 实现hook
 			return true;
 		}else{//移动一格
 			leftMove-=nextWeight;
+			logger.debug(String.valueOf(leftMove));
 			//这个地方要判断一下移动的位置是否被目标站住了（其他的点不要判断的原因是选路算法代劳了）
 			Position nextPosition = positionPath.get(1);
 			if(battleField.isPositionOccupied(nextPosition)){
@@ -342,6 +350,7 @@ public class Troop implements TroopEventHandler {//增加adapter 实现hook
 			getStepActionList().add(stepAction);
 			position.setPosition(nextPosition);
 			stepAction.objectPosition.setPosition(position);
+			logger.debug(stepAction.toString());
 			return false;
 		}
 		

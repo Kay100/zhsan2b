@@ -27,15 +27,19 @@ public class Map {
 			Position to,Array<Position> occupiedPositions) {
         //temp handle the question by cloning , but this is costly , someday ,should modify to use rebuild nodes which is just removed.
 		
-		AStar astar = new AStar(cloner.deepClone(graph));
+		Graph tempGraph = cloner.deepClone(graph);
  		
  		for(Position p:occupiedPositions){
  			if(!p.equal(from)&&!p.equal(to)){
- 				graph.removeNode(String.valueOf(p.getId()));
+ 				String idS=String.valueOf(p.getId());
+ 				if(tempGraph.getNode(idS) !=null){
+ 					tempGraph.removeNode(idS);
+ 				}
+ 				
  			}
  			
  		}
- 		
+ 		AStar astar = new AStar(tempGraph);
  		astar.compute(String.valueOf(from.getId()), String.valueOf(to.getId()));
  		Path path = astar.getShortestPath();
  		Array<Position> pathPositions =null;

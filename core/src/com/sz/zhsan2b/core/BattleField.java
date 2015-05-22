@@ -1,5 +1,7 @@
 package com.sz.zhsan2b.core;
 
+import java.util.Iterator;
+
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
 
@@ -37,7 +39,7 @@ public class BattleField implements TroopEventHandler{
 
 	//进行一轮战斗
 	public void calculateBattle(){
-		while(isAllTroopsActioned()){
+		while(!isAllTroopsActioned()){
 			//重置命令的目标位置为目标部队的位置
 			for(Troop tr:troopList){
 				Troop object = tr.getCommand().object;
@@ -46,7 +48,9 @@ public class BattleField implements TroopEventHandler{
 				}
 			}
 			//主循环
-			for(Troop curTr:troopList){
+			
+			for(int i= 0,size=troopList.size;i<size;i++){
+				Troop curTr = troopList.get(i);
 				if(curTr.getCommand().isCompeted==true)
 					continue;
 				switch(curTr.getCommand().actionKind){
@@ -70,9 +74,7 @@ public class BattleField implements TroopEventHandler{
 					curTr.setCommandComplete();
 					break;
 				}
-				
-
-				
+				System.out.println();
 			}
 			
 		}
@@ -158,21 +160,6 @@ public class BattleField implements TroopEventHandler{
 	@Override
 	public void onAttackAfter(Troop troop, StepAction stepAction) {
 
-		
-	}
-	//构造一个用于测试的troopList。
-	public void testInit() {
-		Troop troop = new Troop(this);
-		troop.getPosition().set(4, 4);
-		troop.setCommand(new Command(new Position(8, 8)));
-		troop.getCurrentProperties().ack= 20;
-		troop.getCurrentProperties().def=0;
-		troop.getCurrentProperties().hp=100;
-		troop.getCurrentProperties().isXie=true;
-		troop.getCurrentProperties().move=30;
-		troop.getCurrentProperties().range=1;
-		troop.getCurrentProperties().speed=10;
-		
 		
 	}
 

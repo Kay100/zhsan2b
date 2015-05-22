@@ -34,7 +34,7 @@ public class BattleScreen extends AbstractGameScreen {
 	private final BattleField battleField = new BattleField();
 
 
-	private boolean isBattleStart;
+	private boolean isBattleStart=true;
 	
 	
 	private BattleFieldAnimationStage battleFieldAnimationStage;
@@ -44,19 +44,18 @@ public class BattleScreen extends AbstractGameScreen {
 	
 	//troop actor list
 	
-	private Array<TroopActor> troopActorList;
+	private Array<TroopActor> troopActorList=new Array<TroopActor>(20);;
 	
 	// debug
 	private final float DEBUG_REBUILD_INTERVAL = 20f;
-	private boolean debugEnabled = true;
+	private boolean debugEnabled = false;
 	private float debugRebuildStage;	
 
 	public BattleScreen(DirectedGame game) {
 		super(game);
 		battleFieldOperationStage = new BattleFieldOperationStage(battleField);
 		battleFieldAnimationStage = new BattleFieldAnimationStage(this);
-		troopActorList = new Array<TroopActor>(20);
-		isBattleStart = true;
+		battleField.setStepActionHandler(battleFieldAnimationStage);
 	}
 	public BattleField getBattleField() {
 		return battleField;
@@ -79,40 +78,30 @@ public class BattleScreen extends AbstractGameScreen {
 		// build all layers
 
 		Table layerTroops = buildTroopsLayer();
-		Table layerback = buildBackgroundLayer();
 		// assemble stage for battle screen
 		stage.clear();
 		Stack stack = new Stack();
 		stage.addActor(stack);
 		stack.setSize(Constants.WORLD_WIDTH,
 				Constants.WORLD_HEIGHT);
-		stack.add(layerback);
-		//stack.add(layerTroops);	
+		stack.add(layerTroops);	
 
 		
 	}
 	private Table buildTroopsLayer() {
 		Table layer = new Table();
-		TroopActor tra =new TroopActor(new Troop(battleField));
-		layer.add(tra);
-		tra.setPosition(600, 300);
-		
-//		createTroopActors();
-//		for(TroopActor tra:troopActorList){
-//			tra.addAction(sequence(
-//					moveTo(1000, 510),
-//					delay(4.0f),
-//					moveBy(-70, -100, 0.5f, Interpolation.fade),
-//					moveBy(-100, -50, 0.5f, Interpolation.fade)));				
-//			layer.add(tra);
-//		}
-//	
+		layer.setLayoutEnabled(false);
+		createTroopActors();
+		for(TroopActor trA:troopActorList){
+			layer.add(trA);
+		}
 	
 		return layer;
 	}
 
 	private void createTroopActors() {
 		TroopActor trActor;
+		troopActorList.clear();
 		for(Troop tr:battleField.getTroopList()){
 			trActor = new TroopActor(tr);
 			trActor.setPosition(RenderUtils.translate(tr.getPosition().x), RenderUtils.translate(tr.getPosition().y));

@@ -11,7 +11,7 @@ public class Command {
     public Position objectPosition;
     boolean isCompeted;
     
-	protected Command(Position objectPosition) {
+	public Command(Position objectPosition) {
 		this(ACTION_KIND.MOVE,0,null,objectPosition);
 	}
 
