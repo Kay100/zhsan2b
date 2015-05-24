@@ -19,6 +19,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.sz.zhsan2b.core.BattleField;
 import com.sz.zhsan2b.core.Troop;
+import com.sz.zhsan2b.core.StepAction.TileEffect;
 
 public class BattleScreen extends AbstractGameScreen {
 	private static final String TAG = BattleScreen.class.getName();
@@ -64,6 +65,12 @@ public class BattleScreen extends AbstractGameScreen {
 	public Array<TroopActor> getTroopActorList() {
 		return troopActorList;
 	}
+	public Stage getStage() {
+		return stage;
+	}
+	public void setStage(Stage stage) {
+		this.stage = stage;
+	}
 	@Override
 	public InputProcessor getInputProcessor() {
 		return stage;
@@ -84,7 +91,11 @@ public class BattleScreen extends AbstractGameScreen {
 		stage.addActor(stack);
 		stack.setSize(Constants.WORLD_WIDTH,
 				Constants.WORLD_HEIGHT);
-		stack.add(layerTroops);	
+		stack.add(layerTroops);
+		stack.add(battleFieldAnimationStage.getLayerEffects());	
+		TileEffectActor effectActor = new TileEffectActor(TileEffect.BOOST);
+		effectActor.setPosition(100, 100);
+		battleFieldAnimationStage.getLayerEffects().add(effectActor);
 
 		
 	}
@@ -184,7 +195,7 @@ public class BattleScreen extends AbstractGameScreen {
 		//ScreenViewport 操作的是世界坐标，像素和米的比例关系
 		ScreenViewport vp = new ScreenViewport();
 		stage = new Stage(vp);	
-		//vp.setUnitsPerPixel(Constants.UNITSPERPIXEL);
+		//vp.setUnitsPerPixel(Constants.UNITSPERPIXEL);	
 		worldController = new WorldController(game,stage);
 		worldRenderer = new WorldRenderer(worldController);
 		//stage.getViewport().setCamera(worldRenderer.getCamera());	

@@ -40,7 +40,7 @@ public class BattleUtils {
 				for (int x = minX; x <= maxX; x++) {
 					Position p = new Position(x, y);
 					rangeList.add(p);
-					logger.debug(p.toString());
+					//logger.debug(p.toString());
 				}
 			}
 		} else {// 构造非斜向list
@@ -51,7 +51,7 @@ public class BattleUtils {
 						- half; x++) {
 					Position p = new Position(x, y);
 					rangeList.add(p);
-					logger.debug(p.toString());
+					//logger.debug(p.toString());
 				}
 				if (half == 0)
 					change = true;
@@ -69,13 +69,16 @@ public class BattleUtils {
 						|| isOutOfBound(p.y, 0,
 								Constants.BATTLE_FIELD_YCOUNT - 1)) {
 					rangeList.removeIndex(index);
-					logger.debug(p.toString() + " is removed.");
+					//logger.debug(p.toString() + " is removed.");
 
 				}
 			}
 		}
 		// 返回是否在队列中
-		return contains(rangeList, object);
+		//logger.debug("object is:"+"["+object.x+","+object.y+"]");
+		boolean returnBool= contains(rangeList, object);
+		//logger.debug(String.valueOf(returnBool));
+		return returnBool;
 
 	}
 

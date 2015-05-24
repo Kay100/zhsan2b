@@ -11,8 +11,10 @@ import org.slf4j.LoggerFactory;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.RunnableAction;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.sz.zhsan2b.core.Position;
@@ -85,24 +87,31 @@ public class TroopActor extends AnimatedImage {
 		case ATTACK:
 		{
 			//所有部队的动画都写在这里，不再用观察者模式了，没必要了。内容简单。
-			//still has effects need to dispose.
-
+			
 			setAnimation(RenderUtils.getTroopAnimationBy(currentStepAction.militaryKindId, currentStepAction.faceDirection, TROOP_ANIMATION_TYPE.ATTACK));
+			TileEffectActor effectActor = new TileEffectActor(currentStepAction.effects.get(currentStepAction.actionTroopId));
+			effectActor.setPosition(getX(), getY());
+			battleFieldAnimationStage.getLayerEffects().add(effectActor);
 			TroopActor affectedTroopActor = null;
 			final Array<TroopActor> affectedTroopActors = new Array<TroopActor>(currentStepAction.affectedTroopList.size);
 			for(long i:currentStepAction.affectedTroopList){
 				affectedTroopActor= battleFieldAnimationStage.getTroopActorByTroopId(i);
 				affectedTroopActor.setAnimation(RenderUtils.getTroopAnimationBy(affectedTroopActor.getTroop().getMilitaryKind().getId(), RenderUtils.getOppositeFaceDirection(currentStepAction.faceDirection), TROOP_ANIMATION_TYPE.BE_ATTACKED));
 				affectedTroopActors.add(affectedTroopActor);
+				effectActor=new TileEffectActor(currentStepAction.effects.get(i));
+				effectActor.setPosition(affectedTroopActor.getX(), affectedTroopActor.getY());
+				battleFieldAnimationStage.getLayerEffects().add(effectActor);
 			}
 			float x = RenderUtils.translate(currentStepAction.orginPosition.x);
 			float y = RenderUtils.translate(currentStepAction.orginPosition.y);
 			RunnableAction runAction = run(new Runnable() {
 				public void run() {
-					setAnimation(RenderUtils.getTroopAnimationBy(currentStepAction.militaryKindId, currentStepAction.faceDirection, TROOP_ANIMATION_TYPE.WALK));
+					setAnimation(RenderUtils.getTroopAnimationBy(currentStepAction.militaryKindId, currentStepAction.faceDirection, TROOP_ANIMATION_TYPE.WALK));		
 					for(TroopActor trA:affectedTroopActors){
 						trA.setAnimation(RenderUtils.getTroopAnimationBy(trA.getTroop().getMilitaryKind().getId(), RenderUtils.getOppositeFaceDirection(currentStepAction.faceDirection), TROOP_ANIMATION_TYPE.WALK));
 					}
+					//remove tile effect
+					battleFieldAnimationStage.getLayerEffects().clear();
 					battleFieldAnimationStage.setPlanning(true);
 				}
 			});			

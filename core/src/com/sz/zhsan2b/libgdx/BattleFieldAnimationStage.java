@@ -5,6 +5,8 @@ import java.util.Iterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Array;
 import com.sz.zhsan2b.core.BattleField;
 import com.sz.zhsan2b.core.BattleField.State;
@@ -20,11 +22,17 @@ public class BattleFieldAnimationStage implements StepActionHandler {
 	private boolean isPlanning;
 	private final BattleField battleField;
 	private final Array<TroopActor> troopActorList;
+	private final Stage stage;
+	private Table layerEffects;
 	
 	public BattleFieldAnimationStage(BattleScreen battleScreen) {
 		this.battleField = battleScreen.getBattleField();
+		stage = battleScreen.getStage();
 		isPlanning = true;
 		troopActorList = battleScreen.getTroopActorList();
+		layerEffects = new Table();
+		layerEffects.setLayoutEnabled(false);
+
 		
 	}
 	public void initStepActionIter(){
@@ -52,6 +60,15 @@ public class BattleFieldAnimationStage implements StepActionHandler {
 		this.isPlanning = isPlanning;
 	}
 
+	public Stage getStage() {
+		return stage;
+	}
+	public Table getLayerEffects() {
+		return layerEffects;
+	}
+	public void setLayerEffects(Table layerEffects) {
+		this.layerEffects = layerEffects;
+	}
 	public void parseStepActions() {
 		if(isPlanning){
 			//parse

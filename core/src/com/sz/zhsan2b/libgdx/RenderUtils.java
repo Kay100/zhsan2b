@@ -2,6 +2,7 @@ package com.sz.zhsan2b.libgdx;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.sz.zhsan2b.core.StepAction.FaceDirection;
+import com.sz.zhsan2b.core.StepAction.TileEffect;
 import com.sz.zhsan2b.libgdx.TroopActor.TROOP_ANIMATION_TYPE;
 
 public class RenderUtils {
@@ -72,7 +73,9 @@ public class RenderUtils {
 		}
 		return returnAnim;
 	}
-
+	public static Animation getTileAnimationBy(TileEffect effect) {
+		return Assets.instance.assetTileEffect.animTileEffect.get(effect);
+	}
 	public static FaceDirection getOppositeFaceDirection(
 			FaceDirection faceDirection) {
 		FaceDirection returnFD = faceDirection.UP;

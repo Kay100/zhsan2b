@@ -33,6 +33,7 @@ public static final String TEXTURE_ATLAS_UI =
 public static final String TEXTURE_ATLAS_MAP = "images/zhsan2b-map.atlas";
 
 public static final String TEXTURE_ATLUS_WANGGE = "images/zhsan2b-wangge.atlas";
+public static final String TEXTURE_ATLUS_TILE_EFFECT = "Effects/TileEffect/zhsan2b-tileeffect.atlas";
 
 public static final String TEXTURE_ATLAS_LIBGDX_UI =
 "images/uiskin.atlas";

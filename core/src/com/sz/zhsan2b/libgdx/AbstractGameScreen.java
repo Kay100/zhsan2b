@@ -25,7 +25,7 @@ public abstract class AbstractGameScreen implements Screen {
 	public abstract InputProcessor getInputProcessor ();
 
 	public void resume() {
-		Assets.instance.init(new AssetManager());
+		//Assets.instance.init(new AssetManager());
 	}
 
 	public void dispose() {

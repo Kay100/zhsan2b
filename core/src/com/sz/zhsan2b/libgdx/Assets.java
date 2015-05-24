@@ -20,6 +20,8 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
 import com.badlogic.gdx.utils.Disposable;
 import com.sun.javafx.binding.StringFormatter;
+import com.sun.scenario.effect.Effect;
+import com.sz.zhsan2b.core.StepAction.TileEffect;
 
 public class Assets implements Disposable, AssetErrorListener {
 
@@ -35,7 +37,9 @@ public class Assets implements Disposable, AssetErrorListener {
 	public AssetMap assetMap;
 	public AssetWangge assetWangge;
 	public AssetTroop assetTroop;
+	public AssetTileEffect assetTileEffect;
 	private AssetManager assetManager;
+	
 
 
 	// singleton: prevent instantiation from other classes
@@ -50,6 +54,8 @@ public class Assets implements Disposable, AssetErrorListener {
 		// load texture atlas
 		assetManager.load(Constants.TEXTURE_ATLAS_MAP, TextureAtlas.class);
 		assetManager.load(Constants.TEXTURE_ATLUS_WANGGE, TextureAtlas.class);
+		assetManager.load(Constants.TEXTURE_ATLUS_TILE_EFFECT, TextureAtlas.class);
+		
 	
 		// start loading assets and wait until finished
 		assetManager.finishLoading();
@@ -65,6 +71,7 @@ public class Assets implements Disposable, AssetErrorListener {
 		assetMap = new AssetMap();
 		assetWangge = new AssetWangge();
 		assetTroop = new AssetTroop();
+		assetTileEffect = new AssetTileEffect();
 		
 	
 	}
@@ -99,6 +106,25 @@ public class Assets implements Disposable, AssetErrorListener {
 		
 
 	}	
+	public class AssetTileEffect{
+		public final ArrayMap<TileEffect,Animation> animTileEffect = new ArrayMap<TileEffect, Animation>();
+		protected AssetTileEffect(){
+			 TextureAtlas atlas = assetManager.get(Constants.TEXTURE_ATLUS_TILE_EFFECT);
+			 TextureRegion texR = atlas.findRegion("huoshi"); 				
+		     TextureRegion[] tempRegs = getAnimationFrames(texR.split(texR.getRegionWidth()/8, texR.getRegionHeight()),0,8);
+		     animTileEffect.put(TileEffect.HUOSHI, new Animation(1/8f, tempRegs)); 
+			 texR = atlas.findRegion("Fire"); 				
+		     tempRegs = getAnimationFrames(texR.split(texR.getRegionWidth()/8, texR.getRegionHeight()),0,8);
+		     animTileEffect.put(TileEffect.FIRE, new Animation(1/8f, tempRegs)); 		
+			 texR = atlas.findRegion("Boost"); 				
+		     tempRegs = getAnimationFrames(texR.split(texR.getRegionWidth()/12, texR.getRegionHeight()),0,12);
+		     animTileEffect.put(TileEffect.BOOST, new Animation(1/12f, tempRegs)); 	
+			 texR = atlas.findRegion("Chaos"); 				
+		     tempRegs = getAnimationFrames(texR.split(texR.getRegionWidth()/8, texR.getRegionHeight()),0,8);
+		     animTileEffect.put(TileEffect.CHAOS, new Animation(1/8f, tempRegs)); 	
+		}
+	
+	}
 	
 	public class AssetTroop {
 		//public final AtlasRegion actionDoneTroopReg;
@@ -161,27 +187,27 @@ public class Assets implements Disposable, AssetErrorListener {
 
 		private Array<TextureRegion[]> getAnimationRegsArray(Texture texture) {
 			TextureRegion[][] tmp = TextureRegion.split(texture, texture.getWidth()/Constants.TROOP_MODEL_XCOUNT, texture.getHeight()/Constants.TROOP_MODEL_YCOUNT);      
-			TextureRegion[] faceUpRegs = getAnimationFrames(tmp, 7);
-			TextureRegion[] faceDownRegs=getAnimationFrames(tmp, 3);
-			TextureRegion[] faceLeftRegs=getAnimationFrames(tmp, 4);
-			TextureRegion[] faceRigthRegs=getAnimationFrames(tmp, 0);
+			TextureRegion[] faceUpRegs = getAnimationFrames(tmp, 7,Constants.TROOP_MODEL_XCOUNT);
+			TextureRegion[] faceDownRegs=getAnimationFrames(tmp, 3,Constants.TROOP_MODEL_XCOUNT);
+			TextureRegion[] faceLeftRegs=getAnimationFrames(tmp, 4,Constants.TROOP_MODEL_XCOUNT);
+			TextureRegion[] faceRigthRegs=getAnimationFrames(tmp, 0,Constants.TROOP_MODEL_XCOUNT);
 			
 			Array<TextureRegion[]> tempRegs = new Array<TextureRegion[]>(4);
 			tempRegs.addAll(faceUpRegs,faceDownRegs,faceLeftRegs,faceRigthRegs);
 			return tempRegs;
 		}
 
-		private TextureRegion[] getAnimationFrames(TextureRegion[][] allSplitedFrames,
-				  int rowIndex) {
-			TextureRegion[] animationFrames = new TextureRegion[Constants.TROOP_MODEL_XCOUNT];
-			int index = 0;
-			for (int j = 0; j < Constants.TROOP_MODEL_XCOUNT; j++) {
-			    animationFrames[index++] = allSplitedFrames[rowIndex][j];
-			}
-			return animationFrames;
-		}
+
 	}	
-	
+	private TextureRegion[] getAnimationFrames(TextureRegion[][] allSplitedFrames,
+			  int rowIndex , int xcount) {
+		TextureRegion[] animationFrames = new TextureRegion[xcount];
+		int index = 0;
+		for (int j = 0; j < xcount; j++) {
+		    animationFrames[index++] = allSplitedFrames[rowIndex][j];
+		}
+		return animationFrames;
+	}	
 	@Override
 	public void dispose() {
 		assetManager.dispose();

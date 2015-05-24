@@ -301,6 +301,10 @@ public class Troop implements TroopEventHandler {//增加adapter 实现hook
 	public boolean isStepAttack() {
 		return isStepAttack;
 	}
+	public void setStepAttack(boolean isStepAttack) {
+		this.isStepAttack = isStepAttack;
+	}
+
 	public long getId() {
 		return id;
 	}
@@ -369,7 +373,7 @@ public class Troop implements TroopEventHandler {//增加adapter 实现hook
 
 	@Override
 	public void onAttackAfter(Troop troop, StepAction stepAction) {
-		troop.beAttack(troop, stepAction);
+		beAttack(troop, stepAction);//这个错误还真难找啊。
 		
 	}
 	

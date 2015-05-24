@@ -2,6 +2,7 @@ package com.sz.zhsan2b.core;
 
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
+import com.badlogic.gdx.utils.ObjectMap.Entry;
 import com.sz.zhsan2b.core.Command.ACTION_KIND;
 
 public class StepAction {
@@ -11,7 +12,7 @@ public class StepAction {
 	}
 
 	public enum TileEffect {
-		NONE, RECOVER, RESIST,DESTROY, HUOSHI, LEITING, RAOLUAN, BOOST, CRITICAL, CHAOS, GUANCHUAN, SURROUNDED, STUNT
+		NONE, RECOVER, RESIST,DESTROY, HUOSHI, LEITING, RAOLUAN, BOOST, CRITICAL, CHAOS, GUANCHUAN, SURROUNDED, STUNT,FIRE
 	}
 
 	public long actionTroopId;
@@ -67,13 +68,19 @@ public class StepAction {
 
 	@Override
 	public String toString() {
+		String effectsString="{";
+		for(Entry<Long,TileEffect> entry:effects){
+			effectsString+="["+entry.key+","+entry.value+"]";
+		}
+		effectsString+="}";
+		
 		return "StepAction [actionTroopId=" + actionTroopId + ", actionKind="
 				+ actionKind + ", objectPosition=" + objectPosition
 				+ ", orginPosition=" + orginPosition + ", faceDirection="
 				+ faceDirection + ", militaryKindId=" + militaryKindId
 				+ ", affectedTroopList=" + affectedTroopList + ", isVisible="
 				+ isVisible + ", damageMap=" + damageMap + ", effects="
-				+ effects + "]";
+				+ effectsString + "]";
 	}	
 	
 

@@ -1,20 +1,337 @@
 
 zhsan2b-tileeffect.png
-size: 2048,512
+size: 2048,1024
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
-Stunt4
+Ambush
+  rotate: false
+  xy: 2, 609
+  size: 1024, 128
+  orig: 1024, 128
+  offset: 0, 0
+  index: -1
+Attract
+  rotate: false
+  xy: 2, 479
+  size: 1024, 128
+  orig: 1024, 128
+  offset: 0, 0
+  index: -1
+Boost
   rotate: false
   xy: 2, 2
-  size: 1120, 140
-  orig: 1120, 140
+  size: 1024, 85
+  orig: 1024, 85
+  offset: 0, 0
+  index: -1
+CauseChaos
+  rotate: false
+  xy: 2, 349
+  size: 1024, 128
+  orig: 1024, 128
+  offset: 0, 0
+  index: -1
+Chaos
+  rotate: false
+  xy: 2, 219
+  size: 1024, 128
+  orig: 1024, 128
+  offset: 0, 0
+  index: -1
+CriticalStrike
+  rotate: false
+  xy: 2, 89
+  size: 1024, 128
+  orig: 1024, 128
+  offset: 0, 0
+  index: -1
+Stunt
+  rotate: false
+  xy: 2, 89
+  size: 1024, 128
+  orig: 1024, 128
+  offset: 0, 0
+  index: -1
+Help
+  rotate: false
+  xy: 2, 876
+  size: 1024, 142
+  orig: 1024, 142
+  offset: 0, 0
+  index: -1
+Raoluan
+  rotate: false
+  xy: 2, 739
+  size: 1024, 135
+  orig: 1024, 135
+  offset: 0, 0
+  index: -1
+
+zhsan2b-tileeffect2.png
+size: 2048,1024
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+Fire
+  rotate: false
+  xy: 2, 869
+  size: 1024, 128
+  orig: 1024, 128
+  offset: 0, 0
+  index: -1
+Fire1
+  rotate: false
+  xy: 2, 739
+  size: 1024, 128
+  orig: 1024, 128
+  offset: 0, 0
+  index: -1
+Gongxin
+  rotate: false
+  xy: 2, 609
+  size: 1024, 128
+  orig: 1024, 128
+  offset: 0, 0
+  index: -1
+Help1
+  rotate: false
+  xy: 2, 479
+  size: 1024, 128
+  orig: 1024, 128
+  offset: 0, 0
+  index: -1
+Hide
+  rotate: false
+  xy: 2, 349
+  size: 1024, 128
+  orig: 1024, 128
+  offset: 0, 0
+  index: -1
+None
+  rotate: false
+  xy: 2, 219
+  size: 1024, 128
+  orig: 1024, 128
+  offset: 0, 0
+  index: -1
+Raoluan1
+  rotate: false
+  xy: 2, 89
+  size: 1024, 128
+  orig: 1024, 128
+  offset: 0, 0
+  index: -1
+pojia1
+  rotate: false
+  xy: 2, 2
+  size: 1024, 85
+  orig: 1024, 85
+  offset: 0, 0
+  index: -1
+
+zhsan2b-tileeffect3.png
+size: 2048,1024
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+Recover
+  rotate: false
+  xy: 2, 392
+  size: 1024, 128
+  orig: 1024, 128
+  offset: 0, 0
+  index: -1
+Resist
+  rotate: false
+  xy: 2, 262
+  size: 1024, 128
+  orig: 1024, 128
+  offset: 0, 0
+  index: -1
+dadun
+  rotate: false
+  xy: 2, 262
+  size: 1024, 128
+  orig: 1024, 128
+  offset: 0, 0
+  index: -1
+Routed
+  rotate: false
+  xy: 2, 132
+  size: 1024, 128
+  orig: 1024, 128
+  offset: 0, 0
+  index: -1
+Rumour
+  rotate: false
+  xy: 2, 2
+  size: 1024, 128
+  orig: 1024, 128
+  offset: 0, 0
+  index: -1
+guanchuan
+  rotate: false
+  xy: 2, 651
+  size: 1024, 127
+  orig: 1024, 127
+  offset: 0, 0
+  index: -1
+huoshi
+  rotate: false
+  xy: 2, 522
+  size: 1024, 127
+  orig: 1024, 127
+  offset: 0, 0
+  index: -1
+pojia
+  rotate: false
+  xy: 2, 954
+  size: 1024, 68
+  orig: 1024, 68
+  offset: 0, 0
+  index: -1
+qiangzhen
+  rotate: false
+  xy: 2, 867
+  size: 1024, 85
+  orig: 1024, 85
+  offset: 0, 0
+  index: -1
+xuanfeng
+  rotate: false
+  xy: 2, 780
+  size: 1024, 85
+  orig: 1024, 85
+  offset: 0, 0
+  index: -1
+
+zhsan2b-tileeffect4.png
+size: 2048,1024
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+SetFire
+  rotate: false
+  xy: 2, 782
+  size: 1024, 128
+  orig: 1024, 128
+  offset: 0, 0
+  index: -1
+huoshi1
+  rotate: false
+  xy: 2, 782
+  size: 1024, 128
+  orig: 1024, 128
+  offset: 0, 0
+  index: -1
+Stunt10
+  rotate: false
+  xy: 2, 262
+  size: 1024, 128
+  orig: 1024, 128
+  offset: 0, 0
+  index: -1
+Stunt11
+  rotate: false
+  xy: 2, 132
+  size: 1024, 128
+  orig: 1024, 128
+  offset: 0, 0
+  index: -1
+Stunt2
+  rotate: false
+  xy: 2, 652
+  size: 1024, 128
+  orig: 1024, 128
+  offset: 0, 0
+  index: -1
+Stunt3
+  rotate: false
+  xy: 2, 522
+  size: 1024, 128
+  orig: 1024, 128
+  offset: 0, 0
+  index: -1
+Stunt4
+  rotate: false
+  xy: 2, 392
+  size: 1024, 128
+  orig: 1024, 128
+  offset: 0, 0
+  index: -1
+Surrounded
+  rotate: false
+  xy: 2, 2
+  size: 1024, 128
+  orig: 1024, 128
+  offset: 0, 0
+  index: -1
+
+zhsan2b-tileeffect5.png
+size: 2048,1024
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+chongji
+  rotate: false
+  xy: 2, 782
+  size: 1024, 128
+  orig: 1024, 128
+  offset: 0, 0
+  index: -1
+guanchuan1
+  rotate: false
+  xy: 2, 652
+  size: 1024, 128
+  orig: 1024, 128
+  offset: 0, 0
+  index: -1
+jinji
+  rotate: false
+  xy: 2, 522
+  size: 1024, 128
+  orig: 1024, 128
   offset: 0, 0
   index: -1
 leiting
   rotate: false
-  xy: 2, 144
-  size: 1352, 169
-  orig: 1352, 169
+  xy: 2, 392
+  size: 1024, 128
+  orig: 1024, 128
+  offset: 0, 0
+  index: -1
+leiting1
+  rotate: false
+  xy: 2, 262
+  size: 1024, 128
+  orig: 1024, 128
+  offset: 0, 0
+  index: -1
+stunt5
+  rotate: false
+  xy: 2, 132
+  size: 1024, 128
+  orig: 1024, 128
+  offset: 0, 0
+  index: -1
+stunt6
+  rotate: false
+  xy: 2, 2
+  size: 1024, 128
+  orig: 1024, 128
+  offset: 0, 0
+  index: -1
+
+zhsan2b-tileeffect6.png
+size: 2048,256
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+tuji
+  rotate: false
+  xy: 2, 2
+  size: 1024, 128
+  orig: 1024, 128
   offset: 0, 0
   index: -1
