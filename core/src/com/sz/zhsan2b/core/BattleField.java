@@ -70,7 +70,6 @@ public class BattleField implements TroopEventHandler{
 					curTr.setCommandComplete();
 					break;
 				}
-				System.out.println();
 			}
 			
 		}

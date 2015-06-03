@@ -92,10 +92,10 @@ public class BattleScreen extends AbstractGameScreen {
 		stack.setSize(Constants.WORLD_WIDTH,
 				Constants.WORLD_HEIGHT);
 		stack.add(layerTroops);
-		stack.add(battleFieldAnimationStage.getLayerEffects());	
+		stack.add(battleFieldAnimationStage.getLayerAnimation());	
 		TileEffectActor effectActor = new TileEffectActor(TileEffect.BOOST);
 		effectActor.setPosition(100, 100);
-		battleFieldAnimationStage.getLayerEffects().add(effectActor);
+		battleFieldAnimationStage.getLayerAnimation().add(effectActor);
 
 		
 	}

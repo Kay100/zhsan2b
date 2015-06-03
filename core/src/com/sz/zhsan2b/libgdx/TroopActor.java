@@ -5,19 +5,22 @@ import static com.badlogic.gdx.scenes.scene2d.actions.Actions.moveBy;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.moveTo;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.run;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.parallel;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Interpolation;
-import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.RunnableAction;
-import com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
-import com.sz.zhsan2b.core.Position;
 import com.sz.zhsan2b.core.StepAction;
 import com.sz.zhsan2b.core.Troop;
 
@@ -34,12 +37,15 @@ public class TroopActor extends AnimatedImage {
 	private Troop troop;
 	private Array<TroopActor> affectedTroopList;
 	private boolean isDestoryed;
+	private Skin skinLibgdx;
 
 	
 	
 	
 
 	public TroopActor(Troop troop) {
+		skinLibgdx = new Skin(Gdx.files.internal(Constants.SKIN_LIBGDX_UI),
+				new TextureAtlas(Constants.TEXTURE_ATLAS_LIBGDX_UI));
 		this.troop = troop;
 		setWidth(Constants.WANGGE_UNIT_WIDTH);
 		setHeight(Constants.WANGGE_UNIT_HEIGHT);
@@ -91,7 +97,11 @@ public class TroopActor extends AnimatedImage {
 			setAnimation(RenderUtils.getTroopAnimationBy(currentStepAction.militaryKindId, currentStepAction.faceDirection, TROOP_ANIMATION_TYPE.ATTACK));
 			TileEffectActor effectActor = new TileEffectActor(currentStepAction.effects.get(currentStepAction.actionTroopId));
 			effectActor.setPosition(getX(), getY());
-			battleFieldAnimationStage.getLayerEffects().add(effectActor);
+			battleFieldAnimationStage.getLayerAnimation().add(effectActor);
+			Label damageLabel = new Label(String.valueOf(currentStepAction.damageMap.get(currentStepAction.actionTroopId)), skinLibgdx);
+			//add animation for damage hint
+			damageLabel.addAction(sequence(Actions.color(Color.RED),moveTo(getX()+50,getY()+50),parallel(Actions.moveBy(0f,50f,Constants.ONE_STEP_TIME,Interpolation.linear))));
+			battleFieldAnimationStage.getLayerAnimation().add(damageLabel);
 			TroopActor affectedTroopActor = null;
 			final Array<TroopActor> affectedTroopActors = new Array<TroopActor>(currentStepAction.affectedTroopList.size);
 			for(long i:currentStepAction.affectedTroopList){
@@ -100,7 +110,10 @@ public class TroopActor extends AnimatedImage {
 				affectedTroopActors.add(affectedTroopActor);
 				effectActor=new TileEffectActor(currentStepAction.effects.get(i));
 				effectActor.setPosition(affectedTroopActor.getX(), affectedTroopActor.getY());
-				battleFieldAnimationStage.getLayerEffects().add(effectActor);
+				battleFieldAnimationStage.getLayerAnimation().add(effectActor);
+				damageLabel = new Label(String.valueOf(currentStepAction.damageMap.get(i)), skinLibgdx);
+				damageLabel.addAction(sequence(Actions.color(Color.RED),moveTo(affectedTroopActor.getX()+50,affectedTroopActor.getY()+50),parallel(Actions.moveBy(0f,50f,Constants.ONE_STEP_TIME,Interpolation.linear))));
+				battleFieldAnimationStage.getLayerAnimation().add(damageLabel);
 			}
 			float x = RenderUtils.translate(currentStepAction.orginPosition.x);
 			float y = RenderUtils.translate(currentStepAction.orginPosition.y);
@@ -110,8 +123,8 @@ public class TroopActor extends AnimatedImage {
 					for(TroopActor trA:affectedTroopActors){
 						trA.setAnimation(RenderUtils.getTroopAnimationBy(trA.getTroop().getMilitaryKind().getId(), RenderUtils.getOppositeFaceDirection(currentStepAction.faceDirection), TROOP_ANIMATION_TYPE.WALK));
 					}
-					//remove tile effect
-					battleFieldAnimationStage.getLayerEffects().clear();
+					//remove layerAnimation
+					battleFieldAnimationStage.getLayerAnimation().clear();
 					battleFieldAnimationStage.setPlanning(true);
 				}
 			});			

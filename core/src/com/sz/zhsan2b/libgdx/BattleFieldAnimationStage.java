@@ -23,15 +23,16 @@ public class BattleFieldAnimationStage implements StepActionHandler {
 	private final BattleField battleField;
 	private final Array<TroopActor> troopActorList;
 	private final Stage stage;
-	private Table layerEffects;
+	private Table layerAnimation;
 	
 	public BattleFieldAnimationStage(BattleScreen battleScreen) {
 		this.battleField = battleScreen.getBattleField();
 		stage = battleScreen.getStage();
 		isPlanning = true;
 		troopActorList = battleScreen.getTroopActorList();
-		layerEffects = new Table();
-		layerEffects.setLayoutEnabled(false);
+		layerAnimation = new Table();
+		layerAnimation.setLayoutEnabled(false);
+		//layerAnimation.setTransform(false);
 
 		
 	}
@@ -63,11 +64,11 @@ public class BattleFieldAnimationStage implements StepActionHandler {
 	public Stage getStage() {
 		return stage;
 	}
-	public Table getLayerEffects() {
-		return layerEffects;
+	public Table getLayerAnimation() {
+		return layerAnimation;
 	}
-	public void setLayerEffects(Table layerEffects) {
-		this.layerEffects = layerEffects;
+	public void setLayerAnimation(Table layerAnimation) {
+		this.layerAnimation = layerAnimation;
 	}
 	public void parseStepActions() {
 		if(isPlanning){
