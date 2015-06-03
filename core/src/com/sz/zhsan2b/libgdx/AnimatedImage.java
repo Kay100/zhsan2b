@@ -27,7 +27,7 @@ public class AnimatedImage extends Image {
 			((TextureRegionDrawable) getDrawable()).setRegion(animation
 					.getKeyFrame(0));	
 		}
-		this.setScale(0.9f);
+		//this.setScale(0.9f);
 
 	}
 
