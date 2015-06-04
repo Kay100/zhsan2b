@@ -33,6 +33,7 @@ public static final String TEXTURE_ATLAS_UI =
 public static final String TEXTURE_ATLAS_MAP = "images/zhsan2b-map.atlas";
 
 public static final String TEXTURE_ATLUS_WANGGE = "images/zhsan2b-wangge.atlas";
+public static final String TEXTURE_ATLUS_NUMBER = "images/zhsan2b-number.atlas";
 public static final String TEXTURE_ATLUS_TILE_EFFECT = "Effects/TileEffect/zhsan2b-tileeffect.atlas";
 
 public static final String TEXTURE_ATLAS_LIBGDX_UI =
@@ -65,6 +66,7 @@ public static final int TROOP_MODEL_YCOUNT = 8;
 
 //step
 public static final float ONE_STEP_TIME = 1f;
+
 
 
 }

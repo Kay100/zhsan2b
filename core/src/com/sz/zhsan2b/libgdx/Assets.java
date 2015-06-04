@@ -27,6 +27,8 @@ public class Assets implements Disposable, AssetErrorListener {
 
 
 
+
+
 	public static final String TAG = Assets.class.getName();
 	/*
 	 * 静态函数的初始化值非常有作用，这个位置可以执行函数，new，或者是调用方法，应善用
@@ -38,6 +40,7 @@ public class Assets implements Disposable, AssetErrorListener {
 	public AssetWangge assetWangge;
 	public AssetTroop assetTroop;
 	public AssetTileEffect assetTileEffect;
+	public AssetNumber assetNumber;
 	private AssetManager assetManager;
 	
 
@@ -54,6 +57,7 @@ public class Assets implements Disposable, AssetErrorListener {
 		// load texture atlas
 		assetManager.load(Constants.TEXTURE_ATLAS_MAP, TextureAtlas.class);
 		assetManager.load(Constants.TEXTURE_ATLUS_WANGGE, TextureAtlas.class);
+		assetManager.load(Constants.TEXTURE_ATLUS_NUMBER, TextureAtlas.class);
 		assetManager.load(Constants.TEXTURE_ATLUS_TILE_EFFECT, TextureAtlas.class);
 		
 	
@@ -70,6 +74,7 @@ public class Assets implements Disposable, AssetErrorListener {
 		fonts = new AssetFonts();
 		assetMap = new AssetMap();
 		assetWangge = new AssetWangge();
+		assetNumber = new AssetNumber();
 		assetTroop = new AssetTroop();
 		assetTileEffect = new AssetTileEffect();
 		
@@ -102,6 +107,20 @@ public class Assets implements Disposable, AssetErrorListener {
 			TextureAtlas atlas = assetManager.get(Constants.TEXTURE_ATLUS_WANGGE);
 		      wangge = atlas.findRegion("wangge");
 		      xuanze = atlas.findRegion("xuanze");
+		}
+		
+
+	}
+	public class AssetNumber {
+		public final TextureRegion[] combatNumber = new TextureRegion[12];
+
+		public AssetNumber() {
+			TextureAtlas atlas = assetManager.get(Constants.TEXTURE_ATLUS_NUMBER);
+			TextureRegion srcNumbers = atlas.findRegion("CombatNumber");
+			TextureRegion[][] tmp = srcNumbers.split(12,20); 
+			for(int i=0;i<12;i++){
+				combatNumber[i]=tmp[0][i];
+			}
 		}
 		
 

@@ -98,9 +98,8 @@ public class TroopActor extends AnimatedImage {
 			TileEffectActor effectActor = new TileEffectActor(currentStepAction.effects.get(currentStepAction.actionTroopId));
 			effectActor.setPosition(getX(), getY());
 			battleFieldAnimationStage.getLayerAnimation().add(effectActor);
-			Label damageLabel = new Label(String.valueOf(currentStepAction.damageMap.get(currentStepAction.actionTroopId)), skinLibgdx);
+			CombatNumberLabel damageLabel = new CombatNumberLabel(currentStepAction.damageMap.get(currentStepAction.actionTroopId), true);
 			//add animation for damage hint
-			damageLabel.setFontScale(1.5f);
 			damageLabel.addAction(sequence(Actions.color(Color.RED),moveTo(getX()+50,getY()+50),parallel(Actions.moveBy(0f,50f,Constants.ONE_STEP_TIME,Interpolation.linear))));
 			battleFieldAnimationStage.getLayerAnimation().add(damageLabel);
 			TroopActor affectedTroopActor = null;
@@ -112,8 +111,7 @@ public class TroopActor extends AnimatedImage {
 				effectActor=new TileEffectActor(currentStepAction.effects.get(i));
 				effectActor.setPosition(affectedTroopActor.getX(), affectedTroopActor.getY());
 				battleFieldAnimationStage.getLayerAnimation().add(effectActor);
-				damageLabel = new Label(String.valueOf(currentStepAction.damageMap.get(i)), skinLibgdx);
-				damageLabel.setFontScale(1.5f);
+				damageLabel = new CombatNumberLabel(currentStepAction.damageMap.get(i), true);
 				damageLabel.addAction(sequence(Actions.color(Color.RED),moveTo(affectedTroopActor.getX()+50,affectedTroopActor.getY()+50),parallel(Actions.moveBy(0f,50f,Constants.ONE_STEP_TIME,Interpolation.linear))));
 				battleFieldAnimationStage.getLayerAnimation().add(damageLabel);
 			}
