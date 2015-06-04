@@ -28,6 +28,8 @@ public class DesktopLauncher {
 					"zhsan2b-wangge");		
 			TexturePacker.process(settings, "assets-raw/TileEffect", "Effects/TileEffect",
 					"zhsan2b-tileeffect");
+			TexturePacker.process(settings, "assets-raw/CombatNumber", "images",
+					"zhsan2b-number");	
 		}
 		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
 		cfg.title = "Zhsan2b";
