@@ -109,16 +109,21 @@ public class Troop implements TroopEventHandler {//增加adapter 实现hook
 		StepAction stepAction = new StepAction(id);
 		//判断是否抵挡反击,抵挡的话,step action 加入 抵挡动画
 		
-		//do attack 修改自身hp和部队状态
-		tempDamage = BattleUtils.calculateDamage(this,troop);
-		hp -= tempDamage;
+		//do attack 修改自身hp和部队状态 判断是否能被反击到。
+		if(BattleUtils.isObjectInAttackRange(this, troop)){
+			tempDamage = BattleUtils.calculateDamage(this,troop);
+			hp -= tempDamage;
+		}else{
+			tempDamage=0;
+		}
+
 		stepAction.actionKind = ACTION_KIND.ATTACK;	
 		faceDirection =BattleUtils.calculateFaceDirection(faceDirection,position,troop.position);
 		stepAction.faceDirection = faceDirection;
 		stepAction.isVisible=true;
-		stepAction.militaryKindId = militaryKind.getId();
-		stepAction.damageMap.put(id, tempDamage);
+		stepAction.militaryKindId = militaryKind.getId();		
         addAttackEffect(stepAction.effects);
+		stepAction.damageMap.put(id, tempDamage);        
         stepAction.orginPosition.setPosition(position);
 		stepAction.objectPosition.setPosition(position);
 		
@@ -307,6 +312,10 @@ public class Troop implements TroopEventHandler {//增加adapter 实现hook
 
 	public long getId() {
 		return id;
+	}
+
+	public int getHp() {
+		return hp;
 	}
 
 	//return true mean already move to the positon where troop can attack(at the end of one step move)

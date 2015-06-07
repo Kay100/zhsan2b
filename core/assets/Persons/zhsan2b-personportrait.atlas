@@ -1,0 +1,34 @@
+
+zhsan2b-personportrait.png
+size: 512,128
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+10s
+  rotate: false
+  xy: 2, 2
+  size: 64, 80
+  orig: 64, 80
+  offset: 0, 0
+  index: -1
+2s
+  rotate: false
+  xy: 68, 2
+  size: 64, 80
+  orig: 64, 80
+  offset: 0, 0
+  index: -1
+3s
+  rotate: false
+  xy: 134, 2
+  size: 64, 80
+  orig: 64, 80
+  offset: 0, 0
+  index: -1
+4s
+  rotate: false
+  xy: 200, 2
+  size: 64, 80
+  orig: 64, 80
+  offset: 0, 0
+  index: -1

@@ -32,15 +32,17 @@ public static final String TEXTURE_ATLAS_UI =
 "images/canyonbunny-ui.atlas";
 public static final String TEXTURE_ATLAS_MAP = "images/zhsan2b-map.atlas";
 
-public static final String TEXTURE_ATLUS_WANGGE = "images/zhsan2b-wangge.atlas";
-public static final String TEXTURE_ATLUS_NUMBER = "images/zhsan2b-number.atlas";
-public static final String TEXTURE_ATLUS_TILE_EFFECT = "Effects/TileEffect/zhsan2b-tileeffect.atlas";
+public static final String TEXTURE_ATLAS_WANGGE = "images/zhsan2b-wangge.atlas";
+public static final String TEXTURE_ATLAS_NUMBER = "images/zhsan2b-number.atlas";
+public static final String TEXTURE_ATLAS_TILE_EFFECT = "Effects/TileEffect/zhsan2b-tileeffect.atlas";
 
 public static final String TEXTURE_ATLAS_LIBGDX_UI =
 "images/uiskin.atlas";
 // Location of description file for skins
 public static final String SKIN_LIBGDX_UI =
 "images/uiskin.json";
+public static final String SKIN_TROOP_TITLE = "images/zhsan2b-trooptitle.json";
+
 public static final String SKIN_CANYONBUNNY_UI =
 "images/canyonbunny-ui.json";
 public static final String PREFERENCES = "sz.test.settings";
@@ -63,9 +65,16 @@ public static final int TROOP_MODEL_UNIT_HEIGHT = 128;
 public static final int TROOP_MODEL_XCOUNT = 10;
 public static final int TROOP_MODEL_YCOUNT = 8;
 
+public static final String TEXTURE_ATLAS_TROOP_TITLE = "images/zhsan2b-trooptitle.atlas";
 
 //step
 public static final float ONE_STEP_TIME = 1f;
+
+
+//person
+public static final String TEXTURE_ATLAS_PERSON_PORTRAIT = "Persons/zhsan2b-personportrait.atlas";
+
+
 
 
 

@@ -1,0 +1,97 @@
+
+zhsan2b-trooptitle.png
+size: 512,512
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+ActionAuto
+  rotate: false
+  xy: 257, 444
+  size: 14, 14
+  orig: 14, 14
+  offset: 0, 0
+  index: -1
+ActionAutoDone
+  rotate: false
+  xy: 2, 18
+  size: 14, 14
+  orig: 14, 14
+  offset: 0, 0
+  index: -1
+ActionDone
+  rotate: false
+  xy: 2, 2
+  size: 14, 14
+  orig: 14, 14
+  offset: 0, 0
+  index: -1
+ActionUndone
+  rotate: false
+  xy: 74, 34
+  size: 14, 14
+  orig: 14, 14
+  offset: 0, 0
+  index: -1
+Background
+  rotate: false
+  xy: 257, 460
+  size: 61, 50
+  orig: 61, 50
+  offset: 0, 0
+  index: -1
+Faction
+  rotate: false
+  xy: 2, 50
+  size: 253, 460
+  orig: 253, 460
+  offset: 0, 0
+  index: -1
+Faction2
+  rotate: false
+  xy: 2, 34
+  size: 70, 14
+  orig: 70, 14
+  offset: 0, 0
+  index: -1
+FoodNormal
+  rotate: false
+  xy: 320, 487
+  size: 14, 14
+  orig: 14, 14
+  offset: 0, 0
+  index: -1
+FoodShortage
+  rotate: false
+  xy: 257, 428
+  size: 14, 14
+  orig: 14, 14
+  offset: 0, 0
+  index: -1
+NoControl
+  rotate: false
+  xy: 273, 444
+  size: 14, 14
+  orig: 14, 14
+  offset: 0, 0
+  index: -1
+Stunt
+  rotate: false
+  xy: 18, 18
+  size: 14, 14
+  orig: 14, 14
+  offset: 0, 0
+  index: -1
+shiqicao
+  rotate: false
+  xy: 320, 503
+  size: 74, 7
+  orig: 74, 7
+  offset: 0, 0
+  index: -1
+shiqitiao
+  rotate: false
+  xy: 396, 507
+  size: 1, 3
+  orig: 1, 3
+  offset: 0, 0
+  index: -1

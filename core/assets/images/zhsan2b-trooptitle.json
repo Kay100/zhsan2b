@@ -1,0 +1,17 @@
+{
+com.badlogic.gdx.scenes.scene2d.ui.Image: {
+background: { drawable: Background },
+actionAuto: { drawable: ActionAuto },
+actionAutoDone: { drawable: ActionAutoDone },
+actionDone: { drawable: ActionDone },
+actionUnDone: { drawable: ActionUndone },
+faction: { drawable: Faction },
+faction2: { drawable: Faction2 },
+foodNormal: { drawable: FoodNormal },
+foodShortage: { drawable: FoodShortage },
+noControl: { drawable: NoControl },
+shiqicao: { drawable: shiqicao },
+shiqitiao: { drawable: shiqitiao },
+stunt: { drawable: Stunt },
+}
+}

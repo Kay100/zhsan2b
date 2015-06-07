@@ -27,8 +27,8 @@ public class BattleScreen extends AbstractGameScreen {
 	private WorldRenderer worldRenderer;
 	private boolean paused;
 	private Stage stage;
-	private Skin skinLibgdx;
-	private Skin skinCanyonBunny;
+	private Skin skinLibgdx = Assets.instance.assetSkin.skinLibgdx;
+	private Skin skinCanyonBunny= Assets.instance.assetSkin.skinCanyonBunny;
 	private Image imgBackground;
 	
 	//game core(logic)
@@ -77,13 +77,7 @@ public class BattleScreen extends AbstractGameScreen {
 	}
 
 	private void rebuildStage() {
-		skinCanyonBunny = new Skin(
-				Gdx.files.internal(Constants.SKIN_CANYONBUNNY_UI),
-				new TextureAtlas(Constants.TEXTURE_ATLAS_UI));
-		skinLibgdx = new Skin(Gdx.files.internal(Constants.SKIN_LIBGDX_UI),
-				new TextureAtlas(Constants.TEXTURE_ATLAS_LIBGDX_UI));
 		// build all layers
-
 		Table layerTroops = buildTroopsLayer();
 		// assemble stage for battle screen
 		stage.clear();
@@ -93,9 +87,6 @@ public class BattleScreen extends AbstractGameScreen {
 				Constants.WORLD_HEIGHT);
 		stack.add(layerTroops);
 		stack.add(battleFieldAnimationStage.getLayerAnimation());	
-		TileEffectActor effectActor = new TileEffectActor(TileEffect.BOOST);
-		effectActor.setPosition(100, 100);
-		battleFieldAnimationStage.getLayerAnimation().add(effectActor);
 
 		
 	}
@@ -105,8 +96,10 @@ public class BattleScreen extends AbstractGameScreen {
 		createTroopActors();
 		for(TroopActor trA:troopActorList){
 			layer.add(trA);
+			layer.add(trA.getTroopTitle());
+			trA.toBack();
 		}
-	
+
 		return layer;
 	}
 
@@ -151,7 +144,7 @@ public class BattleScreen extends AbstractGameScreen {
 			}else{
 				battleFieldAnimationStage.parseStepActions();
 			}
-			
+			synchronizeTroopLayer();
 			break;
 		case OPERATE:
 			
@@ -183,6 +176,13 @@ public class BattleScreen extends AbstractGameScreen {
 
 
 
+	private void synchronizeTroopLayer() {
+		for(TroopActor trA:troopActorList){
+			trA.getTroopTitle().setX(trA.getX()+30f);
+			trA.getTroopTitle().setY(trA.getY()+60f);
+		}
+		
+	}
 	@Override
 	public void resize(int width, int height) {
 		worldRenderer.resize(width, height);
@@ -218,7 +218,8 @@ public class BattleScreen extends AbstractGameScreen {
 		worldRenderer.dispose();
 		Gdx.input.setCatchBackKey(false);
 		stage.dispose();
-		skinLibgdx.dispose();		
+		skinLibgdx.dispose();	
+		skinCanyonBunny.dispose();
 	}
 
 	@Override

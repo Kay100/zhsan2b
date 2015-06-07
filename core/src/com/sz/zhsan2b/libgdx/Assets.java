@@ -16,14 +16,20 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
 import com.badlogic.gdx.utils.Disposable;
+import com.badlogic.gdx.utils.ObjectMap;
 import com.sun.javafx.binding.StringFormatter;
 import com.sun.scenario.effect.Effect;
 import com.sz.zhsan2b.core.StepAction.TileEffect;
 
 public class Assets implements Disposable, AssetErrorListener {
+
+
+
+
 
 
 
@@ -41,7 +47,9 @@ public class Assets implements Disposable, AssetErrorListener {
 	public AssetTroop assetTroop;
 	public AssetTileEffect assetTileEffect;
 	public AssetNumber assetNumber;
+	public AssetPerson assetPerson;
 	private AssetManager assetManager;
+	public AssetSkin assetSkin;
 	
 
 
@@ -56,9 +64,12 @@ public class Assets implements Disposable, AssetErrorListener {
 		assetManager.setErrorListener(this);
 		// load texture atlas
 		assetManager.load(Constants.TEXTURE_ATLAS_MAP, TextureAtlas.class);
-		assetManager.load(Constants.TEXTURE_ATLUS_WANGGE, TextureAtlas.class);
-		assetManager.load(Constants.TEXTURE_ATLUS_NUMBER, TextureAtlas.class);
-		assetManager.load(Constants.TEXTURE_ATLUS_TILE_EFFECT, TextureAtlas.class);
+		assetManager.load(Constants.TEXTURE_ATLAS_WANGGE, TextureAtlas.class);
+		assetManager.load(Constants.TEXTURE_ATLAS_NUMBER, TextureAtlas.class);
+		assetManager.load(Constants.TEXTURE_ATLAS_TILE_EFFECT, TextureAtlas.class);
+		assetManager.load(Constants.TEXTURE_ATLAS_TROOP_TITLE, TextureAtlas.class);
+		assetManager.load(Constants.TEXTURE_ATLAS_PERSON_PORTRAIT, TextureAtlas.class);
+		
 		
 	
 		// start loading assets and wait until finished
@@ -72,11 +83,13 @@ public class Assets implements Disposable, AssetErrorListener {
 //			t.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		 //create game resource objects
 		fonts = new AssetFonts();
+		assetSkin= new AssetSkin();
 		assetMap = new AssetMap();
 		assetWangge = new AssetWangge();
 		assetNumber = new AssetNumber();
 		assetTroop = new AssetTroop();
 		assetTileEffect = new AssetTileEffect();
+		assetPerson = new AssetPerson();
 		
 	
 	}
@@ -87,6 +100,19 @@ public class Assets implements Disposable, AssetErrorListener {
 			back = atlas.findRegion("background");
 		}
 	}
+	public class AssetPerson {
+		public final ArrayMap<Long,TextureRegion> smallPersonPortraits = new ArrayMap<Long,TextureRegion>();
+		public final ArrayMap<Long,TextureRegion> personPortraits = new ArrayMap<Long,TextureRegion>();
+		public AssetPerson(){
+			//test now , foreach when real read data.
+			TextureAtlas atlas = assetManager.get(Constants.TEXTURE_ATLAS_PERSON_PORTRAIT);
+			smallPersonPortraits.put(2l, atlas.findRegion("2"+"s"));
+			smallPersonPortraits.put(3l, atlas.findRegion("3"+"s"));
+			smallPersonPortraits.put(4l, atlas.findRegion("4"+"s"));
+			smallPersonPortraits.put(10l, atlas.findRegion("10"+"s"));
+		}
+
+	}	
 	public class AssetMap {
 		public  AtlasRegion[][] map =new AtlasRegion[Constants.MAP_TEXTURE_XCOUNT][Constants.MAP_TEXTURE_YCOUNT];
 
@@ -104,7 +130,7 @@ public class Assets implements Disposable, AssetErrorListener {
 		public final AtlasRegion wangge;
 		public final AtlasRegion xuanze;
 		protected AssetWangge() {
-			TextureAtlas atlas = assetManager.get(Constants.TEXTURE_ATLUS_WANGGE);
+			TextureAtlas atlas = assetManager.get(Constants.TEXTURE_ATLAS_WANGGE);
 		      wangge = atlas.findRegion("wangge");
 		      xuanze = atlas.findRegion("xuanze");
 		}
@@ -115,7 +141,7 @@ public class Assets implements Disposable, AssetErrorListener {
 		public final TextureRegion[] combatNumber = new TextureRegion[12];
 
 		public AssetNumber() {
-			TextureAtlas atlas = assetManager.get(Constants.TEXTURE_ATLUS_NUMBER);
+			TextureAtlas atlas = assetManager.get(Constants.TEXTURE_ATLAS_NUMBER);
 			TextureRegion srcNumbers = atlas.findRegion("CombatNumber");
 			TextureRegion[][] tmp = srcNumbers.split(12,20); 
 			for(int i=0;i<12;i++){
@@ -128,7 +154,7 @@ public class Assets implements Disposable, AssetErrorListener {
 	public class AssetTileEffect{
 		public final ArrayMap<TileEffect,Animation> animTileEffect = new ArrayMap<TileEffect, Animation>();
 		protected AssetTileEffect(){
-			 TextureAtlas atlas = assetManager.get(Constants.TEXTURE_ATLUS_TILE_EFFECT);
+			 TextureAtlas atlas = assetManager.get(Constants.TEXTURE_ATLAS_TILE_EFFECT);
 			 TextureRegion texR = atlas.findRegion("huoshi"); 				
 		     TextureRegion[] tempRegs = getAnimationFrames(texR.split(texR.getRegionWidth()/8, texR.getRegionHeight()),0,8);
 		     animTileEffect.put(TileEffect.HUOSHI, new Animation(1/8f, tempRegs)); 
@@ -160,14 +186,30 @@ public class Assets implements Disposable, AssetErrorListener {
 		public final ArrayMap<Long,Animation> animFaceDownBeAttacked=new ArrayMap<Long, Animation>();		
 		public final ArrayMap<Long,Animation> animFaceLeftBeAttacked=new ArrayMap<Long, Animation>();		
 		public final ArrayMap<Long,Animation> animFaceRightBeAttacked=new ArrayMap<Long, Animation>();		
-	
+		
+		private final Array<Texture> textures = new Array<Texture>(100);
+		//troop title
+		public final AtlasRegion background;
+		public final AtlasRegion actionAuto;
+		public final AtlasRegion actionAutoDone;
+		public final AtlasRegion actionDone;
+		public final AtlasRegion actionUnDone;
+		public final AtlasRegion faction;
+		public final AtlasRegion faction2;
+		public final AtlasRegion foodNormal;
+		public final AtlasRegion foodShortage;
+		public final AtlasRegion noControl;
+		public final AtlasRegion shiqicao;
+		public final AtlasRegion shiqitiao;
+		public final AtlasRegion stunt;
 
 		public AssetTroop() {
 			//暂时测试使用，以后读数据库
 			long[] troopIds = {0,1};
 			for(long i=0,size= troopIds.length;i<size;i++){
 				//move
-				Texture texture = new Texture(Gdx.files.internal(StringUtils.replace("Troop/%1/Move.png", "%1", String.valueOf(i)))); 
+				Texture texture = new Texture(Gdx.files.internal(StringUtils.replace("Troop/%1/Move.png", "%1", String.valueOf(i))));
+				textures.add(texture);
 		        Array<TextureRegion[]> tempRegs = getAnimationRegsArray(texture);
 		        Animation tempAnim=new Animation(0.1f, tempRegs.get(0));
 		        tempAnim.setPlayMode(PlayMode.LOOP);
@@ -184,6 +226,7 @@ public class Assets implements Disposable, AssetErrorListener {
 		        
 		        //attack
 		        texture = new Texture(Gdx.files.internal(StringUtils.replace("Troop/%1/Attack.png", "%1", String.valueOf(i)))); 
+				textures.add(texture);
 		        tempRegs = getAnimationRegsArray(texture);
 		        animFaceUpAttack.put(i, new Animation(0.1f, tempRegs.get(0))); 
 		        animFaceDownAttack.put(i, new Animation(0.1f, tempRegs.get(1))) ; 
@@ -192,15 +235,28 @@ public class Assets implements Disposable, AssetErrorListener {
 		        
 		        //beattack
 		        texture = new Texture(Gdx.files.internal(StringUtils.replace("Troop/%1/BeAttacked.png", "%1", String.valueOf(i)))); 
+				textures.add(texture);
 		        tempRegs = getAnimationRegsArray(texture);
 		        animFaceUpBeAttacked.put(i, new Animation(0.1f, tempRegs.get(0))); 
 		        animFaceDownBeAttacked.put(i, new Animation(0.1f, tempRegs.get(1))) ; 
 		        animFaceLeftBeAttacked.put(i, new Animation(0.1f, tempRegs.get(2))); 
 		        animFaceRightBeAttacked.put(i, new Animation(0.1f, tempRegs.get(3))) ; 			        
-		        
 			}
-
-                    
+			//troop title
+			TextureAtlas atlas = assetManager.get(Constants.TEXTURE_ATLAS_TROOP_TITLE);
+			background = atlas.findRegion("Background");                    
+			actionAuto = atlas.findRegion("ActionAuto");                    
+			actionAutoDone = atlas.findRegion("ActionAutoDone");                    
+			actionDone = atlas.findRegion("ActionDone");                    
+			actionUnDone = atlas.findRegion("ActionUndone");                    
+			faction = atlas.findRegion("Faction");                    
+			faction2 = atlas.findRegion("Faction2");                    
+			foodNormal = atlas.findRegion("FoodNormal");                    
+			foodShortage = atlas.findRegion("FoodShortage");                    
+			noControl = atlas.findRegion("NoControl");                    
+			shiqicao = atlas.findRegion("shiqicao");                    
+			shiqitiao = atlas.findRegion("shiqitiao");                    
+			stunt = atlas.findRegion("Stunt");                    
 
 		}
 
@@ -215,7 +271,13 @@ public class Assets implements Disposable, AssetErrorListener {
 			tempRegs.addAll(faceUpRegs,faceDownRegs,faceLeftRegs,faceRigthRegs);
 			return tempRegs;
 		}
-
+		public void dispose(){
+			//need to dispose
+			for(Texture t:textures){
+				t.dispose();
+			}
+				
+		}
 
 	}	
 	private TextureRegion[] getAnimationFrames(TextureRegion[][] allSplitedFrames,
@@ -230,9 +292,11 @@ public class Assets implements Disposable, AssetErrorListener {
 	@Override
 	public void dispose() {
 		assetManager.dispose();
+		assetTroop.dispose();
 		fonts.defaultSmall.dispose();
 		fonts.defaultNormal.dispose();
-		fonts.defaultBig.dispose();			
+		fonts.defaultBig.dispose();	
+		assetSkin.dispose();
 	}
 
 	@Override
@@ -267,5 +331,23 @@ public class Assets implements Disposable, AssetErrorListener {
 					.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		}
 	}
-
+	public class AssetSkin {
+		public final Skin skinLibgdx;
+		public final Skin skinTroopTitle;
+		public final Skin  skinCanyonBunny;
+		public AssetSkin() {
+			skinLibgdx = new Skin(Gdx.files.internal(Constants.SKIN_LIBGDX_UI),
+					new TextureAtlas(Constants.TEXTURE_ATLAS_LIBGDX_UI));
+			skinTroopTitle = new Skin(Gdx.files.internal(Constants.SKIN_TROOP_TITLE),
+					new TextureAtlas(Constants.TEXTURE_ATLAS_TROOP_TITLE));	
+			skinCanyonBunny = new Skin(
+					Gdx.files.internal(Constants.SKIN_CANYONBUNNY_UI),
+					new TextureAtlas(Constants.TEXTURE_ATLAS_UI));			
+		}
+		void dispose(){
+			skinCanyonBunny.dispose();
+			skinLibgdx.dispose();
+			skinTroopTitle.dispose();
+		}
+	}
 }
