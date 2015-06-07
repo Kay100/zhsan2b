@@ -30,6 +30,10 @@ public class DesktopLauncher {
 					"zhsan2b-tileeffect");
 			TexturePacker.process(settings, "assets-raw/CombatNumber", "images",
 					"zhsan2b-number");	
+			TexturePacker.process(settings, "assets-raw/TroopTitle", "images",
+					"zhsan2b-trooptitle");	
+			TexturePacker.process(settings, "assets-raw/PersonPortrait", "Persons",
+					"zhsan2b-personportrait");			
 		}
 		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
 		cfg.title = "Zhsan2b";
