@@ -1,9 +1,8 @@
 package com.sz.zhsan2b.libgdx;
 
 public class Constants {
-// Visible game world is 5 meters wide  
+ 
 public static final float VIEWPORT_WIDTH = 1000.0f;  //临时的
-// Visible game world is 5 meters tall
 public static final float VIEWPORT_HEIGHT = 600.0f;
 
 

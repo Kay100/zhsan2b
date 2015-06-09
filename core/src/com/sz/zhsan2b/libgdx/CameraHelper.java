@@ -19,7 +19,7 @@ public class CameraHelper {
 		position = new Vector2();
 		position.x = Constants.WORLD_WIDTH/2;
 		position.y = Constants.WORLD_HEIGHT/2;
-		zoom = 1.8f;
+		zoom = 1.0f;
 	}
 
 	public void update(float deltaTime) {
@@ -29,7 +29,7 @@ public class CameraHelper {
 //		position.y = target.position.y + target.origin.y;
 		position.lerp(target.position, FOLLOW_SPEED*deltaTime);
 		// Prevent camera from moving down too far
-		position.y = Math.max(-1f, position.y);		
+		//position.y = Math.max(-1f, position.y);		
 	}
 
 	public void setPosition(float x, float y) {
@@ -85,4 +85,13 @@ public class CameraHelper {
 		camera.zoom = zoom;
 		camera.update();
 	}
+
+	public boolean objectInCamera(AbstractGameObject object) {
+		float halfViewportWidth = Constants.VIEWPORT_WIDTH/2*Constants.UNITSPERPIXEL*zoom;
+		float halfViewportHeight = Constants.VIEWPORT_HEIGHT/2*Constants.UNITSPERPIXEL*zoom;		
+		return object.position.x<position.x+halfViewportWidth&&object.position.x>position.x-halfViewportWidth
+				&&object.position.y<position.y+halfViewportHeight&&object.position.y>position.y-halfViewportHeight;
+				
+	}
+	
 }

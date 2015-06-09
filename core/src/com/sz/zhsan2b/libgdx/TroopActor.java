@@ -44,7 +44,8 @@ public class TroopActor extends AnimatedImage {
 	private Array<TroopActor> affectedTroopList;
 	private boolean isDestoryed;
 	private Skin skinLibgdx = Assets.instance.assetSkin.skinLibgdx;
-
+	//for integration
+	private Vector2 position = new Vector2();
 
 	
 	//troop title
@@ -124,6 +125,10 @@ public class TroopActor extends AnimatedImage {
 
 	public void setTroop(Troop troop) {
 		this.troop = troop;
+	}
+
+	public Vector2 getPosition() {
+		return position;
 	}
 
 	public Array<TroopActor> getAffectedTroopList() {
@@ -240,6 +245,12 @@ public class TroopActor extends AnimatedImage {
 		hpVisual-=damage;
 		hpVisualLabel.setText(String.valueOf(hpVisual));	
 		
+	}
+
+	@Override
+	public void act(float delta) {
+		position.set(getX(), getY());
+		super.act(delta);
 	}
 
 }

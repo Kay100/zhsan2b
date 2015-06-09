@@ -85,10 +85,10 @@ public class WorldController extends InputAdapter {
 		y += cameraHelper.getPosition().y;
 		
 		//记住永远向世界坐标换算位置，拉大放小，影响的只是屏幕的比例尺（即zoom）
-		float halfViewportWidth = Constants.VIEWPORT_WIDTH/2*Constants.UNITSPERPIXEL*cameraHelper.getZoom();
-		float halfViewportHeight = Constants.VIEWPORT_HEIGHT/2*Constants.UNITSPERPIXEL*cameraHelper.getZoom();
-		x = MathUtils.clamp(x, (0+halfViewportWidth), (Constants.WORLD_WIDTH-halfViewportWidth));
-		y = MathUtils.clamp(y, (0+halfViewportHeight), (Constants.WORLD_HEIGHT-halfViewportHeight));
+//		float halfViewportWidth = Constants.VIEWPORT_WIDTH/2*Constants.UNITSPERPIXEL*cameraHelper.getZoom();
+//		float halfViewportHeight = Constants.VIEWPORT_HEIGHT/2*Constants.UNITSPERPIXEL*cameraHelper.getZoom();
+//		x = MathUtils.clamp(x, (0+halfViewportWidth), (Constants.WORLD_WIDTH-halfViewportWidth));
+//		y = MathUtils.clamp(y, (0+halfViewportHeight), (Constants.WORLD_HEIGHT-halfViewportHeight));
 		
 		cameraHelper.setPosition(x, y);
 	}
@@ -111,43 +111,43 @@ public class WorldController extends InputAdapter {
 
 	@Override
 	public boolean keyDown(int keycode) {
-		// TODO Auto-generated method stub
+
 		return stage.keyDown(keycode);
 	}
 
 	@Override
 	public boolean keyUp(int keycode) {
-		// TODO Auto-generated method stub
+
 		return stage.keyUp(keycode);
 	}
 
 	@Override
 	public boolean keyTyped(char character) {
-		// TODO Auto-generated method stub
+
 		return stage.keyTyped(character);
 	}
 
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		// TODO Auto-generated method stub
+	
 		return stage.touchDown(screenX, screenY, pointer, button);
 	}
 
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		// TODO Auto-generated method stub
+
 		return stage.touchUp(screenX, screenY, pointer, button);
 	}
 
 	@Override
 	public boolean touchDragged(int screenX, int screenY, int pointer) {
-		// TODO Auto-generated method stub
+
 		return stage.touchDragged(screenX, screenY, pointer);
 	}
 
 	@Override
 	public boolean scrolled(int amount) {
-		// TODO Auto-generated method stub
+		cameraHelper.addZoom(amount);
 		return stage.scrolled(amount);
 	}
 

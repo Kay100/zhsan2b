@@ -62,6 +62,9 @@ public class BattleScreen extends AbstractGameScreen {
 		return battleField;
 	}	
 
+	public WorldController getWorldController() {
+		return worldController;
+	}
 	public Array<TroopActor> getTroopActorList() {
 		return troopActorList;
 	}

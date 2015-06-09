@@ -25,22 +25,29 @@ public class BattleFieldOperationStage {
 		bp.range = 1;
 		bp.speed = 20;
 		BattleProperties bp2= new BattleProperties(bp);
-		bp2.range=3;
+		bp2.range=2;
+		BattleProperties bp3= new BattleProperties(bp);
 		
 		Command com1 = new Command(new Position(3, 4));
 		Command com2 = new Command(new Position(4, 6));
-		com1.actionKind=ACTION_KIND.ATTACK;
+		Command com3 = new Command(new Position(4, 6));
+		
+		com1.actionKind=ACTION_KIND.MOVE;
 		com2.actionKind=ACTION_KIND.ATTACK;
+		com3.actionKind=ACTION_KIND.MOVE;
 
 		Troop tr1= new Troop(new MilitaryKind(0), bp, new Position(6, 5),
 				com1, PLAYER_TYPE.PLAYER.AI, battleField);
 		
-		Troop tr2= new Troop(new MilitaryKind(1), bp2, new Position(5, 9),
+		Troop tr2= new Troop(new MilitaryKind(1), bp2, new Position(1, 9),
 				com2, PLAYER_TYPE.PLAYER.PLAYER, battleField);
+		Troop tr3= new Troop(new MilitaryKind(0), bp3, new Position(6, 4),
+				com3, PLAYER_TYPE.PLAYER.AI, battleField);		
 		tr2.setStepAttack(true);
-		com1.object=tr2;
+		tr2.setMultiObject(true);
+		com1.object=null;
 		com2.object=tr1;
-		
+		com3.object=null;
 	}
 
 }

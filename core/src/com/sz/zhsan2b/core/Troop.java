@@ -98,13 +98,14 @@ public class Troop implements TroopEventHandler {//增加adapter 实现hook
 		}
 		
 		attack(command.object);
-		
-
-		command.isCompeted=true;
-		return command.isCompeted;
+		return true;
 	}
 
 	public void attack(Troop troop) {
+		//判断是否为攻击目标，确定命令是否将被完成
+		if(troop.equals(command.object)){
+	        command.isCompeted=true;
+		}
 		//构造stepAction	
 		StepAction stepAction = new StepAction(id);
 		//判断是否抵挡反击,抵挡的话,step action 加入 抵挡动画
@@ -131,7 +132,9 @@ public class Troop implements TroopEventHandler {//增加adapter 实现hook
 		Array<StepAction> stepActionList = getStepActionList();
 		stepActionList.add(stepAction);		
 		
-        fire(TroopEvent.ATTACK_AFTER, stepAction,troop);		
+        fire(TroopEvent.ATTACK_AFTER, stepAction,troop);
+		
+
 		//判断损毁
 		if(hp<=0){
 			battleState=BATTLE_STATE.IS_DESTROY;
@@ -295,6 +298,14 @@ public class Troop implements TroopEventHandler {//增加adapter 实现hook
 		this.isArrowAttack = isArrowAttack;
 	}
 
+	public boolean isMultiObject() {
+		return isMultiObject;
+	}
+
+	public void setMultiObject(boolean isMultiObject) {
+		this.isMultiObject = isMultiObject;
+	}
+
 	public MilitaryKind getMilitaryKind() {
 		return militaryKind;
 	}
@@ -425,9 +436,14 @@ public class Troop implements TroopEventHandler {//增加adapter 实现hook
 		}
 		
 	}
-
+// if object in range,attack object.
 	public void oneRandomAttack() {
-		Troop tr = getFirstTroopInAttackRange();
+		Troop tr = null;
+		if(command.object!=null&&BattleUtils.isObjectInAttackRange(command.object, this)){
+			tr=command.object;
+		}else{
+			tr=getFirstTroopInAttackRange();		
+		}
 		if(tr==null){
 			return;
 		}

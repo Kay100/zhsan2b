@@ -5,6 +5,7 @@ import java.util.Iterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Array;
@@ -17,17 +18,14 @@ public class BattleFieldAnimationStage implements StepActionHandler {
 	private static Logger logger = LoggerFactory.getLogger(TroopActor.class);
 	private final Array<StepAction> stepActionList = new Array<StepAction>(100);
 	private StepAction currentStepAction;
-
+	private final BattleScreen battleScreen;
 	private Iterator<StepAction> stepActionIter;
 	private boolean isPlanning;
-	private final BattleField battleField;
 	private final Array<TroopActor> troopActorList;
-	private final Stage stage;
 	private Table layerAnimation;
 	
 	public BattleFieldAnimationStage(BattleScreen battleScreen) {
-		this.battleField = battleScreen.getBattleField();
-		stage = battleScreen.getStage();
+		this.battleScreen= battleScreen;
 		isPlanning = true;
 		troopActorList = battleScreen.getTroopActorList();
 		layerAnimation = new Table();
@@ -62,7 +60,7 @@ public class BattleFieldAnimationStage implements StepActionHandler {
 	}
 
 	public Stage getStage() {
-		return stage;
+		return battleScreen.getStage();
 	}
 	public Table getLayerAnimation() {
 		return layerAnimation;
@@ -75,7 +73,21 @@ public class BattleFieldAnimationStage implements StepActionHandler {
 			//parse
 			if(stepActionIter.hasNext()){
 				currentStepAction = stepActionIter.next();
-				getCurrentStepTroopActor(currentStepAction.actionTroopId).parseStepAction(this);
+				//add camera follow
+				CameraHelper ch =battleScreen.getWorldController().cameraHelper;
+				TroopActor trA = getCurrentStepTroopActor(currentStepAction.actionTroopId);			
+				AbstractGameObject object = new AbstractGameObject() {					
+					@Override
+					public void render(SpriteBatch batch) {
+						
+					}
+				};
+				object.position=trA.getPosition();
+				if(!ch.objectInCamera(object)){
+					ch.setTarget(object);
+				}
+
+				trA.parseStepAction(this);
 			}else{
 				transferToOperate();
 			}
@@ -103,7 +115,8 @@ public class BattleFieldAnimationStage implements StepActionHandler {
 		return !stepActionIter.hasNext();
 	}
 	public void transferToOperate() {
-		this.battleField.state=State.OPERATE;
+		battleScreen.getWorldController().cameraHelper.setTarget(null);
+		battleScreen.getBattleField().state=State.OPERATE;
 		
 	}
 }
