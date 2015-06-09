@@ -4,8 +4,13 @@ import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Stack;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.sz.zhsan2b.core.Position;
 
 public class WorldController extends InputAdapter {
 	private static final String TAG = WorldController.class.getName();
@@ -14,6 +19,8 @@ public class WorldController extends InputAdapter {
 	public CameraHelper cameraHelper;
 	public Level level;	
 	public Stage stage;
+	private Vector2 orginPosition = new Vector2();
+	private Pixmap cursorImg = new Pixmap(Gdx.files.internal("images/MouseArrow/Selecting.png"));
 
 	
 	public WorldController(DirectedGame game,Stage stage) {
@@ -70,8 +77,11 @@ public class WorldController extends InputAdapter {
 				camZoomSpeed *= camZoomSpeedAccelerationFactor;
 			if (Gdx.input.isKeyPressed(Keys.COMMA))
 				cameraHelper.addZoom(camZoomSpeed);
-			if (Gdx.input.isKeyPressed(Keys.PERIOD))
+			if (Gdx.input.isKeyPressed(Keys.PERIOD)){
 				cameraHelper.addZoom(-camZoomSpeed);
+				//Gdx.app.debug(TAG, String.valueOf(camZoomSpeed));
+			}
+
 			if (Gdx.input.isKeyPressed(Keys.SLASH)){
 				System.out.println(cameraHelper.getZoom());
 				cameraHelper.setZoom(1);
@@ -129,25 +139,34 @@ public class WorldController extends InputAdapter {
 
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-	
+		Gdx.input.setCursorImage(cursorImg, 8, 8);
+		orginPosition.set(screenX, screenY);			
 		return stage.touchDown(screenX, screenY, pointer, button);
 	}
 
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-
+		Gdx.input.setCursorImage(null, 0, 0);
 		return stage.touchUp(screenX, screenY, pointer, button);
 	}
 
 	@Override
 	public boolean touchDragged(int screenX, int screenY, int pointer) {
 
+		moveCamera(-(screenX-orginPosition.x)/15, (screenY-orginPosition.y)/15);		
 		return stage.touchDragged(screenX, screenY, pointer);
 	}
 
 	@Override
 	public boolean scrolled(int amount) {
-		cameraHelper.addZoom(amount);
+		cameraHelper.addZoom(amount/2f);
+		//hide trooptile according to the camera's zoom
+		Table troopInfoLayer=((Table)((Stack)stage.getRoot().findActor("mainStack")).findActor("troopInfoLayer"));
+		if(cameraHelper.getZoom()>2){
+			troopInfoLayer.setVisible(false);
+		}else{
+			troopInfoLayer.setVisible(true);
+		}
 		return stage.scrolled(amount);
 	}
 

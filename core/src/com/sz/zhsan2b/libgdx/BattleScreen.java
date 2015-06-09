@@ -76,35 +76,49 @@ public class BattleScreen extends AbstractGameScreen {
 	}
 	@Override
 	public InputProcessor getInputProcessor() {
-		return stage;
+		return worldController;
 	}
 
 	private void rebuildStage() {
 		// build all layers
-		Table layerTroops = buildTroopsLayer();
+		Table troopsLayer = buildTroopsLayer();
+		troopsLayer.setName("troopLayer");
+		Table troopInfoLayer = buildTroopInfoLayer();
+		troopInfoLayer.setName("troopInfoLayer");
+		
 		// assemble stage for battle screen
 		stage.clear();
 		Stack stack = new Stack();
 		stage.addActor(stack);
 		stack.setSize(Constants.WORLD_WIDTH,
 				Constants.WORLD_HEIGHT);
-		stack.add(layerTroops);
-		stack.add(battleFieldAnimationStage.getLayerAnimation());	
-
+		stack.add(troopsLayer);
+		stack.add(troopInfoLayer);
+		stack.add(battleFieldAnimationStage.getLayerAnimation());
+		stack.setName("mainStack");
 		
 	}
+
 	private Table buildTroopsLayer() {
 		Table layer = new Table();
 		layer.setLayoutEnabled(false);
 		createTroopActors();
 		for(TroopActor trA:troopActorList){
 			layer.add(trA);
-			layer.add(trA.getTroopTitle());
-			trA.toBack();
+			//trA.toBack();
 		}
 
 		return layer;
 	}
+	private Table buildTroopInfoLayer() {
+		Table layer = new Table();
+		layer.setLayoutEnabled(false);
+		for(TroopActor trA:troopActorList){
+			layer.add(trA.getTroopTitle());
+		}
+
+		return layer;
+	}	
 
 	private void createTroopActors() {
 		TroopActor trActor;
@@ -136,34 +150,30 @@ public class BattleScreen extends AbstractGameScreen {
 				rebuildStage();
 			}
 		}	
-		//game logic plan do here.
-		switch(battleField.state){
-		case BATTLE:
-			if(isBattleStart){
-				battleField.calculateBattle();
-				battleFieldAnimationStage.initStepActionIter();
-				isBattleStart = false;
-				
-			}else{
-				battleFieldAnimationStage.parseStepActions();
-			}
-			synchronizeTroopLayer();
-			break;
-		case OPERATE:
-			
-			break;
-		default:
-			break;
-		
-		}
-		
-		
-		
-		
-		
 		
 		// Do not update game world when paused.
 		if (!paused) {
+			//game logic plan do here.
+			switch(battleField.state){
+			case BATTLE:
+				if(isBattleStart){
+					battleField.calculateBattle();
+					battleFieldAnimationStage.initStepActionIter();
+					isBattleStart = false;
+					
+				}else{
+					battleFieldAnimationStage.parseStepActions();
+				}
+				synchronizeTroopLayer();
+				break;
+			case OPERATE:
+				
+				break;
+			default:
+				break;
+			
+			}
+
 			// Update game world by the time that has passed
 			// since last rendered frame.
 			worldController.update(deltaTime);

@@ -7,8 +7,8 @@ import com.badlogic.gdx.math.Vector2;
 
 public class CameraHelper {
 	private static final String TAG = CameraHelper.class.getName();
-	private final float MAX_ZOOM_IN = 0.25f;
-	private final float MAX_ZOOM_OUT = 4.0f;
+	private final float MAX_ZOOM_IN = 0.75f;
+	private final float MAX_ZOOM_OUT = 3.0f;
 	private Vector2 position;
 	private float zoom;
 	// private Sprite target;
@@ -19,7 +19,7 @@ public class CameraHelper {
 		position = new Vector2();
 		position.x = Constants.WORLD_WIDTH/2;
 		position.y = Constants.WORLD_HEIGHT/2;
-		zoom = 1.0f;
+		zoom = 1.5f;
 	}
 
 	public void update(float deltaTime) {
