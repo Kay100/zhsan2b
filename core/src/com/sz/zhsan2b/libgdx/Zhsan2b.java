@@ -13,7 +13,11 @@ public class Zhsan2b extends DirectedGame {
 		Assets.instance.init(new AssetManager());
 		// Load preferences for audio settings and start playing music
 		//GamePreferences.instance.load();	
+		//other init
+		Gdx.input.setCursorImage(Assets.instance.assetArrow.normal, 0, 0);
+		
 		// Start game at menu screen
 		setScreen(new BattleScreen(this));
+		
 	}
 }
