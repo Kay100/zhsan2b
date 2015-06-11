@@ -2,6 +2,7 @@ package com.sz.zhsan2b.libgdx;
 
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -19,9 +20,8 @@ public class WorldController extends InputAdapter {
 	public CameraHelper cameraHelper;
 	public Level level;	
 	public Stage stage;
-	private Vector2 orginPosition = new Vector2();
-	private Pixmap cursorImg = new Pixmap(Gdx.files.internal("images/MouseArrow/Selecting.png"));
-
+	private Vector2 orginPosition = new Vector2();//used for record last screen position
+	private boolean isDragByRightMouseKey = false;
 	
 	public WorldController(DirectedGame game,Stage stage) {
 		this.game =game;
@@ -44,8 +44,6 @@ public class WorldController extends InputAdapter {
 		handleDebugInput(deltaTime);
 	
 		handleInputGame(deltaTime);
-		
-		// updateTestObjects(deltaTime);
 		level.update(deltaTime);
 		cameraHelper.update(deltaTime);
 
@@ -139,21 +137,33 @@ public class WorldController extends InputAdapter {
 
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		Gdx.input.setCursorImage(cursorImg, 8, 8);
-		orginPosition.set(screenX, screenY);			
+		if(button==Buttons.RIGHT){
+			isDragByRightMouseKey=true;
+			orginPosition.set(screenX, screenY);
+			Gdx.input.setCursorImage(Assets.instance.assetArrow.drag, 8, 8);			
+		}
+
+			
 		return stage.touchDown(screenX, screenY, pointer, button);
 	}
 
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		Gdx.input.setCursorImage(null, 0, 0);
+		if(button==Buttons.RIGHT){
+			isDragByRightMouseKey=false;
+			Gdx.input.setCursorImage(Assets.instance.assetArrow.normal, 0, 0);	
+		}
+		
 		return stage.touchUp(screenX, screenY, pointer, button);
 	}
 
 	@Override
 	public boolean touchDragged(int screenX, int screenY, int pointer) {
+		if(isDragByRightMouseKey){
+			moveCamera(-(screenX-orginPosition.x)*Constants.UNITSPERPIXEL*cameraHelper.getZoom(), (screenY-orginPosition.y)*Constants.UNITSPERPIXEL*cameraHelper.getZoom());
+			orginPosition.set(screenX, screenY);		
+		}
 
-		moveCamera(-(screenX-orginPosition.x)/15, (screenY-orginPosition.y)/15);		
 		return stage.touchDragged(screenX, screenY, pointer);
 	}
 

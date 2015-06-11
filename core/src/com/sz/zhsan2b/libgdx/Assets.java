@@ -8,6 +8,8 @@ import com.badlogic.gdx.assets.AssetErrorListener;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -16,17 +18,58 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
 import com.badlogic.gdx.utils.Disposable;
-import com.badlogic.gdx.utils.ObjectMap;
-import com.sun.javafx.binding.StringFormatter;
-import com.sun.scenario.effect.Effect;
 import com.sz.zhsan2b.core.StepAction.TileEffect;
 
 public class Assets implements Disposable, AssetErrorListener {
 
+
+	public static class PixmapTextureAtlas implements Disposable {
+
+		private TextureAtlas textureAtlas;
+		private Pixmap textureAtlasPixmap;
+
+		boolean shouldDispose = false;
+
+		public PixmapTextureAtlas(FileHandle textureAtlasImageFile, FileHandle textureAtlasFile) {
+			this(new TextureAtlas(textureAtlasFile), new Pixmap(textureAtlasImageFile));
+		}
+
+		public PixmapTextureAtlas(TextureAtlas textureAtlas, Pixmap textureAtlasPixmap) {
+			this.shouldDispose = true;
+			this.textureAtlas = textureAtlas;
+			this.textureAtlasPixmap = textureAtlasPixmap;
+		}
+
+		public Pixmap createPixmap(String regionName) {
+			AtlasRegion region = textureAtlas.findRegion(regionName);
+
+			int width = MathUtils.nextPowerOfTwo(region.getRegionWidth());
+			int height = MathUtils.nextPowerOfTwo(region.getRegionHeight());
+
+			Pixmap regionPixmap = new Pixmap(width, height, textureAtlasPixmap.getFormat());
+
+			int x = (width / 2) - (region.getRegionWidth() / 2);
+			int y = (height / 2) - (region.getRegionHeight() / 2);
+
+			regionPixmap.drawPixmap(textureAtlasPixmap, x, y, region.getRegionX(), region.getRegionY(), region.getRegionWidth(), region.getRegionHeight());
+
+			return regionPixmap;
+		}
+
+		@Override
+		public void dispose() {
+			if (shouldDispose) {
+				textureAtlas.dispose();
+				textureAtlasPixmap.dispose();
+			}
+		}
+
+	}
 
 
 
@@ -48,9 +91,11 @@ public class Assets implements Disposable, AssetErrorListener {
 	public AssetTileEffect assetTileEffect;
 	public AssetNumber assetNumber;
 	public AssetPerson assetPerson;
-	private AssetManager assetManager;
+
 	public AssetSkin assetSkin;
+	public AssetArrow assetArrow;
 	
+	private AssetManager assetManager;
 
 
 	// singleton: prevent instantiation from other classes
@@ -69,6 +114,7 @@ public class Assets implements Disposable, AssetErrorListener {
 		assetManager.load(Constants.TEXTURE_ATLAS_TILE_EFFECT, TextureAtlas.class);
 		assetManager.load(Constants.TEXTURE_ATLAS_TROOP_TITLE, TextureAtlas.class);
 		assetManager.load(Constants.TEXTURE_ATLAS_PERSON_PORTRAIT, TextureAtlas.class);
+		assetManager.load(Constants.TEXTURE_ATLAS_MOUSE_ARROW, TextureAtlas.class);
 		
 		
 	
@@ -90,6 +136,7 @@ public class Assets implements Disposable, AssetErrorListener {
 		assetTroop = new AssetTroop();
 		assetTileEffect = new AssetTileEffect();
 		assetPerson = new AssetPerson();
+		assetArrow= new AssetArrow();
 		
 	
 	}
@@ -100,6 +147,21 @@ public class Assets implements Disposable, AssetErrorListener {
 			back = atlas.findRegion("background");
 		}
 	}
+	public class AssetArrow {
+		private final PixmapTextureAtlas pTA;
+		public final Pixmap drag;
+		public final Pixmap select;
+		public final Pixmap normal;
+		
+		public AssetArrow() {
+			TextureAtlas atlas = assetManager.get(Constants.TEXTURE_ATLAS_MOUSE_ARROW);			
+			pTA = new PixmapTextureAtlas(atlas, new Pixmap(Gdx.files.internal("images/zhsan2b-mousearrow.png")));
+			drag = pTA.createPixmap("Drag");
+			select = pTA.createPixmap("Selecting");
+			normal = pTA.createPixmap("Normal");
+		}
+
+	}	
 	public class AssetPerson {
 		public final ArrayMap<Long,TextureRegion> smallPersonPortraits = new ArrayMap<Long,TextureRegion>();
 		public final ArrayMap<Long,TextureRegion> personPortraits = new ArrayMap<Long,TextureRegion>();
@@ -297,6 +359,7 @@ public class Assets implements Disposable, AssetErrorListener {
 		fonts.defaultNormal.dispose();
 		fonts.defaultBig.dispose();	
 		assetSkin.dispose();
+		assetArrow.pTA.dispose();
 	}
 
 	@Override
@@ -350,4 +413,5 @@ public class Assets implements Disposable, AssetErrorListener {
 			skinTroopTitle.dispose();
 		}
 	}
+	
 }
