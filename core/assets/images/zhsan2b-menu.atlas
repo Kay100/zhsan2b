@@ -1,0 +1,90 @@
+
+zhsan2b-menu.png
+size: 1024,64
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+Background
+  rotate: false
+  xy: 2, 2
+  size: 216, 54
+  orig: 216, 54
+  offset: 0, 0
+  index: -1
+ContextMenuLeftClick
+  rotate: false
+  xy: 352, 4
+  size: 100, 25
+  orig: 100, 25
+  offset: 0, 0
+  index: -1
+ContextMenuLeftClickSelected
+  rotate: false
+  xy: 484, 31
+  size: 100, 25
+  orig: 100, 25
+  offset: 0, 0
+  index: -1
+ContextMenuLeftDisabled
+  rotate: false
+  xy: 454, 4
+  size: 100, 25
+  orig: 100, 25
+  offset: 0, 0
+  index: -1
+ContextMenuRightClick
+  rotate: false
+  xy: 220, 31
+  size: 130, 25
+  orig: 130, 25
+  offset: 0, 0
+  index: -1
+ContextMenuRightClickSelected
+  rotate: false
+  xy: 220, 4
+  size: 130, 25
+  orig: 130, 25
+  offset: 0, 0
+  index: -1
+ContextMenuRightDisabled
+  rotate: false
+  xy: 352, 31
+  size: 130, 25
+  orig: 130, 25
+  offset: 0, 0
+  index: -1
+HasChild
+  rotate: false
+  xy: 556, 20
+  size: 8, 9
+  orig: 8, 9
+  offset: 0, 0
+  index: -1
+NO
+  rotate: false
+  xy: 586, 26
+  size: 70, 30
+  orig: 70, 30
+  offset: 0, 0
+  index: -1
+NOSelected
+  rotate: false
+  xy: 658, 26
+  size: 70, 30
+  orig: 70, 30
+  offset: 0, 0
+  index: -1
+Yes
+  rotate: false
+  xy: 730, 26
+  size: 70, 30
+  orig: 70, 30
+  offset: 0, 0
+  index: -1
+YesSelected
+  rotate: false
+  xy: 802, 26
+  size: 70, 30
+  orig: 70, 30
+  offset: 0, 0
+  index: -1

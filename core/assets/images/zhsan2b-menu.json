@@ -1,0 +1,9 @@
+{
+com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle: {
+yes: { over: YesSelected, up: Yes },
+no: { over: NOSelected, up: NO }
+},
+com.badlogic.gdx.scenes.scene2d.ui.Image: {
+background: { drawable: Background }
+}
+}

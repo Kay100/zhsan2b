@@ -95,8 +95,12 @@ public class BattleScreen extends AbstractGameScreen {
 		stack.add(troopsLayer);
 		stack.add(troopInfoLayer);
 		stack.add(battleFieldAnimationStage.getLayerAnimation());
+		stack.add(battleFieldOperationStage.getLayerOperation());
 		stack.setName("mainStack");
 		
+//		ConfirmationDialog conD= new ConfirmationDialog();
+//		battleFieldOperationStage.getLayerOperation().add(conD.confirmTable);
+//		conD.confirmTable.setPosition(worldController.cameraHelper.getPosition().x-120, worldController.cameraHelper.getPosition().y-30);
 	}
 
 	private Table buildTroopsLayer() {

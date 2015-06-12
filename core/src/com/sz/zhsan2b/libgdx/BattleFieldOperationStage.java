@@ -1,5 +1,6 @@
 package com.sz.zhsan2b.libgdx;
 
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.sz.zhsan2b.core.BattleField;
 import com.sz.zhsan2b.core.BattleProperties;
 import com.sz.zhsan2b.core.Command;
@@ -12,8 +13,17 @@ import com.sz.zhsan2b.core.Troop;
 public class BattleFieldOperationStage {
 
 	private BattleField battleField;
+	private Table layerOperation;
+	
+
+	public Table getLayerOperation() {
+		return layerOperation;
+	}
+
 
 	public BattleFieldOperationStage(BattleField battleField) {
+		layerOperation = new Table();
+		layerOperation.setLayoutEnabled(false);		
 		this.battleField = battleField;
 		// 测试
 		BattleProperties bp = new BattleProperties();

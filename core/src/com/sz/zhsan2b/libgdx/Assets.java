@@ -161,7 +161,8 @@ public class Assets implements Disposable, AssetErrorListener {
 			normal = pTA.createPixmap("Normal");
 		}
 
-	}	
+	}
+	
 	public class AssetPerson {
 		public final ArrayMap<Long,TextureRegion> smallPersonPortraits = new ArrayMap<Long,TextureRegion>();
 		public final ArrayMap<Long,TextureRegion> personPortraits = new ArrayMap<Long,TextureRegion>();
@@ -398,6 +399,7 @@ public class Assets implements Disposable, AssetErrorListener {
 		public final Skin skinLibgdx;
 		public final Skin skinTroopTitle;
 		public final Skin  skinCanyonBunny;
+		public final Skin  skinMenu;
 		public AssetSkin() {
 			skinLibgdx = new Skin(Gdx.files.internal(Constants.SKIN_LIBGDX_UI),
 					new TextureAtlas(Constants.TEXTURE_ATLAS_LIBGDX_UI));
@@ -406,11 +408,14 @@ public class Assets implements Disposable, AssetErrorListener {
 			skinCanyonBunny = new Skin(
 					Gdx.files.internal(Constants.SKIN_CANYONBUNNY_UI),
 					new TextureAtlas(Constants.TEXTURE_ATLAS_UI));			
+			skinMenu = new Skin(Gdx.files.internal(Constants.SKIN_MENU),
+					new TextureAtlas(Constants.TEXTURE_ATLAS_MENU));	
 		}
 		void dispose(){
 			skinCanyonBunny.dispose();
 			skinLibgdx.dispose();
 			skinTroopTitle.dispose();
+			skinMenu.dispose();
 		}
 	}
 	

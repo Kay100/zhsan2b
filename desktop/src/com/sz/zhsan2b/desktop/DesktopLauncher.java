@@ -35,7 +35,9 @@ public class DesktopLauncher {
 			TexturePacker.process(settings, "assets-raw/PersonPortrait", "Persons",
 					"zhsan2b-personportrait");		
 			TexturePacker.process(settings, "assets-raw/MouseArrowAlpha", "images",
-					"zhsan2b-mousearrow");				
+					"zhsan2b-mousearrow");	
+			TexturePacker.process(settings, "assets-raw/Menu", "images",
+					"zhsan2b-menu");	
 		}
 		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
 		cfg.title = "Zhsan2b";

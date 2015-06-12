@@ -35,6 +35,7 @@ public static final String TEXTURE_ATLAS_WANGGE = "images/zhsan2b-wangge.atlas";
 public static final String TEXTURE_ATLAS_NUMBER = "images/zhsan2b-number.atlas";
 public static final String TEXTURE_ATLAS_TILE_EFFECT = "Effects/TileEffect/zhsan2b-tileeffect.atlas";
 public static final String TEXTURE_ATLAS_MOUSE_ARROW = "images/zhsan2b-mousearrow.atlas";
+public static final String TEXTURE_ATLAS_MENU = "images/zhsan2b-menu.atlas";
 
 public static final String TEXTURE_ATLAS_LIBGDX_UI =
 "images/uiskin.atlas";
@@ -42,6 +43,7 @@ public static final String TEXTURE_ATLAS_LIBGDX_UI =
 public static final String SKIN_LIBGDX_UI =
 "images/uiskin.json";
 public static final String SKIN_TROOP_TITLE = "images/zhsan2b-trooptitle.json";
+public static final String SKIN_MENU = "images/zhsan2b-menu.json";
 
 public static final String SKIN_CANYONBUNNY_UI =
 "images/canyonbunny-ui.json";
@@ -73,6 +75,9 @@ public static final float ONE_STEP_TIME = 1f;
 
 //person
 public static final String TEXTURE_ATLAS_PERSON_PORTRAIT = "Persons/zhsan2b-personportrait.atlas";
+
+
+
 
 
 
