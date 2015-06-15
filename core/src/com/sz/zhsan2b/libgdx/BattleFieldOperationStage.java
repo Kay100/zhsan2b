@@ -23,14 +23,15 @@ public class BattleFieldOperationStage {
 
 	public BattleFieldOperationStage(BattleField battleField) {
 		layerOperation = new Table();
-		layerOperation.setLayoutEnabled(false);		
+		layerOperation.setLayoutEnabled(false);	
+		layerOperation.setName("layerOperation");
 		this.battleField = battleField;
 		// 测试
 		BattleProperties bp = new BattleProperties();
 		bp.ack = 20;
 		bp.def = 10;
 		bp.hp = 100;
-		bp.isXie = true;
+		bp.isXie = false;
 		bp.move = 30;
 		bp.range = 1;
 		bp.speed = 20;

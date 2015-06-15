@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 
 public class Zhsan2b extends DirectedGame {
+	public static  BattleScreen battleScreen;
 	@Override
 	public void create() {
 		// Set Libgdx log level
@@ -17,7 +18,8 @@ public class Zhsan2b extends DirectedGame {
 		Gdx.input.setCursorImage(Assets.instance.assetArrow.normal, 0, 0);
 		
 		// Start game at menu screen
-		setScreen(new BattleScreen(this));
+		battleScreen=new BattleScreen(this);
+		setScreen(battleScreen);
 		
 	}
 }

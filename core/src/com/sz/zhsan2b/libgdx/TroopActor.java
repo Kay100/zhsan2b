@@ -17,6 +17,9 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.RunnableAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -24,15 +27,49 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 import com.badlogic.gdx.utils.Array;
+import com.sz.zhsan2b.core.BattleField.State;
 import com.sz.zhsan2b.core.PLAYER_TYPE;
+import com.sz.zhsan2b.core.Position;
 import com.sz.zhsan2b.core.StepAction;
 import com.sz.zhsan2b.core.Troop;
+import com.sz.zhsan2b.libgdx.ContextMenu.Executable;
 
 
 public class TroopActor extends AnimatedImage {
 	
+	public enum TroopInputState {
+		IDEL,CHOOSE_OBJECT
+	}
+
+	public class OnTroopMoveClicked implements Executable {
+
+		@Override
+		public void execute() {
+			layerOperation.clear();
+			//computeTroopMoveRange();
+			layerOperation.add(troopMoveRange);
+
+		}
+
+	}
+	public class OnTroopAttackClicked implements Executable {
+
+		@Override
+		public void execute() {
+			layerOperation.clear();
+			computeTroopAttackRange();
+			layerOperation.add(troopAttackRange);
+			
+
+		}
+
+	}	
+
 	public enum TROOP_ANIMATION_TYPE {
 		WALK,ATTACK,BE_ATTACKED,CAST,BE_CAST
 	}
@@ -46,7 +83,13 @@ public class TroopActor extends AnimatedImage {
 	private Skin skinLibgdx = Assets.instance.assetSkin.skinLibgdx;
 	//for integration
 	private Vector2 position = new Vector2();
-
+	private Table layerOperation = Zhsan2b.battleScreen.getBattleFieldOperationStage().getLayerOperation();
+	private Stage stage = Zhsan2b.battleScreen.getStage();
+	//troop range
+	private Table troopAttackRange;
+	private Table troopMoveRange;
+	
+	private TroopInputState troopInputState = TroopInputState.IDEL;
 	
 	//troop title
 	
@@ -69,8 +112,47 @@ public class TroopActor extends AnimatedImage {
 		isDestoryed = false;			
 		super.setDrawable(new TextureRegionDrawable());
 		setAnimation(RenderUtils.getTroopAnimationBy(troop.getMilitaryKind().getId(), com.sz.zhsan2b.core.StepAction.FaceDirection.UP, TROOP_ANIMATION_TYPE.WALK));
+		addListener(new ClickListener() {
+
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+	
+				super.clicked(event, x, y);
+				onTroopClicked();	
+			}
+			
+		});
 		//build troopTitle
 		troopTitle=buildTroopTitle();
+	}
+
+	public void computeTroopAttackRange() {
+		troopAttackRange = new Table();
+		troopAttackRange.setLayoutEnabled(false);
+		Array<Position> rangeList = troop.getAttackRangeList();
+		for(Position p:rangeList){
+			Image curImg = new Image(Assets.instance.assetWangge.red);
+			curImg.setSize(Constants.WANGGE_UNIT_WIDTH, Constants.WANGGE_UNIT_HEIGHT);
+			curImg.setPosition(RenderUtils.translate(p.x), RenderUtils.translate(p.y));
+			curImg.toBack();
+			troopAttackRange.add(curImg);
+		}
+		
+	}
+
+	protected void onTroopClicked() {
+
+		if(troop.getBattleField().state==State.OPERATE){
+			layerOperation.clear();
+			MenuCommand attackCommand =new MenuCommand("attack", true, null);
+			attackCommand.addMenuList(new MenuCommand("plan", false, null),new MenuCommand("occupy", false, null));
+			ContextMenu  menu = new ContextMenu(layerOperation,true,new MenuCommand("move", false, new OnTroopMoveClicked()),attackCommand,new MenuCommand("done", false, null));
+			//menu.disableButtonByName("move");
+			//((Button)menu.combined.findActor("move")).getStyle().pressedOffsetX=20f;
+			menu.setPosition(getX()+100,getY());	
+		}
+	
+		
 	}
 
 	private Table buildTroopTitle() {

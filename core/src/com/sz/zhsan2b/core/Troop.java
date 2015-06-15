@@ -329,6 +329,14 @@ public class Troop implements TroopEventHandler {//增加adapter 实现hook
 		return hp;
 	}
 
+	public BattleField getBattleField() {
+		return battleField;
+	}
+
+	public void setBattleField(BattleField battleField) {
+		this.battleField = battleField;
+	}
+
 	//return true mean already move to the positon where troop can attack(at the end of one step move)
 	public boolean moveToAttackPositionByOneStep() {
 		//判断是否到达目的地
@@ -450,7 +458,9 @@ public class Troop implements TroopEventHandler {//增加adapter 实现hook
 		attack(tr);
 	}
 
-	
+	public Array<Position> getAttackRangeList(){
+		return BattleUtils.getAttackRangeList(position, battleProperties.range, battleProperties.isXie);
+	}
 
 
 }

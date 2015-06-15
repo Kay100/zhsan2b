@@ -192,10 +192,14 @@ public class Assets implements Disposable, AssetErrorListener {
 	public class AssetWangge {
 		public final AtlasRegion wangge;
 		public final AtlasRegion xuanze;
+		public final AtlasRegion red;
+		public final AtlasRegion blue;
 		protected AssetWangge() {
 			TextureAtlas atlas = assetManager.get(Constants.TEXTURE_ATLAS_WANGGE);
 		      wangge = atlas.findRegion("wangge");
 		      xuanze = atlas.findRegion("xuanze");
+		      red  = atlas.findRegion("Red");
+		      blue  = atlas.findRegion("Blue");
 		}
 		
 

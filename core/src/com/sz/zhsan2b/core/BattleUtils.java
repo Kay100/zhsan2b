@@ -27,6 +27,17 @@ public class BattleUtils {
 
 	public static boolean isObjectInAttackRange(Position object,
 			Position origin, int range, boolean isXie) {
+		Array<Position> rangeList = getAttackRangeList(origin, range, isXie);
+		// 返回是否在队列中
+		//logger.debug("object is:"+"["+object.x+","+object.y+"]");
+		boolean returnBool= contains(rangeList, object);
+		//logger.debug(String.valueOf(returnBool));
+		return returnBool;
+
+	}
+
+	public static Array<Position> getAttackRangeList(Position origin,
+			int range, boolean isXie) {
 		Array<Position> rangeList = new Array<Position>(range * 10);
 		int minX = Math.max(0, origin.x - range);
 		int maxX = Math
@@ -74,12 +85,7 @@ public class BattleUtils {
 				}
 			}
 		}
-		// 返回是否在队列中
-		//logger.debug("object is:"+"["+object.x+","+object.y+"]");
-		boolean returnBool= contains(rangeList, object);
-		//logger.debug(String.valueOf(returnBool));
-		return returnBool;
-
+		return rangeList;
 	}
 
 	private static boolean contains(Array<Position> rangeList, Position object) {

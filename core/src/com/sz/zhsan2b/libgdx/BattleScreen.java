@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
@@ -20,6 +21,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.sz.zhsan2b.core.BattleField;
 import com.sz.zhsan2b.core.Troop;
 import com.sz.zhsan2b.core.StepAction.TileEffect;
+import com.sz.zhsan2b.libgdx.ConfirmationDialog.Confirmable;
 
 public class BattleScreen extends AbstractGameScreen {
 	private static final String TAG = BattleScreen.class.getName();
@@ -74,6 +76,9 @@ public class BattleScreen extends AbstractGameScreen {
 	public void setStage(Stage stage) {
 		this.stage = stage;
 	}
+	public BattleFieldOperationStage getBattleFieldOperationStage() {
+		return battleFieldOperationStage;
+	}
 	@Override
 	public InputProcessor getInputProcessor() {
 		return worldController;
@@ -98,10 +103,24 @@ public class BattleScreen extends AbstractGameScreen {
 		stack.add(battleFieldOperationStage.getLayerOperation());
 		stack.setName("mainStack");
 		
-//		ConfirmationDialog conD= new ConfirmationDialog();
-//		battleFieldOperationStage.getLayerOperation().add(conD.confirmTable);
-//		conD.confirmTable.setPosition(worldController.cameraHelper.getPosition().x-120, worldController.cameraHelper.getPosition().y-30);
-	}
+/*		 ConfirmationDialog conD= new ConfirmationDialog(new Confirmable() {
+			
+			@Override
+			public void confirm() {
+
+				
+			}
+			
+			@Override
+			public void cancel() {
+
+				
+			}
+		});
+
+		battleFieldOperationStage.getLayerOperation().add(conD.combined);
+		conD.combined.setPosition(worldController.cameraHelper.getPosition().x-120, worldController.cameraHelper.getPosition().y-30);
+*/	}
 
 	private Table buildTroopsLayer() {
 		Table layer = new Table();

@@ -21,7 +21,8 @@ public class WorldController extends InputAdapter {
 	public Level level;	
 	public Stage stage;
 	private Vector2 orginPosition = new Vector2();//used for record last screen position
-	private boolean isDragByRightMouseKey = false;
+	private boolean isDragPrepared = false;
+	private boolean isDragging = false;
 	
 	public WorldController(DirectedGame game,Stage stage) {
 		this.game =game;
@@ -138,9 +139,11 @@ public class WorldController extends InputAdapter {
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 		if(button==Buttons.RIGHT){
-			isDragByRightMouseKey=true;
-			orginPosition.set(screenX, screenY);
-			Gdx.input.setCursorImage(Assets.instance.assetArrow.drag, 8, 8);			
+			isDragPrepared=true;
+			orginPosition.set(screenX, screenY);	
+			
+			
+		
 		}
 
 			
@@ -149,17 +152,38 @@ public class WorldController extends InputAdapter {
 
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		if(button==Buttons.RIGHT){
-			isDragByRightMouseKey=false;
-			Gdx.input.setCursorImage(Assets.instance.assetArrow.normal, 0, 0);	
+		if (button == Buttons.RIGHT) {
+			isDragPrepared = false;
+			Gdx.input.setCursorImage(Assets.instance.assetArrow.normal, 0, 0);
+			
+			if(!isDragging){
+				Table layerOperation = ((Table) stage.getRoot().findActor(
+						"layerOperation"));
+				if (layerOperation.hasChildren()){
+					layerOperation.clear();
+				}else{
+					new ContextMenu(layerOperation, false, new MenuCommand("system", false, null)).setPosition(cameraHelper.getPosition().x, cameraHelper.getPosition().y);
+					
+				}				
+			}
+			isDragging=false;
+
+
+			
 		}
 		
+
 		return stage.touchUp(screenX, screenY, pointer, button);
 	}
 
 	@Override
 	public boolean touchDragged(int screenX, int screenY, int pointer) {
-		if(isDragByRightMouseKey){
+		if(isDragPrepared){
+			isDragging=true;
+			Table layerOperation = ((Table) stage.getRoot().findActor(
+					"layerOperation"));
+			layerOperation.clear();
+			Gdx.input.setCursorImage(Assets.instance.assetArrow.drag, 8, 8);				
 			moveCamera(-(screenX-orginPosition.x)*Constants.UNITSPERPIXEL*cameraHelper.getZoom(), (screenY-orginPosition.y)*Constants.UNITSPERPIXEL*cameraHelper.getZoom());
 			orginPosition.set(screenX, screenY);		
 		}
@@ -171,7 +195,7 @@ public class WorldController extends InputAdapter {
 	public boolean scrolled(int amount) {
 		cameraHelper.addZoom(amount/2f);
 		//hide trooptile according to the camera's zoom
-		Table troopInfoLayer=((Table)((Stack)stage.getRoot().findActor("mainStack")).findActor("troopInfoLayer"));
+		Table troopInfoLayer=stage.getRoot().findActor("troopInfoLayer");
 		if(cameraHelper.getZoom()>2){
 			troopInfoLayer.setVisible(false);
 		}else{

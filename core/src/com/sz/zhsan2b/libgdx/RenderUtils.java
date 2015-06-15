@@ -7,7 +7,7 @@ import com.sz.zhsan2b.libgdx.TroopActor.TROOP_ANIMATION_TYPE;
 
 public class RenderUtils {
 	public static float translate(int value){
-		return value*Constants.WANGGE_UNIT_WIDTH;
+		return value*100;
 	}
 
 	public static Animation getTroopAnimationBy(long militaryKindId,
