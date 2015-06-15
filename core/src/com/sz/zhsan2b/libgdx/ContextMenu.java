@@ -33,6 +33,7 @@ public class ContextMenu {
 		this.layerOperation=layerOperation;
 		combined = new Table();
 		layerOperation.add(combined);
+		combined.setName("menuList");
 		combined.setSize(170, menuList.size*40);
 		for(final MenuCommand menuCom:menuList){
 			Button btn = new Button(skinMenu,isLeftClickMenu?"menuLeftClick":"menuRightClick" );

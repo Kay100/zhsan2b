@@ -32,7 +32,7 @@ public class BattleFieldOperationStage {
 		bp.def = 10;
 		bp.hp = 100;
 		bp.isXie = false;
-		bp.move = 30;
+		bp.move = 0;
 		bp.range = 1;
 		bp.speed = 20;
 		BattleProperties bp2= new BattleProperties(bp);

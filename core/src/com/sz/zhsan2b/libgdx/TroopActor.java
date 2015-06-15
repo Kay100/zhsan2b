@@ -7,6 +7,8 @@ import static com.badlogic.gdx.scenes.scene2d.actions.Actions.run;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.parallel;
 
+import javax.swing.text.ChangedCharSetException;
+
 import org.jfree.ui.Align;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +21,7 @@ import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.RunnableAction;
@@ -51,8 +54,8 @@ public class TroopActor extends AnimatedImage {
 		@Override
 		public void execute() {
 			layerOperation.clear();
-			//computeTroopMoveRange();
 			layerOperation.add(troopMoveRange);
+
 
 		}
 
@@ -61,9 +64,20 @@ public class TroopActor extends AnimatedImage {
 
 		@Override
 		public void execute() {
-			layerOperation.clear();
-			computeTroopAttackRange();
-			layerOperation.add(troopAttackRange);
+			layerOperation.findActor("menuList").remove();
+			Vector2 worldP = stage.screenToStageCoordinates(tempCoords.set(Gdx.input.getX(), Gdx.input.getY()));
+			final Image xuanze = new Image(Assets.instance.assetWangge.xuanze);
+			xuanze.setPosition(((int)(worldP.x/Constants.WANGGE_UNIT_WIDTH))*Constants.WANGGE_UNIT_WIDTH, ((int)(worldP.y/Constants.WANGGE_UNIT_HEIGHT))*Constants.WANGGE_UNIT_HEIGHT);
+			layerOperation.add(xuanze);
+			stage.addListener(new InputListener(){
+
+				@Override
+				public boolean mouseMoved(InputEvent event, float x, float y) {
+					xuanze.setPosition(((int)(x/Constants.WANGGE_UNIT_WIDTH))*Constants.WANGGE_UNIT_WIDTH, ((int)(y/Constants.WANGGE_UNIT_HEIGHT))*Constants.WANGGE_UNIT_HEIGHT);
+					return super.mouseMoved(event, x, y);
+				}
+				
+			});			
 			
 
 		}
@@ -76,6 +90,7 @@ public class TroopActor extends AnimatedImage {
 
 	public static final String TAG = TroopActor.class.getName();
 	private static Logger logger = LoggerFactory.getLogger(TroopActor.class);
+	private final Vector2 tempCoords = new Vector2();
 	//game logic properties
 	private Troop troop;
 	private Array<TroopActor> affectedTroopList;
@@ -141,10 +156,16 @@ public class TroopActor extends AnimatedImage {
 	}
 
 	protected void onTroopClicked() {
+	
 
 		if(troop.getBattleField().state==State.OPERATE){
 			layerOperation.clear();
-			MenuCommand attackCommand =new MenuCommand("attack", true, null);
+
+			computeTroopAttackRange();
+			layerOperation.add(troopAttackRange);				
+			
+			
+			MenuCommand attackCommand =new MenuCommand("attack", false, new OnTroopAttackClicked());
 			attackCommand.addMenuList(new MenuCommand("plan", false, null),new MenuCommand("occupy", false, null));
 			ContextMenu  menu = new ContextMenu(layerOperation,true,new MenuCommand("move", false, new OnTroopMoveClicked()),attackCommand,new MenuCommand("done", false, null));
 			//menu.disableButtonByName("move");
