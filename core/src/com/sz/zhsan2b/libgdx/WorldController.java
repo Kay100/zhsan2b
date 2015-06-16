@@ -180,9 +180,9 @@ public class WorldController extends InputAdapter {
 	public boolean touchDragged(int screenX, int screenY, int pointer) {
 		if(isDragPrepared){
 			isDragging=true;
-			Table layerOperation = ((Table) stage.getRoot().findActor(
-					"layerOperation"));
-			layerOperation.clear();
+//			Table layerOperation = ((Table) stage.getRoot().findActor(
+//					"layerOperation"));
+//			layerOperation.clear();
 			Gdx.input.setCursorImage(Assets.instance.assetArrow.drag, 8, 8);				
 			moveCamera(-(screenX-orginPosition.x)*Constants.UNITSPERPIXEL*cameraHelper.getZoom(), (screenY-orginPosition.y)*Constants.UNITSPERPIXEL*cameraHelper.getZoom());
 			orginPosition.set(screenX, screenY);		

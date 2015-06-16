@@ -1,6 +1,8 @@
 package com.sz.zhsan2b.libgdx;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.math.Vector2;
+import com.sz.zhsan2b.core.Position;
 import com.sz.zhsan2b.core.StepAction.FaceDirection;
 import com.sz.zhsan2b.core.StepAction.TileEffect;
 import com.sz.zhsan2b.libgdx.TroopActor.TROOP_ANIMATION_TYPE;
@@ -9,6 +11,16 @@ public class RenderUtils {
 	public static float translate(int value){
 		return value*100;
 	}
+	public static void toLogicPosition(float x,float y,Position logicP){
+		logicP.x= (int)(x/Constants.WANGGE_UNIT_WIDTH);
+		logicP.y= (int)(y/Constants.WANGGE_UNIT_HEIGHT);
+	}
+	
+	public static void toWorldPosition(int x,int y,Vector2 worldP){
+		worldP.x=x*Constants.WANGGE_UNIT_WIDTH;
+		worldP.y=y*Constants.WANGGE_UNIT_HEIGHT;
+	}
+	
 
 	public static Animation getTroopAnimationBy(long militaryKindId,
 			FaceDirection faceDirection, TROOP_ANIMATION_TYPE type) {

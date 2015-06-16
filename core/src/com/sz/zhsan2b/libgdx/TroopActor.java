@@ -36,10 +36,13 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 import com.badlogic.gdx.utils.Array;
 import com.sz.zhsan2b.core.BattleField.State;
+import com.sz.zhsan2b.core.Command;
+import com.sz.zhsan2b.core.Command.ACTION_KIND;
 import com.sz.zhsan2b.core.PLAYER_TYPE;
 import com.sz.zhsan2b.core.Position;
 import com.sz.zhsan2b.core.StepAction;
 import com.sz.zhsan2b.core.Troop;
+import com.sz.zhsan2b.libgdx.ConfirmationDialog.Confirmable;
 import com.sz.zhsan2b.libgdx.ContextMenu.Executable;
 
 
@@ -70,7 +73,7 @@ public class TroopActor extends AnimatedImage {
 			xuanze.setPosition(((int)(worldP.x/Constants.WANGGE_UNIT_WIDTH))*Constants.WANGGE_UNIT_WIDTH, ((int)(worldP.y/Constants.WANGGE_UNIT_HEIGHT))*Constants.WANGGE_UNIT_HEIGHT);
 			layerOperation.add(xuanze);
 			Gdx.input.setCursorImage(Assets.instance.assetArrow.select, 0, 0);
-			stage.addListener(new InputListener(){
+			final InputListener inputListener = new InputListener(){
 
 				@Override
 				public boolean mouseMoved(InputEvent event, float x, float y) {
@@ -78,13 +81,40 @@ public class TroopActor extends AnimatedImage {
 					return super.mouseMoved(event, x, y);
 				}
 				
-			});	
+			};
+			stage.addListener(inputListener);	
 			xuanze.addListener(new ClickListener(){
 
 				@Override
 				public void clicked(InputEvent event, float x, float y) {
-					layerOperation.clear();
-					Gdx.input.setCursorImage(Assets.instance.assetArrow.normal, 0, 0);
+					Gdx.input.setCursorImage(Assets.instance.assetArrow.normal,
+							0, 0);
+					stage.removeListener(inputListener);
+					ConfirmationDialog conD = new ConfirmationDialog(
+							new Confirmable() {
+
+								@Override
+								public void confirm() {
+									layerOperation.clear();
+									Position tempP =  new Position(0, 0);
+									RenderUtils.toLogicPosition(xuanze.getX(), xuanze.getY(),tempP);
+									//Command command = new Command(ACTION_KIND.ATTACK, 0, object, null);
+									//troop.setCommand(command)
+									
+								}
+
+								@Override
+								public void cancel() {
+									layerOperation.clear();
+								}
+							});
+
+					layerOperation.add(
+							conD.combined);
+					conD.combined.setPosition(
+							stage.getCamera().position.x - 120,
+							stage.getCamera().position.y - 30);
+		
 					super.clicked(event, x, y);
 				}
 				
