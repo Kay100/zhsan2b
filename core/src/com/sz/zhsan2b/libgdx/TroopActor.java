@@ -98,9 +98,16 @@ public class TroopActor extends AnimatedImage {
 									layerOperation.clear();
 									Position tempP =  new Position(0, 0);
 									RenderUtils.toLogicPosition(xuanze.getX(), xuanze.getY(),tempP);
-									//Command command = new Command(ACTION_KIND.ATTACK, 0, object, null);
-									//troop.setCommand(command)
-									
+									Troop object = troop.getBattleField().getTroopByPosition(tempP);
+									troop.getCommand().actionKind=ACTION_KIND.ATTACK;
+									troop.getCommand().zhanfaId=0;
+									if(object==null){
+										troop.getCommand().object=null;
+										troop.getCommand().objectPosition=tempP;
+									}else{
+										troop.getCommand().object=object;
+									}
+									Gdx.app.debug(TAG, troop.getCommand().toString());
 								}
 
 								@Override
@@ -388,6 +395,9 @@ public class TroopActor extends AnimatedImage {
 
 	protected void modifyHpVisual(int damage) {
 		hpVisual-=damage;
+		if(hpVisual<=0){
+			hpVisual=0;
+		}
 		hpVisualLabel.setText(String.valueOf(hpVisual));	
 		
 	}

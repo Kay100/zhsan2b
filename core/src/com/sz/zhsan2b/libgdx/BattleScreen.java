@@ -22,8 +22,9 @@ import com.sz.zhsan2b.core.BattleField;
 import com.sz.zhsan2b.core.Troop;
 import com.sz.zhsan2b.core.StepAction.TileEffect;
 import com.sz.zhsan2b.libgdx.ConfirmationDialog.Confirmable;
+import com.sz.zhsan2b.libgdx.ContextMenu.Executable;
 
-public class BattleScreen extends AbstractGameScreen {
+public class BattleScreen extends AbstractGameScreen {	
 	private static final String TAG = BattleScreen.class.getName();
 	private WorldController worldController;
 	private WorldRenderer worldRenderer;
@@ -75,6 +76,12 @@ public class BattleScreen extends AbstractGameScreen {
 	}
 	public void setStage(Stage stage) {
 		this.stage = stage;
+	}
+	public boolean isBattleStart() {
+		return isBattleStart;
+	}
+	public void setBattleStart(boolean isBattleStart) {
+		this.isBattleStart = isBattleStart;
 	}
 	public BattleFieldOperationStage getBattleFieldOperationStage() {
 		return battleFieldOperationStage;
@@ -192,7 +199,10 @@ public class BattleScreen extends AbstractGameScreen {
 		worldRenderer.render();
         stage.draw();		
 	}
-
+	public void startBattle(){
+		isBattleStart=true;
+		battleFieldAnimationStage.setPlanning(true);
+	}
 
 
 	private void synchronizeTroopLayer() {

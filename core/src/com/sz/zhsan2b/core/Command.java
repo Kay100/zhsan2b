@@ -10,7 +10,7 @@ public class Command {
 	public Troop object;
     public Position objectPosition;
     boolean isCompeted;
-    
+    //position must be needed. 默认构造函数被重载，不能使用
 	public Command(Position objectPosition) {
 		this(ACTION_KIND.MOVE,0,null,objectPosition);
 	}
@@ -24,5 +24,13 @@ public class Command {
 		this.objectPosition = objectPosition;
 		isCompeted = false;
 	}
+
+	@Override
+	public String toString() {
+		return "Command [actionKind=" + actionKind + ", zhanfaId=" + zhanfaId
+				+ ", object=" + object + ", objectPosition=" + objectPosition
+				+ ", isCompeted=" + isCompeted + "]";
+	}
+	
     
 }

@@ -116,6 +116,7 @@ public class BattleFieldAnimationStage implements StepActionHandler {
 	}
 	public void transferToOperate() {
 		battleScreen.getWorldController().cameraHelper.setTarget(null);
+		battleScreen.getBattleField().deleteDestroyedTroops();
 		battleScreen.getBattleField().state=State.OPERATE;
 		
 	}

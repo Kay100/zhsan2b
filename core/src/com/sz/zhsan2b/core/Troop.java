@@ -1,5 +1,7 @@
 package com.sz.zhsan2b.core;
 
+import javax.xml.stream.events.Comment;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -321,6 +323,14 @@ public class Troop implements TroopEventHandler {//增加adapter 实现hook
 		this.isStepAttack = isStepAttack;
 	}
 
+	public BATTLE_STATE getBattleState() {
+		return battleState;
+	}
+
+	public void setBattleState(BATTLE_STATE battleState) {
+		this.battleState = battleState;
+	}
+
 	public long getId() {
 		return id;
 	}
@@ -390,6 +400,8 @@ public class Troop implements TroopEventHandler {//增加adapter 实现hook
 
 
 //已on开头的事件都是获得对方的事件，自己的事件不需要通过接口获得，直接操作对象即可。
+	
+	//接收战场上有部队损毁的消息。
 	@Override
 	public void onTroopDestroyed(Troop troop, StepAction stepAction) {
 		// 接收消息,将部队命令中的攻击对象清空
@@ -460,6 +472,12 @@ public class Troop implements TroopEventHandler {//增加adapter 实现hook
 
 	public Array<Position> getAttackRangeList(){
 		return BattleUtils.getAttackRangeList(position, battleProperties.range, battleProperties.isXie);
+	}
+
+	public void refresh() {
+		command.isCompeted=false;
+		this.leftMove=currentProperties.move;
+		
 	}
 
 

@@ -1,7 +1,9 @@
 package com.sz.zhsan2b.libgdx;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.sz.zhsan2b.core.BattleField;
+import com.sz.zhsan2b.core.BattleField.State;
 import com.sz.zhsan2b.core.BattleProperties;
 import com.sz.zhsan2b.core.Command;
 import com.sz.zhsan2b.core.Command.ACTION_KIND;
@@ -9,9 +11,20 @@ import com.sz.zhsan2b.core.MilitaryKind;
 import com.sz.zhsan2b.core.PLAYER_TYPE;
 import com.sz.zhsan2b.core.Position;
 import com.sz.zhsan2b.core.Troop;
+import com.sz.zhsan2b.libgdx.ContextMenu.Executable;
 
 public class BattleFieldOperationStage {
+	public class OnBattleProceedClicked implements Executable {
 
+		@Override
+		public void execute() {
+			layerOperation.clear();
+			transferToBattle();	
+			Gdx.app.debug(TAG, "transferToBattle");
+		}
+
+	}	
+	public static final String TAG = BattleFieldOperationStage.class.getName();	
 	private BattleField battleField;
 	private Table layerOperation;
 	
@@ -32,7 +45,7 @@ public class BattleFieldOperationStage {
 		bp.def = 10;
 		bp.hp = 100;
 		bp.isXie = false;
-		bp.move = 0;
+		bp.move = 15;
 		bp.range = 1;
 		bp.speed = 20;
 		BattleProperties bp2= new BattleProperties(bp);
@@ -60,5 +73,10 @@ public class BattleFieldOperationStage {
 		com2.object=tr1;
 		com3.object=null;
 	}
+	public void transferToBattle() {
+		battleField.refresh();
+		battleField.state=State.BATTLE;
+		Zhsan2b.battleScreen.startBattle();	
+	}	
 
 }

@@ -12,6 +12,8 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.sz.zhsan2b.core.Position;
+import com.sz.zhsan2b.libgdx.BattleFieldOperationStage.OnBattleProceedClicked;
+import com.sz.zhsan2b.libgdx.ContextMenu.Executable;
 
 public class WorldController extends InputAdapter {
 	private static final String TAG = WorldController.class.getName();
@@ -23,6 +25,7 @@ public class WorldController extends InputAdapter {
 	private Vector2 orginPosition = new Vector2();//used for record last screen position
 	private boolean isDragPrepared = false;
 	private boolean isDragging = false;
+	private final BattleScreen battleScreen = Zhsan2b.battleScreen;
 	
 	public WorldController(DirectedGame game,Stage stage) {
 		this.game =game;
@@ -162,7 +165,9 @@ public class WorldController extends InputAdapter {
 				if (layerOperation.hasChildren()){
 					layerOperation.clear();
 				}else{
-					new ContextMenu(layerOperation, false, new MenuCommand("system", false, null)).setPosition(cameraHelper.getPosition().x, cameraHelper.getPosition().y);
+					OnBattleProceedClicked onBattleProceedClicked = battleScreen.getBattleFieldOperationStage().new OnBattleProceedClicked();
+					
+					new ContextMenu(layerOperation, false, new MenuCommand("proceed", false, onBattleProceedClicked)).setPosition(cameraHelper.getPosition().x, cameraHelper.getPosition().y);
 					
 				}				
 			}

@@ -4,6 +4,7 @@ import java.util.Iterator;
 
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
+import com.sz.zhsan2b.core.Troop.BATTLE_STATE;
 
 public class BattleField implements TroopEventHandler{
 	public enum State {
@@ -130,6 +131,16 @@ public class BattleField implements TroopEventHandler{
 		
 		return occupied;
 	}
+	public Troop getTroopByPosition(Position p) {
+		Troop returnTroop = null;
+		for(Troop tr:troopList){
+			if(tr.getPosition().equal(p)){
+				returnTroop= tr;
+			}
+		}
+		return returnTroop;
+	}
+	
 
 	public Position getNotOccupiedNeighborPosition(Position to,
 			Position from) {
@@ -169,6 +180,26 @@ public class BattleField implements TroopEventHandler{
 
 		
 	}
+
+	public void deleteDestroyedTroops() {
+		Troop curTr = null;
+		for(int size=troopList.size,i=size-1;i>=0;i--){
+			curTr=troopList.get(i);
+			if(curTr.getBattleState()==BATTLE_STATE.IS_DESTROY){
+				troopList.removeValue(curTr, true);
+			}
+		}
+		
+	}
+	
+	public void refresh(){
+		getStepActionHandler().getStepActionList().clear();
+		//refresh troop for new battle
+		for(Troop tr:troopList){
+			tr.refresh();
+		}
+	}
+
 
 	
 
