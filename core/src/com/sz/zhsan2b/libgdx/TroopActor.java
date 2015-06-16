@@ -69,6 +69,7 @@ public class TroopActor extends AnimatedImage {
 			final Image xuanze = new Image(Assets.instance.assetWangge.xuanze);
 			xuanze.setPosition(((int)(worldP.x/Constants.WANGGE_UNIT_WIDTH))*Constants.WANGGE_UNIT_WIDTH, ((int)(worldP.y/Constants.WANGGE_UNIT_HEIGHT))*Constants.WANGGE_UNIT_HEIGHT);
 			layerOperation.add(xuanze);
+			Gdx.input.setCursorImage(Assets.instance.assetArrow.select, 0, 0);
 			stage.addListener(new InputListener(){
 
 				@Override
@@ -77,7 +78,18 @@ public class TroopActor extends AnimatedImage {
 					return super.mouseMoved(event, x, y);
 				}
 				
-			});			
+			});	
+			xuanze.addListener(new ClickListener(){
+
+				@Override
+				public void clicked(InputEvent event, float x, float y) {
+					layerOperation.clear();
+					Gdx.input.setCursorImage(Assets.instance.assetArrow.normal, 0, 0);
+					super.clicked(event, x, y);
+				}
+				
+			});
+			
 			
 
 		}
