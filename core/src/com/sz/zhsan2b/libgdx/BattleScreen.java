@@ -15,10 +15,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ArrayMap;
+import com.badlogic.gdx.utils.ObjectMap.Entry;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.sz.zhsan2b.core.BattleField;
+import com.sz.zhsan2b.core.StepAction;
 import com.sz.zhsan2b.core.Troop;
 import com.sz.zhsan2b.core.StepAction.TileEffect;
 import com.sz.zhsan2b.libgdx.ConfirmationDialog.Confirmable;
@@ -30,6 +33,7 @@ public class BattleScreen extends AbstractGameScreen {
 	private WorldRenderer worldRenderer;
 	private boolean paused;
 	private Stage stage;
+	private Stage uiStage;
 	private Skin skinLibgdx = Assets.instance.assetSkin.skinLibgdx;
 	private Skin skinCanyonBunny= Assets.instance.assetSkin.skinCanyonBunny;
 	private Image imgBackground;
@@ -39,6 +43,7 @@ public class BattleScreen extends AbstractGameScreen {
 
 
 	private boolean isBattleStart=true;
+	private boolean isOperateStart=true;
 	
 	
 	private BattleFieldAnimationStage battleFieldAnimationStage;
@@ -77,11 +82,23 @@ public class BattleScreen extends AbstractGameScreen {
 	public void setStage(Stage stage) {
 		this.stage = stage;
 	}
+	public Stage getUiStage() {
+		return uiStage;
+	}
+	public void setUiStage(Stage uiStage) {
+		this.uiStage = uiStage;
+	}
 	public boolean isBattleStart() {
 		return isBattleStart;
 	}
 	public void setBattleStart(boolean isBattleStart) {
 		this.isBattleStart = isBattleStart;
+	}
+	public boolean isOperateStart() {
+		return isOperateStart;
+	}
+	public void setOperateStart(boolean isOperateStart) {
+		this.isOperateStart = isOperateStart;
 	}
 	public BattleFieldOperationStage getBattleFieldOperationStage() {
 		return battleFieldOperationStage;
@@ -109,6 +126,7 @@ public class BattleScreen extends AbstractGameScreen {
 		stack.add(battleFieldAnimationStage.getLayerAnimation());
 		stack.add(battleFieldOperationStage.getLayerOperation());
 		stack.setName("mainStack");
+		uiStage.addActor(battleFieldOperationStage.getNotification());
 		
 	}
 
@@ -170,16 +188,21 @@ public class BattleScreen extends AbstractGameScreen {
 			switch(battleField.state){
 			case BATTLE:
 				if(isBattleStart){
-					battleField.calculateBattle();
-					battleFieldAnimationStage.initStepActionIter();
+					battleFieldAnimationStage.startBattle();
 					isBattleStart = false;
-					
+					Gdx.app.debug(TAG, "calucate is correct!");
 				}else{
 					battleFieldAnimationStage.parseStepActions();
 				}
 				synchronizeTroopLayer();
 				break;
 			case OPERATE:
+				if(isOperateStart){
+					battleFieldOperationStage.startOperate();
+					isOperateStart=false;
+				}else{
+					battleFieldOperationStage.operate();
+				}
 				
 				break;
 			default:
@@ -191,18 +214,24 @@ public class BattleScreen extends AbstractGameScreen {
 			// since last rendered frame.
 			worldController.update(deltaTime);
 			stage.act(deltaTime);
+			uiStage.act(deltaTime);
 		}
 		//clear the screen
 		Gdx.gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		// Render game world to screen
 		worldRenderer.render();
-        stage.draw();		
+        stage.draw();	
+        uiStage.draw();
 	}
 	public void startBattle(){
 		isBattleStart=true;
 		battleFieldAnimationStage.setPlanning(true);
 	}
+	public void startOperate() {
+		isOperateStart=true;
+		
+	}	
 
 
 	private void synchronizeTroopLayer() {
@@ -215,6 +244,14 @@ public class BattleScreen extends AbstractGameScreen {
 	@Override
 	public void resize(int width, int height) {
 		worldRenderer.resize(width, height);
+		uiStage.getViewport().update(width, height);
+		// 这个camera相对于窗口是不动的，不动的carema可以类同于世界坐标系。
+		uiStage.getCamera().viewportHeight = Constants.VIEWPORT_HEIGHT;
+		uiStage.getCamera().viewportWidth = (Constants.VIEWPORT_HEIGHT / (float) height)
+				* (float) width;
+		uiStage.getCamera().position.set(uiStage.getCamera().viewportWidth / 2,
+				uiStage.getCamera().viewportHeight / 2, 0);
+		uiStage.getCamera().update();
 	}
 
 	@Override
@@ -224,10 +261,10 @@ public class BattleScreen extends AbstractGameScreen {
 		//ScreenViewport 操作的是世界坐标，像素和米的比例关系
 		ScreenViewport vp = new ScreenViewport();
 		stage = new Stage(vp);	
+		uiStage = new Stage(new ScreenViewport(), stage.getBatch());
 		//vp.setUnitsPerPixel(Constants.UNITSPERPIXEL);	
 		worldController = new WorldController(game,stage);
 		worldRenderer = new WorldRenderer(worldController);
-		//stage.getViewport().setCamera(worldRenderer.getCamera());	
 		
 		
 		
@@ -237,8 +274,11 @@ public class BattleScreen extends AbstractGameScreen {
 
 		
 		//set debug
-		if (debugEnabled)
+		if (debugEnabled){
 			stage.setDebugAll(true);
+			uiStage.setDebugAll(true);
+		}
+
 		rebuildStage();		
 	}
 
@@ -247,6 +287,7 @@ public class BattleScreen extends AbstractGameScreen {
 		worldRenderer.dispose();
 		Gdx.input.setCatchBackKey(false);
 		stage.dispose();
+		uiStage.dispose();
 		skinLibgdx.dispose();	
 		skinCanyonBunny.dispose();
 	}
@@ -262,4 +303,36 @@ public class BattleScreen extends AbstractGameScreen {
 		// Only called on Android!
 		paused = false;
 	}
+	public void deleteTroopActor(TroopActor destroyedTroop) {
+		destroyedTroop.getTroopTitle().remove();
+		Zhsan2b.battleScreen.getTroopActorList().removeValue(destroyedTroop, true);
+		destroyedTroop.remove();
+		
+	}
+
+	public void parseTroopsEffect(ArrayMap<Long,TileEffect> effects) {
+		//解析效果，根据效果分类处理troopActor
+		for(Entry<Long,TileEffect> teE:effects){
+			switch(teE.value){
+			case CRITICAL:
+				break;
+			case DESTROY:
+				TroopActor destroyedTroop = battleFieldAnimationStage.getTroopActorByTroopId(teE.key);
+				deleteTroopActor(destroyedTroop);
+				break;
+			case FIRE:
+				break;
+			case HUOSHI:
+				break;
+			case RECOVER:
+				break;
+			case RESIST:
+				break;
+			default:
+				break;
+			
+			}
+		}
+	}	
+
 }

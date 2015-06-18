@@ -233,7 +233,10 @@ public class Assets implements Disposable, AssetErrorListener {
 		     animTileEffect.put(TileEffect.BOOST, new Animation(1/12f, tempRegs)); 	
 			 texR = atlas.findRegion("Chaos"); 				
 		     tempRegs = getAnimationFrames(texR.split(texR.getRegionWidth()/8, texR.getRegionHeight()),0,8);
-		     animTileEffect.put(TileEffect.CHAOS, new Animation(1/8f, tempRegs)); 	
+		     animTileEffect.put(TileEffect.CHAOS, new Animation(1/8f, tempRegs)); 
+			 texR = atlas.findRegion("CauseChaos"); 				
+		     tempRegs = getAnimationFrames(texR.split(texR.getRegionWidth()/8, texR.getRegionHeight()),0,8);
+		     animTileEffect.put(TileEffect.DESTROY, new Animation(1/8f, tempRegs)); 
 		}
 	
 	}

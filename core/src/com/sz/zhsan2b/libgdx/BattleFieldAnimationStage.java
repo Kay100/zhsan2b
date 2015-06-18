@@ -78,8 +78,7 @@ public class BattleFieldAnimationStage implements StepActionHandler {
 				TroopActor trA = getCurrentStepTroopActor(currentStepAction.actionTroopId);			
 				AbstractGameObject object = new AbstractGameObject() {					
 					@Override
-					public void render(SpriteBatch batch) {
-						
+					public void render(SpriteBatch batch) {					
 					}
 				};
 				object.position=trA.getPosition();
@@ -118,6 +117,14 @@ public class BattleFieldAnimationStage implements StepActionHandler {
 		battleScreen.getWorldController().cameraHelper.setTarget(null);
 		battleScreen.getBattleField().deleteDestroyedTroops();
 		battleScreen.getBattleField().state=State.OPERATE;
+		battleScreen.startOperate();
+		
+	}
+	public void startBattle() {
+		stepActionList.clear();
+		battleScreen.getBattleField().refresh();
+		battleScreen.getBattleField().calculateBattle();
+		initStepActionIter();
 		
 	}
 }

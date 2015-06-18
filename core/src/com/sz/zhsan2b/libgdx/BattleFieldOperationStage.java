@@ -1,6 +1,8 @@
 package com.sz.zhsan2b.libgdx;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.sz.zhsan2b.core.BattleField;
 import com.sz.zhsan2b.core.BattleField.State;
@@ -20,17 +22,22 @@ public class BattleFieldOperationStage {
 		public void execute() {
 			layerOperation.clear();
 			transferToBattle();	
-			Gdx.app.debug(TAG, "transferToBattle");
 		}
 
 	}	
 	public static final String TAG = BattleFieldOperationStage.class.getName();	
 	private BattleField battleField;
 	private Table layerOperation;
+	private Label notification;
 	
 
 	public Table getLayerOperation() {
 		return layerOperation;
+	}
+
+
+	public Label getNotification() {
+		return notification;
 	}
 
 
@@ -39,11 +46,14 @@ public class BattleFieldOperationStage {
 		layerOperation.setLayoutEnabled(false);	
 		layerOperation.setName("layerOperation");
 		this.battleField = battleField;
+		notification= new Label("notification", Assets.instance.assetSkin.skinLibgdx);
+		notification.setPosition(500, 0);
+		notification.setVisible(false);
 		// 测试
 		BattleProperties bp = new BattleProperties();
 		bp.ack = 20;
 		bp.def = 10;
-		bp.hp = 100;
+		bp.hp = 30;
 		bp.isXie = false;
 		bp.move = 15;
 		bp.range = 1;
@@ -74,9 +84,27 @@ public class BattleFieldOperationStage {
 		com3.object=null;
 	}
 	public void transferToBattle() {
-		battleField.refresh();
 		battleField.state=State.BATTLE;
 		Zhsan2b.battleScreen.startBattle();	
+	}
+
+
+	public void startOperate() {
+
+		
+	}
+
+
+	public void operate() {
+		
+	}
+
+
+	public void displayNotification(String text) {
+		notification.setVisible(true);
+		notification.setText(text);
+		notification.addAction(Actions.delay(3f, Actions.hide()));
+		
 	}	
 
 }

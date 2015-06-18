@@ -110,39 +110,37 @@ public class Troop implements TroopEventHandler {//增加adapter 实现hook
 		}
 		//构造stepAction	
 		StepAction stepAction = new StepAction(id);
-		//判断是否抵挡反击,抵挡的话,step action 加入 抵挡动画
-		
-		//do attack 修改自身hp和部队状态 判断是否能被反击到。
-		if(BattleUtils.isObjectInAttackRange(this, troop)){
-			tempDamage = BattleUtils.calculateDamage(this,troop);
-			hp -= tempDamage;
-		}else{
-			tempDamage=0;
-		}
-
 		stepAction.actionKind = ACTION_KIND.ATTACK;	
 		faceDirection =BattleUtils.calculateFaceDirection(faceDirection,position,troop.position);
 		stepAction.faceDirection = faceDirection;
 		stepAction.isVisible=true;
 		stepAction.militaryKindId = militaryKind.getId();		
-        addAttackEffect(stepAction.effects);
+		//do attack 修改自身hp和部队状态 判断是否能被反击到。判断是否抵挡反击,抵挡的话,step action 加入 抵挡动画
+		if(BattleUtils.isObjectInAttackRange(this, troop)){
+			tempDamage = BattleUtils.calculateDamage(this,troop);
+			hp -= tempDamage;
+			if(hp<=0){
+				battleState=BATTLE_STATE.IS_DESTROY;
+				command.isCompeted=true;
+				stepAction.effects.put(id, TileEffect.DESTROY);
+				fire(TroopEvent.DESTROY, stepAction);
+			}else{
+				stepAction.effects.put(id, TileEffect.BOOST);
+			}
+		}else{
+			tempDamage=0;
+			stepAction.effects.put(id, TileEffect.BOOST);
+		}
 		stepAction.damageMap.put(id, tempDamage);        
         stepAction.orginPosition.setPosition(position);
 		stepAction.objectPosition.setPosition(position);
 		
 		
 		Array<StepAction> stepActionList = getStepActionList();
-		stepActionList.add(stepAction);		
+		stepActionList.add(stepAction);	
+		logger.debug(stepAction.toString());
 		
         fire(TroopEvent.ATTACK_AFTER, stepAction,troop);
-		
-
-		//判断损毁
-		if(hp<=0){
-			battleState=BATTLE_STATE.IS_DESTROY;
-			stepAction.effects.put(id,TileEffect.DESTROY);
-			fire(TroopEvent.DESTROY, stepAction);
-		}
 	}
 
 	public  void addTroopEventHandler(TroopEventHandler... eventHandlers) {
@@ -166,12 +164,6 @@ public class Troop implements TroopEventHandler {//增加adapter 实现hook
 		return battleField.getStepActionHandler().getStepActionList();
 	}
 
-	private void addAttackEffect(ArrayMap<Long, TileEffect> effects) {
-		//test
-		effects.put(id, TileEffect.BOOST);
-		
-	}
-
 
 
 	private Array<Long> getAffectedTroopIdList(Array<TroopEventHandler> affectedTroopList) {
@@ -186,6 +178,9 @@ public class Troop implements TroopEventHandler {//增加adapter 实现hook
 	private Array<Troop> getAllTroopsInAttackRange() {
 		Array<Troop> tmpList = new Array<Troop>(10*currentProperties.range);
 		for(Troop tr:battleField.getTroopList()){
+			if(tr.battleState==BATTLE_STATE.IS_DESTROY){
+				continue;
+			}
 			if(tr.owner!=owner&&BattleUtils.isObjectInAttackRange(tr,this)){
 				tmpList.add(tr);
 			}
@@ -197,6 +192,9 @@ public class Troop implements TroopEventHandler {//增加adapter 实现hook
 		
 		Troop returnTr = null;
 		for(Troop tr:battleField.getTroopList()){
+			if(tr.battleState==BATTLE_STATE.IS_DESTROY){
+				continue;
+			}			
 			if(tr.owner!=owner&&BattleUtils.isObjectInAttackRange(tr,this)){
 				returnTr = tr;
 				break;
@@ -239,26 +237,20 @@ public class Troop implements TroopEventHandler {//增加adapter 实现hook
 		//be attack 修改自身hp和部队状态
 		tempDamage =BattleUtils.calculateDamage(this, damageFrom);
 		hp-= tempDamage;
-		
-		//以后可以考虑下朝想的实现，也得做troopid的map。
-		stepAction.damageMap.put(id, tempDamage);
 		if(hp<=0){
 			battleState=BATTLE_STATE.IS_DESTROY;
+			command.isCompeted=true;
 			stepAction.effects.put(id, TileEffect.DESTROY);
 			fire(TroopEvent.DESTROY, stepAction);
 		}else{
-			addBeAttackEffect(stepAction.effects);
-		}
-
-
-
+			stepAction.effects.put(id, TileEffect.HUOSHI);
+		}		
 		
-	}
+		//以后可以考虑下朝想的实现，也得做troopid的map。
+		stepAction.damageMap.put(id, tempDamage);
 
-	private void addBeAttackEffect(ArrayMap<Long, TileEffect> effects) {
 
-		//test
-		effects.put(id, TileEffect.HUOSHI);
+
 
 		
 	}
@@ -405,7 +397,7 @@ public class Troop implements TroopEventHandler {//增加adapter 实现hook
 	@Override
 	public void onTroopDestroyed(Troop troop, StepAction stepAction) {
 		// 接收消息,将部队命令中的攻击对象清空
-		if(command.object.equals(troop)){
+		if(command.object==troop){
 			command.object=null;
 		}
 		

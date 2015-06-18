@@ -193,7 +193,6 @@ public class BattleField implements TroopEventHandler{
 	}
 	
 	public void refresh(){
-		getStepActionHandler().getStepActionList().clear();
 		//refresh troop for new battle
 		for(Troop tr:troopList){
 			tr.refresh();
