@@ -114,24 +114,26 @@ public class Troop implements TroopEventHandler {//增加adapter 实现hook
 		faceDirection =BattleUtils.calculateFaceDirection(faceDirection,position,troop.position);
 		stepAction.faceDirection = faceDirection;
 		stepAction.isVisible=true;
-		stepAction.militaryKindId = militaryKind.getId();		
+		stepAction.militaryKindId = militaryKind.getId();
+		//stepAction.effects.put(id, TileEffect.BOOST);
 		//do attack 修改自身hp和部队状态 判断是否能被反击到。判断是否抵挡反击,抵挡的话,step action 加入 抵挡动画
 		if(BattleUtils.isObjectInAttackRange(this, troop)){
 			tempDamage = BattleUtils.calculateDamage(this,troop);
 			hp -= tempDamage;
+			stepAction.damageMap.put(id, tempDamage);    
 			if(hp<=0){
 				battleState=BATTLE_STATE.IS_DESTROY;
 				command.isCompeted=true;
-				stepAction.effects.put(id, TileEffect.DESTROY);
-				fire(TroopEvent.DESTROY, stepAction);
-			}else{
-				stepAction.effects.put(id, TileEffect.BOOST);
+				//new innerStepAction
+				StepAction next = new StepAction(id);
+				stepAction.setNext(next);
+				next.actionKind=ACTION_KIND.NONE;
+				next.effects.put(id, TileEffect.DESTROY);
+
+				fire(TroopEvent.DESTROY, next);
 			}
-		}else{
-			tempDamage=0;
-			stepAction.effects.put(id, TileEffect.BOOST);
 		}
-		stepAction.damageMap.put(id, tempDamage);        
+    
         stepAction.orginPosition.setPosition(position);
 		stepAction.objectPosition.setPosition(position);
 		
@@ -139,8 +141,17 @@ public class Troop implements TroopEventHandler {//增加adapter 实现hook
 		Array<StepAction> stepActionList = getStepActionList();
 		stepActionList.add(stepAction);	
 		logger.debug(stepAction.toString());
-		
-        fire(TroopEvent.ATTACK_AFTER, stepAction,troop);
+		isAttackCompleted=true;
+		fire(TroopEvent.ATTACK_AFTER, stepAction,troop);
+        
+	}
+
+	private StepAction getTheLastStepAction(StepAction stepAction) {
+		if(stepAction.next==null){
+			return stepAction;
+		}else{
+			return getTheLastStepAction(stepAction.next);
+		}
 	}
 
 	public  void addTroopEventHandler(TroopEventHandler... eventHandlers) {
@@ -237,17 +248,28 @@ public class Troop implements TroopEventHandler {//增加adapter 实现hook
 		//be attack 修改自身hp和部队状态
 		tempDamage =BattleUtils.calculateDamage(this, damageFrom);
 		hp-= tempDamage;
+		stepAction.effects.put(id, TileEffect.HUOSHI);
+		//以后可以考虑下朝想的实现，也得做troopid的map。
+		stepAction.damageMap.put(id, tempDamage);		
 		if(hp<=0){
 			battleState=BATTLE_STATE.IS_DESTROY;
 			command.isCompeted=true;
-			stepAction.effects.put(id, TileEffect.DESTROY);
+			stepAction= getTheLastStepAction(stepAction);
+			if(stepAction.actionKind==ACTION_KIND.NONE){
+				stepAction.effects.put(id, TileEffect.DESTROY);
+			}else{
+				StepAction next = new StepAction(id);
+				stepAction.setNext(next);
+				next.actionKind=ACTION_KIND.NONE;
+				next.effects.put(id, TileEffect.DESTROY);	
+				stepAction=next;
+			}
+			
+
 			fire(TroopEvent.DESTROY, stepAction);
-		}else{
-			stepAction.effects.put(id, TileEffect.HUOSHI);
-		}		
+		}	
 		
-		//以后可以考虑下朝想的实现，也得做troopid的map。
-		stepAction.damageMap.put(id, tempDamage);
+
 
 
 
@@ -340,31 +362,27 @@ public class Troop implements TroopEventHandler {//增加adapter 实现hook
 	}
 
 	//return true mean already move to the positon where troop can attack(at the end of one step move)
-	public boolean moveToAttackPositionByOneStep() {
-		//判断是否到达目的地
+	public boolean moveToAttackPositionByOneStep(boolean isAttackFirst) {
+		//判断是否到达目的地和无法移动的情况。
 		//return null means no path calculated , return size 0 means already reached.
 		Map currentMap = battleField.getMapByMilitaryKindId(militaryKind.getId());
 		Array<Position> positionPath = currentMap.calculatePositionPath(position,command.objectPosition,battleField.getOccupiedPositions());
-		if(positionPath==null){
+		if(positionPath==null||positionPath.size==0){
 			leftMove-=militaryKind.getDefaultMoveWeight();
 			if(leftMove<=0){
 				command.isCompeted=true;
-				return true;
+				return !isAttackCompleted;
 			}else{
 				return false;
 			}
 		}
-		if(positionPath.size==0){ //已经抵达目标
-			command.isCompeted=true;
-			return true;
-		}
+		//没有到达目的地，可以移动
 		int nextWeight = currentMap.calculateNextEdgeWeight(positionPath.get(0),positionPath.get(1));
 		if(leftMove<nextWeight){
 			command.isCompeted=true;
-			return true;
+			return !isAttackCompleted;
 		}else{//移动一格
 			leftMove-=nextWeight;
-			logger.debug(String.valueOf(leftMove));
 			//这个地方要判断一下移动的位置是否被目标站住了（其他的点不要判断的原因是选路算法代劳了）
 			Position nextPosition = positionPath.get(1);
 			if(battleField.isPositionOccupied(nextPosition)){
@@ -373,7 +391,7 @@ public class Troop implements TroopEventHandler {//增加adapter 实现hook
 					return false;
 				}
 			}
-
+			//判断到这里，才正真可以移动。
 			//add stepAction
 			StepAction stepAction = new StepAction(this.id);
 			stepAction.actionKind=ACTION_KIND.MOVE;
@@ -382,10 +400,24 @@ public class Troop implements TroopEventHandler {//增加adapter 实现hook
 			stepAction.orginPosition.setPosition(position);
 			stepAction.militaryKindId=militaryKind.getId();
 			getStepActionList().add(stepAction);
-			position.setPosition(nextPosition);
+			//移动
+			position.setPosition(nextPosition);	
 			stepAction.objectPosition.setPosition(position);
 			logger.debug(stepAction.toString());
-			return false;
+			if(isStepAttack){
+				return true;
+			}
+			if(command.object==null){
+				if(isAttackFirst){
+					return !isAttackCompleted;
+				}else{
+					return false;
+				}
+				
+			}else{
+				return false;
+			}
+			
 		}
 		
 	}
@@ -465,11 +497,11 @@ public class Troop implements TroopEventHandler {//增加adapter 实现hook
 	public Array<Position> getAttackRangeList(){
 		return BattleUtils.getAttackRangeList(position, battleProperties.range, battleProperties.isXie);
 	}
-
+	//每回合开始，战场会调用troop的refresh方法，来重置部队的状态。
 	public void refresh() {
 		command.isCompeted=false;
 		this.leftMove=currentProperties.move;
-		
+		isAttackCompleted=false;
 	}
 
 

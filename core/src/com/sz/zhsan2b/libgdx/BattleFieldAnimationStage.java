@@ -1,16 +1,26 @@
 package com.sz.zhsan2b.libgdx;
 
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.moveTo;
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.parallel;
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
+
 import java.util.Iterator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ArrayMap;
+import com.badlogic.gdx.utils.ObjectMap.Entry;
 import com.sz.zhsan2b.core.BattleField;
 import com.sz.zhsan2b.core.BattleField.State;
+import com.sz.zhsan2b.core.StepAction.TileEffect;
 import com.sz.zhsan2b.core.StepAction;
 import com.sz.zhsan2b.core.StepActionHandler;
 
@@ -88,7 +98,7 @@ public class BattleFieldAnimationStage implements StepActionHandler {
 
 				trA.parseStepAction(this);
 			}else{
-				transferToOperate();
+				battleScreen.startOperate();
 			}
 			
 			
@@ -113,18 +123,42 @@ public class BattleFieldAnimationStage implements StepActionHandler {
 		
 		return !stepActionIter.hasNext();
 	}
-	public void transferToOperate() {
-		battleScreen.getWorldController().cameraHelper.setTarget(null);
-		battleScreen.getBattleField().deleteDestroyedTroops();
-		battleScreen.getBattleField().state=State.OPERATE;
-		battleScreen.startOperate();
-		
-	}
 	public void startBattle() {
 		stepActionList.clear();
 		battleScreen.getBattleField().refresh();
 		battleScreen.getBattleField().calculateBattle();
+		for(TroopActor trA:battleScreen.getTroopActorList()){
+			trA.hideActionLabel();
+		}
+		
 		initStepActionIter();
 		
+	}
+	public void displayTileEffects(ArrayMap<Long,TileEffect> effects){
+		for(Entry<Long,TileEffect> en:effects){
+			TileEffectActor effectActor = new TileEffectActor(effects.get(en.key));
+			TroopActor trA = getTroopActorByTroopId(en.key);
+			effectActor.setPosition(trA.getX(), trA.getY());
+			getLayerAnimation().add(effectActor);				
+		}
+	}
+	public void displayCombatNumbers(ArrayMap<Long,Integer> damages){
+		for(Entry<Long,Integer>en:damages){
+			int tempInt =damages.get(en.key);
+			CombatNumberLabel damageLabel = new CombatNumberLabel(tempInt, true);
+			if(tempInt==0){
+				damageLabel.setVisible(false);
+			}			
+			TroopActor trA = getTroopActorByTroopId(en.key);
+			damageLabel.addAction(sequence(Actions.color(Color.RED),moveTo(trA.getX()+50,trA.getY()+50),parallel(Actions.moveBy(0f,50f,Constants.ONE_STEP_TIME,Interpolation.linear))));
+			getLayerAnimation().add(damageLabel);				
+		}
+	}
+	public void modifyTroopsHpVisual(ArrayMap<Long,Integer> damages){
+		for(Entry<Long,Integer>en:damages){
+			TroopActor trA = getTroopActorByTroopId(en.key);
+		    trA.modifyHpVisual(damages.get(trA.getTroop().getId()));	
+		}
+	
 	}
 }

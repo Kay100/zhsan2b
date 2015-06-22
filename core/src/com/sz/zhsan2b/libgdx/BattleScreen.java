@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -23,6 +24,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.sz.zhsan2b.core.BattleField;
 import com.sz.zhsan2b.core.StepAction;
 import com.sz.zhsan2b.core.Troop;
+import com.sz.zhsan2b.core.BattleField.State;
 import com.sz.zhsan2b.core.StepAction.TileEffect;
 import com.sz.zhsan2b.libgdx.ConfirmationDialog.Confirmable;
 import com.sz.zhsan2b.libgdx.ContextMenu.Executable;
@@ -37,6 +39,7 @@ public class BattleScreen extends AbstractGameScreen {
 	private Skin skinLibgdx = Assets.instance.assetSkin.skinLibgdx;
 	private Skin skinCanyonBunny= Assets.instance.assetSkin.skinCanyonBunny;
 	private Image imgBackground;
+	private Label mousePositionLabel;
 	
 	//game core(logic)
 	private final BattleField battleField = new BattleField();
@@ -88,6 +91,9 @@ public class BattleScreen extends AbstractGameScreen {
 	public void setUiStage(Stage uiStage) {
 		this.uiStage = uiStage;
 	}
+	public Label getMousePositionLabel() {
+		return mousePositionLabel;
+	}
 	public boolean isBattleStart() {
 		return isBattleStart;
 	}
@@ -111,9 +117,11 @@ public class BattleScreen extends AbstractGameScreen {
 	private void rebuildStage() {
 		// build all layers
 		Table troopsLayer = buildTroopsLayer();
-		troopsLayer.setName("troopLayer");
+
 		Table troopInfoLayer = buildTroopInfoLayer();
-		troopInfoLayer.setName("troopInfoLayer");
+
+		Table effectsLayer = buildEffectsLayer();
+
 		
 		// assemble stage for battle screen
 		stage.clear();
@@ -123,20 +131,35 @@ public class BattleScreen extends AbstractGameScreen {
 				Constants.WORLD_HEIGHT);
 		stack.add(troopsLayer);
 		stack.add(troopInfoLayer);
+		stack.add(effectsLayer);
 		stack.add(battleFieldAnimationStage.getLayerAnimation());
 		stack.add(battleFieldOperationStage.getLayerOperation());
 		stack.setName("mainStack");
+		
+		//uiStage
+		
+		mousePositionLabel= new Label("mousePosition", Assets.instance.assetSkin.skinLibgdx);
+		mousePositionLabel.setPosition(500, 0);
+		mousePositionLabel.setVisible(false);
+		uiStage.addActor(mousePositionLabel);
 		uiStage.addActor(battleFieldOperationStage.getNotification());
+
 		
 	}
 
+	private Table buildEffectsLayer() {
+		Table layer = new Table();
+		layer.setLayoutEnabled(false);
+		layer.setName("effectsLayer");//permenent layer
+		return layer;
+	}
 	private Table buildTroopsLayer() {
 		Table layer = new Table();
 		layer.setLayoutEnabled(false);
+		layer.setName("troopLayer");		
 		createTroopActors();
 		for(TroopActor trA:troopActorList){
 			layer.add(trA);
-			//trA.toBack();
 		}
 
 		return layer;
@@ -144,6 +167,7 @@ public class BattleScreen extends AbstractGameScreen {
 	private Table buildTroopInfoLayer() {
 		Table layer = new Table();
 		layer.setLayoutEnabled(false);
+		layer.setName("troopInfoLayer");
 		for(TroopActor trA:troopActorList){
 			layer.add(trA.getTroopTitle());
 		}
@@ -225,10 +249,14 @@ public class BattleScreen extends AbstractGameScreen {
         uiStage.draw();
 	}
 	public void startBattle(){
+		battleField.state=State.BATTLE;
 		isBattleStart=true;
 		battleFieldAnimationStage.setPlanning(true);
 	}
 	public void startOperate() {
+		worldController.cameraHelper.setTarget(null);
+		battleField.deleteDestroyedTroops();
+		battleField.state=State.OPERATE;		
 		isOperateStart=true;
 		
 	}	

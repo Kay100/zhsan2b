@@ -6,10 +6,6 @@ import static com.badlogic.gdx.scenes.scene2d.actions.Actions.moveTo;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.run;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.parallel;
-
-import javax.swing.text.ChangedCharSetException;
-
-import org.jfree.ui.Align;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,12 +13,14 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.RunnableAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -30,6 +28,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -46,12 +45,16 @@ import com.sz.zhsan2b.core.StepAction.TileEffect;
 import com.sz.zhsan2b.core.Troop;
 import com.sz.zhsan2b.libgdx.ConfirmationDialog.Confirmable;
 import com.sz.zhsan2b.libgdx.ContextMenu.Executable;
+import com.sz.zhsan2b.libgdx.TroopActor.ACTION_LABEL;
 
 
 public class TroopActor extends AnimatedImage {
 	
 	public enum TroopInputState {
 		IDEL,CHOOSE_OBJECT
+	}
+	public enum ACTION_LABEL {
+		UNDONE,DONE,AUTO,AUTODONE
 	}
 
 	public class OnTroopMoveClicked implements Executable {
@@ -114,6 +117,7 @@ public class TroopActor extends AnimatedImage {
 										}else{
 											troop.getCommand().object=object;
 										}
+										setActionLabel(ACTION_LABEL.DONE);
 										//Gdx.app.debug(TAG, troop.getCommand().toString());
 										layerOperation.clear();
 									}
@@ -167,7 +171,7 @@ public class TroopActor extends AnimatedImage {
 	
 	private Table troopTitle;
 	private int hpVisual; 
-	private Image troopState;
+	private Image actionLabel;
 	private Label hpVisualLabel;
 	private Skin skinTroopTitle= Assets.instance.assetSkin.skinTroopTitle;
 	
@@ -176,7 +180,7 @@ public class TroopActor extends AnimatedImage {
 	
 		this.troop = troop;
 		hpVisual=troop.getHp();
-		troopState = new Image(Assets.instance.assetTroop.actionUnDone);
+		actionLabel = new Image(Assets.instance.assetTroop.actionUnDone);
 		hpVisualLabel=new Label(String.valueOf(hpVisual), skinLibgdx);
 		setWidth(Constants.WANGGE_UNIT_WIDTH);
 		setHeight(Constants.WANGGE_UNIT_HEIGHT);
@@ -234,8 +238,11 @@ public class TroopActor extends AnimatedImage {
 	}
 
 	private Table buildTroopTitle() {
-		Table returnTable = new Table();
+		Table returnTable = new Table();	
 		returnTable.setLayoutEnabled(false);
+//		returnTable.setTransform(true);
+//		returnTable.setScaleX(0.8f);
+//		returnTable.setScaleY(0.6f);
 		Image back =new Image(Assets.instance.assetTroop.background);
 		back.setSize(120, 70);
 		back.setPosition(30, 0);
@@ -255,7 +262,7 @@ public class TroopActor extends AnimatedImage {
 		infoTable.add(portrait).width(50f).left();
 		Table hpTable = new Table();
 		hpTable.add(hpVisualLabel).width(50).left();
-		hpTable.add(troopState).width(14f);
+		hpTable.add(actionLabel).width(14f);
 		hpTable.row();
 		Label name = new Label("zhangfei",skinLibgdx);
 		hpTable.add(name).colspan(2).center();
@@ -269,7 +276,7 @@ public class TroopActor extends AnimatedImage {
 		shiqiTable.setLayoutEnabled(false);
 		shiqiTable.add(shiqicao);
 		shiqiTable.add(shiqitiao);
-		shiqicao.setAlign(Align.LEFT); 
+		shiqicao.setAlign(Align.left); 
 		shiqicao.setWidth(120f);
 		shiqitiao.setPosition(2f,2f);
 		shiqitiao.setWidth(50f);
@@ -320,17 +327,8 @@ public class TroopActor extends AnimatedImage {
 			//所有部队的动画都写在这里，不再用观察者模式了，没必要了。内容简单。
 			
 			setAnimation(RenderUtils.getTroopAnimationBy(currentStepAction.militaryKindId, currentStepAction.faceDirection, TROOP_ANIMATION_TYPE.ATTACK));
-			TileEffectActor effectActor = new TileEffectActor(currentStepAction.effects.get(currentStepAction.actionTroopId));
-			effectActor.setPosition(getX(), getY());
-			battleFieldAnimationStage.getLayerAnimation().add(effectActor);
-			Integer tempInt=currentStepAction.damageMap.get(currentStepAction.actionTroopId);
-			CombatNumberLabel damageLabel = new CombatNumberLabel(tempInt, true);
-			if(tempInt.equals(0)){
-				damageLabel.setVisible(false);
-			}
-			//add animation for damage hint
-			damageLabel.addAction(sequence(Actions.color(Color.RED),moveTo(getX()+50,getY()+50),parallel(Actions.moveBy(0f,50f,Constants.ONE_STEP_TIME,Interpolation.linear))));
-			battleFieldAnimationStage.getLayerAnimation().add(damageLabel);				
+			battleFieldAnimationStage.displayTileEffects(currentStepAction.effects);
+			battleFieldAnimationStage.displayCombatNumbers(currentStepAction.damageMap);
 			
 
 			TroopActor affectedTroopActor = null;
@@ -339,27 +337,28 @@ public class TroopActor extends AnimatedImage {
 				affectedTroopActor= battleFieldAnimationStage.getTroopActorByTroopId(i);
 				affectedTroopActor.setAnimation(RenderUtils.getTroopAnimationBy(affectedTroopActor.getTroop().getMilitaryKind().getId(), RenderUtils.getOppositeFaceDirection(currentStepAction.faceDirection), TROOP_ANIMATION_TYPE.BE_ATTACKED));
 				affectedTroopActors.add(affectedTroopActor);
-				effectActor=new TileEffectActor(currentStepAction.effects.get(i));
-				effectActor.setPosition(affectedTroopActor.getX(), affectedTroopActor.getY());
-				battleFieldAnimationStage.getLayerAnimation().add(effectActor);
-				damageLabel = new CombatNumberLabel(currentStepAction.damageMap.get(i), true);
-				damageLabel.addAction(sequence(Actions.color(Color.RED),moveTo(affectedTroopActor.getX()+50,affectedTroopActor.getY()+50),parallel(Actions.moveBy(0f,50f,Constants.ONE_STEP_TIME,Interpolation.linear))));
-				battleFieldAnimationStage.getLayerAnimation().add(damageLabel);
 			}
 			float x = RenderUtils.translate(currentStepAction.orginPosition.x);
 			float y = RenderUtils.translate(currentStepAction.orginPosition.y);
 			RunnableAction runAction = run(new Runnable() {
 				public void run() {
 					setAnimation(RenderUtils.getTroopAnimationBy(currentStepAction.militaryKindId, currentStepAction.faceDirection, TROOP_ANIMATION_TYPE.WALK));		
-					modifyHpVisual(currentStepAction.damageMap.get(currentStepAction.actionTroopId));
 					for(TroopActor trA:affectedTroopActors){
 						trA.setAnimation(RenderUtils.getTroopAnimationBy(trA.getTroop().getMilitaryKind().getId(), RenderUtils.getOppositeFaceDirection(currentStepAction.faceDirection), TROOP_ANIMATION_TYPE.WALK));
-					    trA.modifyHpVisual(currentStepAction.damageMap.get(trA.getTroop().getId()));
 					}
+					battleFieldAnimationStage.modifyTroopsHpVisual(currentStepAction.damageMap);
 					Zhsan2b.battleScreen.parseTroopsEffect(currentStepAction.effects);
 					//remove layerAnimation
 					battleFieldAnimationStage.getLayerAnimation().clear();
-					battleFieldAnimationStage.setPlanning(true);
+					if(currentStepAction.getNext()==null){
+						battleFieldAnimationStage.setPlanning(true);
+					}else{
+						battleFieldAnimationStage.setCurrentStepAction(currentStepAction.next);
+						TroopActor trA = battleFieldAnimationStage.getTroopActorByTroopId(currentStepAction.next.actionTroopId);
+						trA.parseStepAction(battleFieldAnimationStage);
+					}
+					
+
 				}
 			});			
 			addAction(sequence(moveTo(x, y),delay(Constants.ONE_STEP_TIME,runAction)));
@@ -392,6 +391,31 @@ public class TroopActor extends AnimatedImage {
 		}
 			break;
 		case NONE:
+		{
+			battleFieldAnimationStage.displayTileEffects(currentStepAction.effects);
+			
+			battleFieldAnimationStage.displayCombatNumbers(currentStepAction.damageMap);
+			
+
+
+			RunnableAction runAction = run(new Runnable() {
+				public void run() {
+					Zhsan2b.battleScreen.parseTroopsEffect(currentStepAction.effects);	
+					battleFieldAnimationStage.getLayerAnimation().clear();
+					if(currentStepAction.getNext()==null){
+						battleFieldAnimationStage.setPlanning(true);
+					}else{
+						battleFieldAnimationStage.setCurrentStepAction(currentStepAction.next);
+						TroopActor trA = battleFieldAnimationStage.getTroopActorByTroopId(currentStepAction.next.actionTroopId);
+						trA.parseStepAction(battleFieldAnimationStage);
+					}
+
+
+
+				}
+			});			
+			addAction(Actions.delay(Constants.ONE_STEP_TIME, runAction));
+		}
 			break;
 		default:
 			break;
@@ -415,6 +439,35 @@ public class TroopActor extends AnimatedImage {
 	public void act(float delta) {
 		position.set(getX(), getY());
 		super.act(delta);
+	}
+
+	public void hideActionLabel() {
+		actionLabel.setVisible(false);
+		
+	}
+
+	public void setActionLabel(ACTION_LABEL actionL) {
+		actionLabel.setVisible(true);
+		switch(actionL){
+		case AUTO:
+			((TextureRegionDrawable) actionLabel.getDrawable()).setRegion(Assets.instance.assetTroop.actionAuto);
+			break;
+		case AUTODONE:
+			((TextureRegionDrawable) actionLabel.getDrawable()).setRegion(Assets.instance.assetTroop.actionAutoDone);
+			break;
+		case DONE:
+			((TextureRegionDrawable) actionLabel.getDrawable()).setRegion(Assets.instance.assetTroop.actionDone);
+			setTouchable(Touchable.disabled);
+			break;
+		case UNDONE:
+			((TextureRegionDrawable) actionLabel.getDrawable()).setRegion(Assets.instance.assetTroop.actionUnDone);
+			setTouchable(Touchable.enabled);
+			break;
+		default:
+			break;
+		
+		}
+		
 	}
 
 }

@@ -25,7 +25,8 @@ public class StepAction {
 	public boolean isVisible;
 	public ArrayMap<Long, Integer> damageMap;
 	public ArrayMap<Long, TileEffect> effects;//用于各种效果,里面的效果都发生在同一个step周期内
-
+	public StepAction next=null;
+	
 	public StepAction(long actionTroopId) {
 		this(actionTroopId, ACTION_KIND.NONE, new Position(0, 0), new Position(0, 0),
 				FaceDirection.RIGHT, 0, new Array<Long>(), true,
@@ -54,7 +55,7 @@ public class StepAction {
 			Position objectPosition, FaceDirection faceDirection,
 			long militaryKindId, Array<Long> affectedTroopList,
 			boolean isVisible, ArrayMap<Long, Integer> damageMap,
-			ArrayMap<Long, TileEffect> effects) {
+			ArrayMap<Long, TileEffect> effects,StepAction next) {
 		this.actionTroopId = actionTroopId;
 		this.actionKind = actionKind;
 		this.objectPosition = objectPosition;
@@ -64,6 +65,15 @@ public class StepAction {
 		this.isVisible = isVisible;
 		this.damageMap = damageMap;
 		this.effects = effects;
+		this.next=next;
+	}
+
+	public StepAction getNext() {
+		return next;
+	}
+
+	public void setNext(StepAction next) {
+		this.next = next;
 	}
 
 	@Override

@@ -26,6 +26,8 @@ public class WorldController extends InputAdapter {
 	private boolean isDragPrepared = false;
 	private boolean isDragging = false;
 	private final BattleScreen battleScreen = Zhsan2b.battleScreen;
+	private final Vector2 tempCoords = new Vector2();
+	private final Position tempP = new Position(0,0);
 	
 	public WorldController(DirectedGame game,Stage stage) {
 		this.game =game;
@@ -117,7 +119,11 @@ public class WorldController extends InputAdapter {
      * @see com.badlogic.gdx.InputAdapter#mouseMoved(int, int)
      */
 	@Override
-	public boolean mouseMoved(int screenX, int screenY) {  
+	public boolean mouseMoved(int screenX, int screenY) {
+		tempCoords.set(stage.screenToStageCoordinates(tempCoords.set(screenX, screenY)));
+		RenderUtils.toLogicPosition(tempCoords.x, tempCoords.y, tempP);
+		battleScreen.getMousePositionLabel().setText("("+tempP.x+","+tempP.y+")");
+		battleScreen.getMousePositionLabel().setVisible(true);
 		return stage.mouseMoved(screenX, screenY);
 	}
 

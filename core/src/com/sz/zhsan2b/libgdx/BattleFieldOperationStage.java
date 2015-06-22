@@ -14,6 +14,7 @@ import com.sz.zhsan2b.core.PLAYER_TYPE;
 import com.sz.zhsan2b.core.Position;
 import com.sz.zhsan2b.core.Troop;
 import com.sz.zhsan2b.libgdx.ContextMenu.Executable;
+import com.sz.zhsan2b.libgdx.TroopActor.ACTION_LABEL;
 
 public class BattleFieldOperationStage {
 	public class OnBattleProceedClicked implements Executable {
@@ -21,7 +22,7 @@ public class BattleFieldOperationStage {
 		@Override
 		public void execute() {
 			layerOperation.clear();
-			transferToBattle();	
+			Zhsan2b.battleScreen.startBattle();
 		}
 
 	}	
@@ -53,14 +54,16 @@ public class BattleFieldOperationStage {
 		BattleProperties bp = new BattleProperties();
 		bp.ack = 20;
 		bp.def = 10;
-		bp.hp = 30;
+		bp.hp = 100;
 		bp.isXie = false;
-		bp.move = 15;
+		bp.move = 25;
 		bp.range = 1;
 		bp.speed = 20;
 		BattleProperties bp2= new BattleProperties(bp);
 		bp2.range=2;
+		bp2.isXie=true;
 		BattleProperties bp3= new BattleProperties(bp);
+		bp3.isXie=true;
 		
 		Command com1 = new Command(new Position(3, 4));
 		Command com2 = new Command(new Position(4, 6));
@@ -80,17 +83,15 @@ public class BattleFieldOperationStage {
 		tr2.setStepAttack(true);
 		tr2.setMultiObject(true);
 		com1.object=null;
-		com2.object=tr1;
+		com2.object=null;
 		com3.object=null;
-	}
-	public void transferToBattle() {
-		battleField.state=State.BATTLE;
-		Zhsan2b.battleScreen.startBattle();	
 	}
 
 
 	public void startOperate() {
-
+		for(TroopActor trA:Zhsan2b.battleScreen.getTroopActorList()){
+			trA.setActionLabel(ACTION_LABEL.UNDONE);
+		}
 		
 	}
 

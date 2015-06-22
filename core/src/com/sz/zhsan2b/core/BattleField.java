@@ -57,7 +57,7 @@ public class BattleField implements TroopEventHandler{
 				switch(curTr.getCommand().actionKind){
 				case ATTACK:
 					if(!curTr.attackObject()){
-						moveOneStepToAttack(curTr);
+						moveOneStepToAttack(curTr,true);
 					}
 					break;
 				case CAST:
@@ -65,7 +65,7 @@ public class BattleField implements TroopEventHandler{
 					
 					break;
 				case MOVE:
-					moveOneStepToAttack(curTr);
+					moveOneStepToAttack(curTr,false);
 					break;
 				case NONE:
 					curTr.setCommandComplete();
@@ -76,15 +76,9 @@ public class BattleField implements TroopEventHandler{
 		}
 	}
 
-	private void moveOneStepToAttack(Troop curTr) {
-		boolean tempB=curTr.moveToAttackPositionByOneStep();
-		if(tempB||curTr.isStepAttack()){
-			if(tempB&&curTr.isStepAttack()){
-				
-			}else{
+	private void moveOneStepToAttack(Troop curTr,boolean isAttackFirst) {
+		if(curTr.moveToAttackPositionByOneStep(isAttackFirst)){
 				curTr.oneRandomAttack();
-			}
-
 		}
 	}
 	
