@@ -23,7 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.sz.zhsan2b.core.BattleUtils;
-import com.sz.zhsan2b.core.Position;
+import com.sz.zhsan2b.core.entity.Position;
 
 public class Test {
 	private static Logger logger = LoggerFactory.getLogger(Test.class);
