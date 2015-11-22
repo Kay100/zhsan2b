@@ -1,4 +1,4 @@
-package com.sz.zhsan2b.core;
+package com.sz.zhsan2b.core.entity;
 
 public class MilitaryKind {
 	public MilitaryKind(long id) {

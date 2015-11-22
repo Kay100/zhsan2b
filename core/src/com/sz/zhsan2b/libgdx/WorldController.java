@@ -11,7 +11,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.sz.zhsan2b.core.Position;
+import com.sz.zhsan2b.core.entity.Position;
 import com.sz.zhsan2b.libgdx.BattleFieldOperationStage.OnBattleProceedClicked;
 import com.sz.zhsan2b.libgdx.ContextMenu.Executable;
 

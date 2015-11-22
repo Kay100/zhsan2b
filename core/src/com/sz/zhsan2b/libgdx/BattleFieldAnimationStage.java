@@ -8,6 +8,7 @@ import java.util.Iterator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -18,21 +19,22 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
 import com.badlogic.gdx.utils.ObjectMap.Entry;
-import com.sz.zhsan2b.core.BattleField;
-import com.sz.zhsan2b.core.BattleField.State;
-import com.sz.zhsan2b.core.StepAction.TileEffect;
-import com.sz.zhsan2b.core.StepAction;
-import com.sz.zhsan2b.core.StepActionHandler;
+import com.sz.zhsan2b.core.BattleFieldManager;
+import com.sz.zhsan2b.core.GameContext;
+import com.sz.zhsan2b.core.entity.StepAction;
+import com.sz.zhsan2b.core.entity.StepAction.TileEffect;
 
-public class BattleFieldAnimationStage implements StepActionHandler {
+public class BattleFieldAnimationStage {
 	private static Logger logger = LoggerFactory.getLogger(TroopActor.class);
-	private final Array<StepAction> stepActionList = new Array<StepAction>(100);
+	
 	private StepAction currentStepAction;
 	private final BattleScreen battleScreen;
 	private Iterator<StepAction> stepActionIter;
 	private boolean isPlanning;
 	private final Array<TroopActor> troopActorList;
 	private Table layerAnimation;
+	
+	private BattleFieldManager battleFieldManager;
 	
 	public BattleFieldAnimationStage(BattleScreen battleScreen) {
 		this.battleScreen= battleScreen;
@@ -41,18 +43,13 @@ public class BattleFieldAnimationStage implements StepActionHandler {
 		layerAnimation = new Table();
 		layerAnimation.setLayoutEnabled(false);
 		//layerAnimation.setTransform(false);
-
+		battleFieldManager=GameContext.getContext().getBean(BattleFieldManager.class);
 		
 	}
 	public void initStepActionIter(){
-		stepActionIter = stepActionList.iterator();
+		stepActionIter = battleScreen.getBattleField().getStepActionList().iterator();
 	}
 
-	@Override
-	public Array<StepAction> getStepActionList() {
-		
-		return stepActionList;
-	}
 	public StepAction getCurrentStepAction() {
 		return currentStepAction;
 	}
@@ -96,7 +93,7 @@ public class BattleFieldAnimationStage implements StepActionHandler {
 					ch.setTarget(object);
 				}
 
-				trA.parseStepAction(this);
+				trA.parseStepAction();
 			}else{
 				battleScreen.startOperate();
 			}
@@ -124,9 +121,9 @@ public class BattleFieldAnimationStage implements StepActionHandler {
 		return !stepActionIter.hasNext();
 	}
 	public void startBattle() {
-		stepActionList.clear();
+		battleScreen.getBattleField().clearStepActionList();
 		battleScreen.getBattleField().refresh();
-		battleScreen.getBattleField().calculateBattle();
+		battleFieldManager.calculateBattle();
 		for(TroopActor trA:battleScreen.getTroopActorList()){
 			trA.hideActionLabel();
 		}

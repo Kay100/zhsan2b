@@ -4,8 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.sz.zhsan2b.core.StepAction.TileEffect;
-import com.sz.zhsan2b.core.Troop;
+import com.sz.zhsan2b.core.entity.Troop;
+import com.sz.zhsan2b.core.entity.StepAction.TileEffect;
 import com.sz.zhsan2b.libgdx.TroopActor.TROOP_ANIMATION_TYPE;
 
 public class TileEffectActor extends AnimatedImage {

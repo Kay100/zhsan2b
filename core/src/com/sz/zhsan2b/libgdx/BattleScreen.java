@@ -21,11 +21,12 @@ import com.badlogic.gdx.utils.ObjectMap.Entry;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.sz.zhsan2b.core.BattleField;
-import com.sz.zhsan2b.core.StepAction;
-import com.sz.zhsan2b.core.Troop;
-import com.sz.zhsan2b.core.BattleField.State;
-import com.sz.zhsan2b.core.StepAction.TileEffect;
+import com.sz.zhsan2b.core.GameContext;
+import com.sz.zhsan2b.core.entity.BattleField;
+import com.sz.zhsan2b.core.entity.StepAction;
+import com.sz.zhsan2b.core.entity.Troop;
+import com.sz.zhsan2b.core.entity.BattleField.State;
+import com.sz.zhsan2b.core.entity.StepAction.TileEffect;
 import com.sz.zhsan2b.libgdx.ConfirmationDialog.Confirmable;
 import com.sz.zhsan2b.libgdx.ContextMenu.Executable;
 
@@ -42,7 +43,7 @@ public class BattleScreen extends AbstractGameScreen {
 	private Label mousePositionLabel;
 	
 	//game core(logic)
-	private final BattleField battleField = new BattleField();
+	private final BattleField battleField = GameContext.getBattleField();
 
 
 	private boolean isBattleStart=true;
@@ -65,9 +66,8 @@ public class BattleScreen extends AbstractGameScreen {
 
 	public BattleScreen(DirectedGame game) {
 		super(game);
-		battleFieldOperationStage = new BattleFieldOperationStage(battleField);
+		battleFieldOperationStage = new BattleFieldOperationStage();
 		battleFieldAnimationStage = new BattleFieldAnimationStage(this);
-		battleField.setStepActionHandler(battleFieldAnimationStage);
 	}
 	public BattleField getBattleField() {
 		return battleField;
@@ -108,6 +108,9 @@ public class BattleScreen extends AbstractGameScreen {
 	}
 	public BattleFieldOperationStage getBattleFieldOperationStage() {
 		return battleFieldOperationStage;
+	}
+	public BattleFieldAnimationStage getBattleFieldAnimationStage() {
+		return battleFieldAnimationStage;
 	}
 	@Override
 	public InputProcessor getInputProcessor() {
@@ -333,7 +336,7 @@ public class BattleScreen extends AbstractGameScreen {
 	}
 	public void deleteTroopActor(TroopActor destroyedTroop) {
 		destroyedTroop.getTroopTitle().remove();
-		Zhsan2b.battleScreen.getTroopActorList().removeValue(destroyedTroop, true);
+		getTroopActorList().removeValue(destroyedTroop, true);
 		destroyedTroop.remove();
 		
 	}

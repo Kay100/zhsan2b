@@ -1,10 +1,12 @@
 package com.sz.zhsan2b.libgdx;
 
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.math.Vector2;
-import com.sz.zhsan2b.core.Position;
-import com.sz.zhsan2b.core.StepAction.FaceDirection;
-import com.sz.zhsan2b.core.StepAction.TileEffect;
+import com.sz.zhsan2b.core.entity.Position;
+import com.sz.zhsan2b.core.entity.StepAction.FaceDirection;
+import com.sz.zhsan2b.core.entity.StepAction.TileEffect;
 import com.sz.zhsan2b.libgdx.TroopActor.TROOP_ANIMATION_TYPE;
 
 public class RenderUtils {
@@ -108,6 +110,14 @@ public class RenderUtils {
 		
 		}
 		return returnFD;
+	}
+	
+	public static Pixmap getRedBlockPixmap(){
+		Pixmap pixmap = new Pixmap(100, 100, Format.RGBA8888);
+		// Fill square with red color at 50% opacity
+		pixmap.setColor(1, 0, 0, 0.5f);
+		pixmap.fill();
+		return pixmap;
 	}
 
 }

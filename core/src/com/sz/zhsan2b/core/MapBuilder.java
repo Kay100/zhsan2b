@@ -11,6 +11,8 @@ import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.AbstractEdge;
 import org.graphstream.graph.implementations.DefaultGraph;
 
+import com.sz.zhsan2b.core.entity.MilitaryKind;
+
 
 
 public class MapBuilder {
@@ -29,6 +31,7 @@ public class MapBuilder {
  				int tempId = y*MAX_ROWS+x;
  				graph.addNode(String.valueOf(tempId));
  				graph.getNode(String.valueOf(tempId)).addAttribute("xy", x,y);
+ 				graph.getNode(String.valueOf(tempId)).addAttribute("weight", new MilitaryKind(militaryKindId).getDefaultMoveWeight());
  				notes.add(String.valueOf(tempId));
  				
  			}
@@ -58,14 +61,7 @@ public class MapBuilder {
  			
  			
  		}
- 		// add edge weight to graph
- 		for(Iterator<AbstractEdge> iter=graph.getEdgeIterator();iter.hasNext();){
- 			         Edge edge = (Edge)iter.next();
-					edge.addAttribute("weight", new MilitaryKind(militaryKindId).getDefaultMoveWeight());
-					
- 			         
- 		}
- 		
+ 		graph.getNode("32").setAttribute("weight", 10);
  		map.setGraph(graph);
 
 		return map;

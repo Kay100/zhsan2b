@@ -4,7 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.badlogic.gdx.utils.Array;
-import com.sz.zhsan2b.core.StepAction.FaceDirection;
+import com.sz.zhsan2b.core.entity.Position;
+import com.sz.zhsan2b.core.entity.Troop;
+import com.sz.zhsan2b.core.entity.StepAction.FaceDirection;
 
 public class BattleUtils {
 	private static Logger logger = LoggerFactory.getLogger(BattleUtils.class);
@@ -14,24 +16,22 @@ public class BattleUtils {
 	 */
 	public static int calculateDamage(Troop victim, Troop generate) {
 		// 先简单模拟一下最简单的计算公式
-		return generate.getCurrentProperties().ack
-				- victim.getCurrentProperties().def;
+		return generate.getBattleProperties().ack
+				- victim.getBattleProperties().def;
 	}
 
 	public static boolean isObjectInAttackRange(Troop object, Troop orgin) {
 
 		return isObjectInAttackRange(object.getPosition(), orgin.getPosition(),
-				orgin.getCurrentProperties().range,
-				orgin.getCurrentProperties().isXie);
+				orgin.getBattleProperties().range,
+				orgin.getBattleProperties().isXie);
 	}
 
 	public static boolean isObjectInAttackRange(Position object,
 			Position origin, int range, boolean isXie) {
 		Array<Position> rangeList = getAttackRangeList(origin, range, isXie);
 		// 返回是否在队列中
-		//logger.debug("object is:"+"["+object.x+","+object.y+"]");
 		boolean returnBool= contains(rangeList, object);
-		//logger.debug(String.valueOf(returnBool));
 		return returnBool;
 
 	}
@@ -88,8 +88,12 @@ public class BattleUtils {
 		return rangeList;
 	}
 
-	private static boolean contains(Array<Position> rangeList, Position object) {
+	public static boolean contains(Array<Position> rangeList, Position object) {
 		boolean isContain = false;
+		if(rangeList==null||object==null){ return isContain;}
+		else if(rangeList.size==0){
+			return isContain;
+		}
 		for (Position p : rangeList) {
 			if (p.compareTo(object) == 0) {
 				isContain = true;
@@ -99,7 +103,7 @@ public class BattleUtils {
 		return isContain;
 	}
 
-	private static boolean isOutOfBound(int i, int min, int max) {
+	public static boolean isOutOfBound(int i, int min, int max) {
 		if (i < min || i > max)
 			return true;
 		else
@@ -134,6 +138,11 @@ public class BattleUtils {
 				curFaceDi = FaceDirection.RIGHT;
 		}
 		return curFaceDi;
+	}
+	//already consider the border problem.
+	public static Array<Position> getEightDirectionPosition(Position orgin) {
+		
+		return getAttackRangeList(orgin, 1, true);
 	}
 
 }

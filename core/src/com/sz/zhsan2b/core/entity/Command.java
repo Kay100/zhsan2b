@@ -1,4 +1,5 @@
-package com.sz.zhsan2b.core;
+package com.sz.zhsan2b.core.entity;
+
 
 public class Command {
 	public enum ACTION_KIND {
@@ -9,7 +10,7 @@ public class Command {
 	public long zhanfaId;
 	public Troop object;
     public Position objectPosition;
-    boolean isCompeted;
+    public boolean isCompeted;
     //position must be needed. 默认构造函数被重载，不能使用
 	public Command(Position objectPosition) {
 		this(ACTION_KIND.MOVE,0,null,objectPosition);
