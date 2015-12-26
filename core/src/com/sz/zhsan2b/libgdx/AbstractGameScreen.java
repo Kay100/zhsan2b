@@ -23,7 +23,7 @@ public abstract class AbstractGameScreen implements Screen {
 	public abstract void pause();
 	
 	public abstract InputProcessor getInputProcessor ();
-
+	//desktop 程序这个是无用的 ，留空。
 	public void resume() {
 		//Assets.instance.init(new AssetManager());
 	}

@@ -1,5 +1,7 @@
 package com.sz.zhsan2b.core.entity;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
 import com.badlogic.gdx.utils.ObjectMap.Entry;
@@ -30,7 +32,7 @@ public class StepAction {
 
 	@Override
 	public String toString() {
-		String effectsString="{";
+/*		String effectsString="{";
 		for(Entry<Long,TileEffect> entry:effects){
 			effectsString+="["+entry.key+","+entry.value+"]";
 		}
@@ -42,7 +44,8 @@ public class StepAction {
 				+ faceDirection + ", militaryKindId=" + militaryKindId
 				+ ", affectedTroopList=" + affectedTroopList + ", isVisible="
 				+ isVisible + ", damageMap=" + damageMap + ", effects="
-				+ effectsString + "]";
+				+ effectsString + "]";*/
+		return ToStringBuilder.reflectionToString(this);
 	}	
 	
 

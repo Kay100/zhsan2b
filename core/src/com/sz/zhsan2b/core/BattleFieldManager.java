@@ -31,7 +31,7 @@ public class BattleFieldManager {
 	public void init() {
 
 		//test,暂时是battle状态
-		battleField.state=State.BATTLE;
+		battleField.state=State.OPERATE;
 		battleField.loadMaps();	
 		
 	}

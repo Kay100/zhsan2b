@@ -6,11 +6,8 @@ import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.math.Interpolation;
+
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
@@ -18,19 +15,22 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
 import com.badlogic.gdx.utils.ObjectMap.Entry;
-import com.badlogic.gdx.utils.viewport.ExtendViewport;
+
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
+
 import com.sz.zhsan2b.core.GameContext;
 import com.sz.zhsan2b.core.entity.BattleField;
-import com.sz.zhsan2b.core.entity.StepAction;
 import com.sz.zhsan2b.core.entity.Troop;
 import com.sz.zhsan2b.core.entity.BattleField.State;
 import com.sz.zhsan2b.core.entity.StepAction.TileEffect;
-import com.sz.zhsan2b.libgdx.ConfirmationDialog.Confirmable;
-import com.sz.zhsan2b.libgdx.ContextMenu.Executable;
+import com.uwsoft.editor.renderer.SceneLoader;
+import com.uwsoft.editor.renderer.resources.ResourceManager;
 
 public class BattleScreen extends AbstractGameScreen {	
+	
+	//overlap2d
+	private ResourceManager resourceManager;
+	
 	private static final String TAG = BattleScreen.class.getName();
 	private WorldController worldController;
 	private WorldRenderer worldRenderer;
@@ -39,7 +39,6 @@ public class BattleScreen extends AbstractGameScreen {
 	private Stage uiStage;
 	private Skin skinLibgdx = Assets.instance.assetSkin.skinLibgdx;
 	private Skin skinCanyonBunny= Assets.instance.assetSkin.skinCanyonBunny;
-	private Image imgBackground;
 	private Label mousePositionLabel;
 	
 	//game core(logic)
@@ -62,7 +61,9 @@ public class BattleScreen extends AbstractGameScreen {
 	// debug
 	private final float DEBUG_REBUILD_INTERVAL = 20f;
 	private boolean debugEnabled = false;
-	private float debugRebuildStage;	
+	private float debugRebuildStage;
+
+	private SceneLoader menuLoader;	
 
 	public BattleScreen(DirectedGame game) {
 		super(game);
@@ -146,7 +147,15 @@ public class BattleScreen extends AbstractGameScreen {
 		mousePositionLabel.setVisible(false);
 		uiStage.addActor(mousePositionLabel);
 		uiStage.addActor(battleFieldOperationStage.getNotification());
-
+		//scene load
+		// Initializing iScript MenuSceneScript that will be holding all menu logic, and passing this stage for later use
+		MenuScreenScript menuScript = new MenuScreenScript(stage,menuLoader);
+		
+		// adding this script to the root scene of menu which is hold in menuLoader.sceneActor
+		menuLoader.sceneActor.addScript(menuScript);
+		//battleFieldOperationStage.getLayerOperation().add(menuLoader.sceneActor);	
+		
+		synchronizeTroopLayer();
 		
 	}
 
@@ -189,16 +198,6 @@ public class BattleScreen extends AbstractGameScreen {
 		}
 		
 	}
-
-	private Table buildBackgroundLayer() {
-		Table layer = new Table();
-		// + Background
-		//imgBackground = new Image(Assets.instance.background.back.getTexture());
-		imgBackground = new Image(skinCanyonBunny, "background");
-		//System.out.println(Assets.instance.background.back.getRegionWidth());
-		layer.add(imgBackground);
-		return layer;
-	}	
 	@Override
 	public void render(float deltaTime) {
 		if (debugEnabled) {
@@ -287,6 +286,18 @@ public class BattleScreen extends AbstractGameScreen {
 
 	@Override
 	public void show() {
+		// Initializing asset manager
+        resourceManager = new ResourceManager();
+		
+		// loading assets into memory
+        resourceManager.initAllResources();
+		menuLoader = new SceneLoader(resourceManager);
+		
+		// loading MenuScene.dt from assets folder
+		menuLoader.loadScene("MenuScene");
+		
+		
+		
 		GamePreferences.instance.load();
 		//Viewport vp = new ExtendViewport(Constants.WORLD_HEIGHT,Constants.WORLD_WIDTH);
 		//ScreenViewport 操作的是世界坐标，像素和米的比例关系
@@ -296,9 +307,6 @@ public class BattleScreen extends AbstractGameScreen {
 		//vp.setUnitsPerPixel(Constants.UNITSPERPIXEL);	
 		worldController = new WorldController(game,stage);
 		worldRenderer = new WorldRenderer(worldController);
-		
-		
-		
 		Gdx.input.setCatchBackKey(true);
 
 
@@ -310,7 +318,10 @@ public class BattleScreen extends AbstractGameScreen {
 			uiStage.setDebugAll(true);
 		}
 
-		rebuildStage();		
+		rebuildStage();
+		
+	
+
 	}
 
 	@Override

@@ -1,7 +1,7 @@
 package com.sz.zhsan2b.libgdx;
 import java.util.Arrays;
 
-
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 
 import org.springframework.context.ApplicationContext;
@@ -9,6 +9,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
 import org.springframework.context.annotation.ImportResource;
+
+import ch.qos.logback.classic.Logger;
 
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
@@ -19,7 +21,10 @@ import com.sz.zhsan2b.core.GameContext;
 @ComponentScan(basePackages="com.sz.zhsan2b")
 @ImportResource("classpath:/com/sz/zhsan2b/applicationContext.xml") 
 public class Zhsan2b extends DirectedGame {
+	
 	public  static  BattleScreen battleScreen;
+	//set 
+	public final ch.qos.logback.classic.Level logLevel = ch.qos.logback.classic.Level.INFO;
 	@Override
 	public void create() {
 		// Set Libgdx log level
@@ -29,6 +34,7 @@ public class Zhsan2b extends DirectedGame {
 		Profiles.setProfileAsSystemProperty(Profiles.UNIT_TEST);
 		//System.setProperty("spring.config.location", "classpath:/com/sz/zhsan2b/application.properties");
 		ApplicationContext ctx = SpringApplication.run(Zhsan2b.class);
+		((Logger)LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME)).setLevel(logLevel);
 		GameContext.setContext(ctx);
 //		if(ctx.getEnvironment().containsProperty("jdbc.url")){
 //			System.out.println("have environment!!!");
