@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.sz.zhsan2b.core.BattleUtils;
+import com.sz.zhsan2b.core.entity.Command.ACTION_KIND;
 import com.sz.zhsan2b.core.entity.Position;
 
 public class Test {
@@ -42,6 +43,11 @@ public class Test {
 
          //copyFiles();
 		 //testObjectInAttackRange();
+		//disposeImage();
+		testEnum();
+		
+	}
+	private static void disposeImage() {
 		File srcDir = new File("C:\\Users\\Administrator\\git\\zhsan2b\\core\\assets\\assets-raw\\MouseArrow");
 		File desDir = new File("C:\\Users\\Administrator\\git\\zhsan2b\\core\\assets\\assets-raw\\MouseArrowAlpha");
 		File[] files = srcDir.listFiles();
@@ -52,8 +58,6 @@ public class Test {
 			File curFile = files[i];
 			transferAlpha(curFile, new File(desDir,curFile.getName()));
 		}
- 
-		
 	}
 	private static void testObjectInAttackRange() {
 		Position object = new Position(2, 2);
@@ -70,7 +74,6 @@ public class Test {
  
         		 File a = new File("E:\\zhsan2b\\core\\assets\\assets-raw\\map\\kure_2.0\\"+String.valueOf(y*30+x)+".jpg");
         		 File b = new File("E:\\zhsan2b\\core\\assets\\assets-raw\\map\\kure_3.0\\"+String.valueOf((9-(y-10))*10+x-10)+".jpg");
-
         		 try {
 					copyFileUsingApacheCommonsIO(a, b);
 				} catch (IOException e) {
@@ -162,5 +165,9 @@ public class Test {
         return bimage;
     }	
 
+    public static void testEnum(){
+    	ACTION_KIND temp = ACTION_KIND.valueOf("NONE");
+    	System.out.println(temp);		
+    }
 }
 

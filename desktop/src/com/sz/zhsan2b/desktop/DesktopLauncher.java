@@ -15,7 +15,7 @@ public class DesktopLauncher {
 	}	
 
 	public static void main(String[] arg) {
-		setLoggingLevel(ch.qos.logback.classic.Level.DEBUG);
+		//setLoggingLevel(ch.qos.logback.classic.Level.DEBUG);
 		if (rebuildAtlas) {
 			Settings settings = new Settings();
 			settings.maxWidth = 1024*2;
