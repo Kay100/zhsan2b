@@ -1,0 +1,90 @@
+
+pack.png
+size: 1024,256
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+busy
+  rotate: false
+  xy: 476, 70
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+checked
+  rotate: false
+  xy: 374, 22
+  size: 14, 14
+  orig: 14, 14
+  offset: 0, 0
+  index: -1
+grey
+  rotate: false
+  xy: 2, 2
+  size: 20, 16
+  orig: 20, 16
+  offset: 0, 0
+  index: -1
+home
+  rotate: false
+  xy: 374, 92
+  size: 307, 160
+  orig: 307, 160
+  offset: 0, 0
+  index: -1
+messageDialog
+  rotate: false
+  xy: 2, 122
+  size: 370, 130
+  orig: 370, 130
+  offset: 0, 0
+  index: -1
+u15
+  rotate: false
+  xy: 683, 214
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+u17
+  rotate: false
+  xy: 766, 236
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+u7
+  rotate: false
+  xy: 683, 232
+  size: 81, 20
+  orig: 81, 20
+  offset: 0, 0
+  index: -1
+u9
+  rotate: false
+  xy: 374, 38
+  size: 81, 20
+  orig: 81, 20
+  offset: 0, 0
+  index: -1
+unchecked
+  rotate: false
+  xy: 457, 44
+  size: 14, 14
+  orig: 14, 14
+  offset: 0, 0
+  index: -1
+waitforaplayer
+  rotate: false
+  xy: 2, 20
+  size: 370, 100
+  orig: 370, 100
+  offset: 0, 0
+  index: -1
+white
+  rotate: false
+  xy: 374, 60
+  size: 100, 30
+  orig: 100, 30
+  offset: 0, 0
+  index: -1
