@@ -6,6 +6,8 @@ import static com.badlogic.gdx.scenes.scene2d.actions.Actions.moveTo;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.run;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.parallel;
+
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +40,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap.Entry;
+import com.sz.zhsan2b.appwarp.WarpController;
 import com.sz.zhsan2b.core.GameContext;
 import com.sz.zhsan2b.core.PLAYER_TYPE;
 import com.sz.zhsan2b.core.TroopManager;
@@ -66,7 +69,7 @@ public class TroopActor extends AnimatedImage {
 
 	public static final String TAG = TroopActor.class.getName();
 	private static Logger logger = LoggerFactory.getLogger(TroopActor.class);
-	
+	BattleScreen battleScreen = Zhsan2b.battleScreen;
 	private TroopManager troopManager;
 	
 	private final Vector2 tempCoords = new Vector2();
@@ -76,12 +79,9 @@ public class TroopActor extends AnimatedImage {
 	private boolean isDestoryed;
 	private Skin skinLibgdx = Assets.instance.assetSkin.skinLibgdx;
 	//for integration
-	private Vector2 position = new Vector2();
-	private BattleFieldOperationStage battleFieldOperationStage =Zhsan2b.battleScreen.getBattleFieldOperationStage();
-	private BattleFieldAnimationStage battleFieldAnimationStage =Zhsan2b.battleScreen.getBattleFieldAnimationStage();
-	
-	private Table layerOperation = battleFieldOperationStage.getLayerOperation();
-	private Table layerAnimation = battleFieldAnimationStage.getLayerAnimation();
+	private Vector2 position = new Vector2();	
+	private Table layerOperation = battleScreen.getLayerOperation();
+	private Table layerAnimation = battleScreen.getLayerAnimation();
 	private Stage stage = Zhsan2b.battleScreen.getStage();
 	//troop range
 	private Table troopAttackRange;
@@ -136,9 +136,11 @@ public class TroopActor extends AnimatedImage {
 
 									@Override
 									public void confirm() {
+										Troop object = troopManager.getBattleField().getTroopByPosition(
+												xuanzePosition);
 
-										disposeToAddCommand(xuanzePosition);
-
+										disposeToAddCommand(object,xuanzePosition);
+										synchronizeTroopCommand(troop);
 										setActionLabel(ACTION_LABEL.DONE);
 										//Gdx.app.debug(TAG, troop.getCommand().toString());
 										layerOperation.clear();
@@ -173,7 +175,7 @@ public class TroopActor extends AnimatedImage {
 		abstract protected boolean isDisplayRange() ;
 		abstract protected void displayRangeArea();
 		abstract protected boolean isSelectedRightPosition(final Position xuanzePosition);
-		abstract protected void disposeToAddCommand(final Position xuanzePosition);
+		abstract protected void disposeToAddCommand(final Troop object,final Position xuanzePosition);
 
 	}	
 
@@ -193,9 +195,8 @@ public class TroopActor extends AnimatedImage {
 		}
 
 		@Override
-		protected void disposeToAddCommand(final Position xuanzePosition) {
-			final Troop object = troopManager.getBattleField().getTroopByPosition(
-					xuanzePosition);
+		protected void disposeToAddCommand(final Troop object,final Position xuanzePosition) {
+
 			troop.getCommand().actionKind = ACTION_KIND.MOVE;
 			troop.getCommand().zhanfaId = 0;
 			if (object == null) {
@@ -205,6 +206,8 @@ public class TroopActor extends AnimatedImage {
 				troop.getCommand().object = object;
 			}
 		}
+
+
 
 		@Override
 		protected boolean isSelectedRightPosition(Position xuanzePosition) {
@@ -217,16 +220,14 @@ public class TroopActor extends AnimatedImage {
 		protected boolean isSelectedRightPosition(final Position xuanzePosition) {
 			final Troop object = troopManager.getBattleField().getTroopByPosition(xuanzePosition);	
 			if(object!=null&&object.getOwner()==troop.getOwner()){
-				battleFieldOperationStage.displayNotification("could not select troop of yourself!");
+				Zhsan2b.battleScreen.displayNotification("不能选择己方部队!");
 				return false;
 			}else{
 				return true;
 			}	
 		}		
 		@Override
-		public void disposeToAddCommand(final Position xuanzePosition) {
-			final Troop object = troopManager.getBattleField().getTroopByPosition(
-					xuanzePosition);
+		public void disposeToAddCommand(final Troop object,final Position xuanzePosition) {
 			troop.getCommand().actionKind = ACTION_KIND.ATTACK;
 			troop.getCommand().zhanfaId = 0;
 			if (object == null) {
@@ -252,7 +253,10 @@ public class TroopActor extends AnimatedImage {
 
 	}	
 
-
+	private void synchronizeTroopCommand(Troop troop) {
+		String data = troopManager.buildTroopCommandJSON(troop);
+		WarpController.getInstance().sendGameUpdate(data);
+	}
 	
 
 	public TroopActor(Troop troop) {
@@ -310,7 +314,10 @@ public class TroopActor extends AnimatedImage {
 	}
 
 	protected void onTroopClicked() {
-	
+		if(GameContext.getCurrentUser().getPlayerType()!=troop.getOwner()){
+			logger.debug(GameContext.getCurrentUser().getPlayerType().toString()+":"+troop.getOwner());
+			return;
+		}
 
 		if(troopManager.getBattleField().state==State.OPERATE){
 			layerOperation.clear();
@@ -412,21 +419,21 @@ public class TroopActor extends AnimatedImage {
 	}
 
 	public void parseStepAction() {
-		final StepAction currentStepAction = battleFieldAnimationStage.getCurrentStepAction();
+		final StepAction currentStepAction = battleScreen.getCurrentStepAction();
 		switch(currentStepAction.actionKind){
 		case ATTACK:
 		{
 			//所有部队的动画都写在这里，不再用观察者模式了，没必要。内容很简单。
 			
 			setAnimation(RenderUtils.getTroopAnimationBy(currentStepAction.militaryKindId, currentStepAction.faceDirection, TROOP_ANIMATION_TYPE.ATTACK));
-			battleFieldAnimationStage.displayTileEffects(currentStepAction.effects);
-			battleFieldAnimationStage.displayCombatNumbers(currentStepAction.damageMap);
+			battleScreen.displayTileEffects(currentStepAction.effects);
+			battleScreen.displayCombatNumbers(currentStepAction.damageMap);
 			
 
 			TroopActor affectedTroopActor = null;
 			final Array<TroopActor> affectedTroopActors = new Array<TroopActor>(currentStepAction.affectedTroopList.size);
 			for(long i:currentStepAction.affectedTroopList){
-				affectedTroopActor= battleFieldAnimationStage.getTroopActorByTroopId(i);
+				affectedTroopActor= battleScreen.getTroopActorByTroopId(i);
 				affectedTroopActor.setAnimation(RenderUtils.getTroopAnimationBy(affectedTroopActor.getTroop().getMilitaryKind().getId(), RenderUtils.getOppositeFaceDirection(currentStepAction.faceDirection), TROOP_ANIMATION_TYPE.BE_ATTACKED));
 				affectedTroopActors.add(affectedTroopActor);
 			}
@@ -448,15 +455,15 @@ public class TroopActor extends AnimatedImage {
 					for(TroopActor trA:affectedTroopActors){
 						trA.setAnimation(RenderUtils.getTroopAnimationBy(trA.getTroop().getMilitaryKind().getId(), RenderUtils.getOppositeFaceDirection(currentStepAction.faceDirection), TROOP_ANIMATION_TYPE.WALK));
 					}
-					battleFieldAnimationStage.modifyTroopsHpVisual(currentStepAction.damageMap);
+					battleScreen.modifyTroopsHpVisual(currentStepAction.damageMap);
 					Zhsan2b.battleScreen.parseTroopsEffect(currentStepAction.effects);
 					//remove layerAnimation
-					battleFieldAnimationStage.getLayerAnimation().clear();
+					battleScreen.getLayerAnimation().clear();
 					if(currentStepAction.next==null){
-						battleFieldAnimationStage.setPlanning(true);
+						battleScreen.setPlanning(true);
 					}else{
-						battleFieldAnimationStage.setCurrentStepAction(currentStepAction.next);
-						TroopActor trA = battleFieldAnimationStage.getTroopActorByTroopId(currentStepAction.next.actionTroopId);
+						battleScreen.setCurrentStepAction(currentStepAction.next);
+						TroopActor trA = battleScreen.getTroopActorByTroopId(currentStepAction.next.actionTroopId);
 						trA.parseStepAction();
 					}
 					
@@ -478,7 +485,7 @@ public class TroopActor extends AnimatedImage {
 			RunnableAction runAction = run(new Runnable() {
 				public void run() {
 	
-						battleFieldAnimationStage.setPlanning(true);
+					battleScreen.setPlanning(true);
 
 
 				}
@@ -494,21 +501,21 @@ public class TroopActor extends AnimatedImage {
 			break;
 		case NONE:
 		{
-			battleFieldAnimationStage.displayTileEffects(currentStepAction.effects);
+			battleScreen.displayTileEffects(currentStepAction.effects);
 			
-			battleFieldAnimationStage.displayCombatNumbers(currentStepAction.damageMap);
+			battleScreen.displayCombatNumbers(currentStepAction.damageMap);
 			
 
 
 			RunnableAction runAction = run(new Runnable() {
 				public void run() {
-					Zhsan2b.battleScreen.parseTroopsEffect(currentStepAction.effects);	
-					battleFieldAnimationStage.getLayerAnimation().clear();
+					battleScreen.parseTroopsEffect(currentStepAction.effects);	
+					battleScreen.getLayerAnimation().clear();
 					if(currentStepAction.next==null){
-						battleFieldAnimationStage.setPlanning(true);
+						battleScreen.setPlanning(true);
 					}else{
-						battleFieldAnimationStage.setCurrentStepAction(currentStepAction.next);
-						TroopActor trA = battleFieldAnimationStage.getTroopActorByTroopId(currentStepAction.next.actionTroopId);
+						battleScreen.setCurrentStepAction(currentStepAction.next);
+						TroopActor trA = battleScreen.getTroopActorByTroopId(currentStepAction.next.actionTroopId);
 						trA.parseStepAction();
 					}
 

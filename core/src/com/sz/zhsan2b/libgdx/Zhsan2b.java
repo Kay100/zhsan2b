@@ -15,8 +15,13 @@ import ch.qos.logback.classic.Logger;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import com.esotericsoftware.kryo.Kryo;
 import com.sz.zhsan2b.Profiles;
+import com.sz.zhsan2b.appwarp.WarpController;
 import com.sz.zhsan2b.core.GameContext;
+import com.sz.zhsan2b.core.entity.Command;
+import com.sz.zhsan2b.core.entity.StepAction;
+import com.sz.zhsan2b.core.entity.Troop;
 
 @ComponentScan(basePackages="com.sz.zhsan2b")
 @ImportResource("classpath:/com/sz/zhsan2b/applicationContext.xml") 
@@ -24,7 +29,7 @@ public class Zhsan2b extends DirectedGame {
 	
 	public  static  BattleScreen battleScreen;
 	//set 
-	public final ch.qos.logback.classic.Level logLevel = ch.qos.logback.classic.Level.INFO;
+	public final ch.qos.logback.classic.Level logLevel = ch.qos.logback.classic.Level.DEBUG;
 	@Override
 	public void create() {
 		// Set Libgdx log level
@@ -53,6 +58,16 @@ public class Zhsan2b extends DirectedGame {
 		// Start game at menu screen
 		battleScreen=new BattleScreen(this);
 		setScreen(battleScreen);
+		WarpController.getInstance().setListener(battleScreen);		
+		//kyro
+		initKyroRegister();
+		
+	}
+	private void initKyroRegister() {
+		Kryo kryo = GameContext.getContext().getBean(Kryo.class);
+		kryo.register(Command.class);
+		kryo.register(Troop.class);
+		kryo.register(StepAction.class);
 		
 	}
 }

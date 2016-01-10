@@ -20,7 +20,7 @@ public class NotificationListener implements NotifyListener{
 	}
 	
 	public void onChatReceived(ChatEvent event) {
-		
+		callBack.onGameUpdateReceived(event.getMessage());
 	}
 
 	public void onRoomCreated(RoomData arg0) {
@@ -32,7 +32,8 @@ public class NotificationListener implements NotifyListener{
 	}
 
 	public void onUpdatePeersReceived(UpdateEvent event) {
-		callBack.onGameUpdateReceived(new String(event.getUpdate()));
+		//callBack.onGameUpdateReceived(new String(event.getUpdate()));
+		callBack.onGameStateDataReceived(event.getUpdate());
 	}
 
 	public void onUserJoinedLobby(LobbyData arg0, String arg1) {
@@ -74,7 +75,11 @@ public class NotificationListener implements NotifyListener{
 	@Override
 	public void onUserChangeRoomProperty (RoomData roomData, String userName, HashMap<String, Object> properties, HashMap<String, String> lockProperties) {
 		int code = Integer.parseInt(properties.get("result").toString());
-		callBack.onResultUpdateReceived(userName, code);
+		if(code==WarpController.ONE_PLAYER_DONE){
+			callBack.onFirstDoneReceived(userName,code);
+		}else{
+			callBack.onResultUpdateReceived(userName, code);
+		}
 	}
 
 	@Override

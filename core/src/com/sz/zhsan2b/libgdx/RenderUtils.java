@@ -1,5 +1,7 @@
 package com.sz.zhsan2b.libgdx;
 
+import java.util.Random;
+
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -119,5 +121,13 @@ public class RenderUtils {
 		pixmap.fill();
 		return pixmap;
 	}
+	public static  String getRandomHexString(int numchars){
+	      Random r = new Random();
+	      StringBuffer sb = new StringBuffer();
+	      while(sb.length() < numchars){
+	          sb.append(Integer.toHexString(r.nextInt()));
+	      }
+	      return sb.toString().substring(0, numchars);
+	  }	
 
 }

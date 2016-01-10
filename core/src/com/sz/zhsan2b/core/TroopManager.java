@@ -1,5 +1,6 @@
 package com.sz.zhsan2b.core;
 
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -10,6 +11,7 @@ import com.sz.zhsan2b.core.entity.DamageRange;
 import com.sz.zhsan2b.core.entity.Position;
 import com.sz.zhsan2b.core.entity.StepAction;
 import com.sz.zhsan2b.core.entity.Troop;
+import com.sz.zhsan2b.core.entity.BattleField.SYN_TYPE;
 import com.sz.zhsan2b.core.entity.Command.ACTION_KIND;
 import com.sz.zhsan2b.core.entity.StepAction.TileEffect;
 import com.sz.zhsan2b.core.entity.Troop.BATTLE_STATE;
@@ -262,6 +264,23 @@ public class TroopManager {
 		Map map = battleField.getMapByMilitaryKindId(tr.getMilitaryKind().getId());
 		return map.calculateMoveRangeList(orgin, moveLong, unMovablePositions);
 	}
+	
+	public void refresh(){
+		//refresh troop for new battle
+		for(Troop tr:battleField.getTroopList()){
+			tr.refresh();
+		}		
+	}
+	public void deleteDestroyedTroops() {
+		Troop curTr = null;
+		for(int size=battleField.getTroopList().size,i=size-1;i>=0;i--){
+			curTr=battleField.getTroopList().get(i);
+			if(curTr.getBattleState()==BATTLE_STATE.IS_DESTROY){
+				battleField.getTroopList().removeValue(curTr, true);
+			}
+		}
+		
+	}	
 
 	public BattleField getBattleField() {
 		return battleField;
@@ -269,5 +288,43 @@ public class TroopManager {
 
 	public void setBattleField(BattleField battleField) {
 		this.battleField = battleField;
+	}
+
+	public String buildTroopCommandJSON(Troop troop) {
+		JSONObject jo = new JSONObject();
+		jo.put("troopId", troop.getId());
+		jo.put("actionKind", troop.getCommand().actionKind);
+		jo.put("objectTroopId", troop.getCommand().object==null?JSONObject.NULL:troop.getCommand().object.getId());
+		if(troop.getPosition()!=null){
+			JSONObject positionJSON = new JSONObject();
+			positionJSON.put("x", troop.getPosition().x);
+			positionJSON.put("y", troop.getPosition().y);
+			jo.put("position", positionJSON);
+		}
+		jo.put("zhanfaId", troop.getCommand().zhanfaId);
+		jo.put("isCompeted", troop.getCommand().isCompeted);
+		String returnString = SYN_TYPE.CommandData.toString()+Constants.SYN_DATA_SEPARATOR+jo.toString();
+		logger.debug(returnString);
+		return returnString;
+	}
+
+	public void updateLocalTroopCommandByJSON(String message) {
+		JSONObject jo = new JSONObject(message);
+		long id = jo.getLong("troopId");
+		Troop troop = battleField.getTroopById(id);
+		troop.getCommand().actionKind= ACTION_KIND.valueOf(jo.getString("actionKind"));
+		if(jo.get("objectTroopId")!=JSONObject.NULL){
+			long objectTroopId = ((Integer)jo.get("objectTroopId")).longValue();
+			Troop object = battleField.getTroopById(objectTroopId);
+			troop.getCommand().object=object;
+		}
+		JSONObject position = (JSONObject)jo.get("position");
+		if(position!=null){
+			Position p = new Position(position.getInt("x"), position.getInt("y"));
+			troop.getCommand().objectPosition=p;
+		}
+		troop.getCommand().zhanfaId = jo.getLong("zhanfaId");
+		troop.getCommand().isCompeted= jo.getBoolean("isCompeted");
+		logger.debug("update troop command,troopId:"+troop.getId());
 	}	
 }

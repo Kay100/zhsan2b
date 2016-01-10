@@ -1,6 +1,10 @@
 package com.sz.zhsan2b.core.entity;
 
 public class MilitaryKind {
+	
+	public MilitaryKind() {
+	}
+
 	public MilitaryKind(long id) {
 		this.id = id;
 	}

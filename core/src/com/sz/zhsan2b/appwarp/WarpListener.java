@@ -12,4 +12,10 @@ public interface WarpListener {
 	
 	public void onGameUpdateReceived(String message);
 	
+	
+	public void onPlayerEntered(boolean isPlayer);
+
+	public void onCanCalculateBattle();
+
+	public void onGameStateDataReceived(byte[] data);
 }

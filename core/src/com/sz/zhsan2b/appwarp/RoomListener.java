@@ -52,7 +52,9 @@ public class RoomListener implements RoomRequestListener{
 
 	@Override
 	public void onLockPropertiesDone (byte result) {
-		
+		if(result!=WarpResponseResultCode.SUCCESS){
+			callBack.onLockFailed();
+		}
 	}
 
 	@Override

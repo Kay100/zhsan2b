@@ -1,17 +1,23 @@
 package com.sz.zhsan2b.core.entity;
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
+import com.esotericsoftware.kryo.serializers.DefaultSerializers.VoidSerializer;
+import com.esotericsoftware.kryo.serializers.FieldSerializer.Bind;
 import com.sz.zhsan2b.core.Map;
 import com.sz.zhsan2b.core.MapBuilder;
-import com.sz.zhsan2b.core.entity.Troop.BATTLE_STATE;
 
 public class BattleField{
 	public enum State {
 		BATTLE,OPERATE
 	}
-
+	public enum SYN_TYPE {
+		BattlefieldData,CommandData
+	}
 	private Array<Troop> troopList = new Array<Troop>();
 	public State state;
+	@Bind(VoidSerializer.class)
 	private ArrayMap<Long,Map> maps  = new ArrayMap<Long, Map>() ;
 	private final Array<StepAction> stepActionList = new Array<StepAction>(100);
 
@@ -49,6 +55,15 @@ public class BattleField{
 		return returnTroop;
 	}
 	
+	public Troop getTroopById(long id) {
+		Troop returnTroop = null;
+		for(Troop tr:troopList){
+			if(tr.getId()==id){
+				returnTroop= tr;
+			}
+		}
+		return returnTroop;
+	}	
 
 	public Position getNotOccupiedNeighborPosition(Position to,
 			Position from) {
@@ -74,22 +89,14 @@ public class BattleField{
 	}
 
 
-	public void deleteDestroyedTroops() {
-		Troop curTr = null;
-		for(int size=troopList.size,i=size-1;i>=0;i--){
-			curTr=troopList.get(i);
-			if(curTr.getBattleState()==BATTLE_STATE.IS_DESTROY){
-				troopList.removeValue(curTr, true);
-			}
-		}
-		
+
+
+	@Override
+	public String toString() {
+
+		return ToStringBuilder.reflectionToString(this);
 	}
-	public void refresh(){
-		//refresh troop for new battle
-		for(Troop tr:troopList){
-			tr.refresh();
-		}
-	}	
+
 	public Array<Troop> getTroopList() {
 		return troopList;
 	}

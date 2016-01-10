@@ -12,7 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.sz.zhsan2b.core.entity.Position;
-import com.sz.zhsan2b.libgdx.BattleFieldOperationStage.OnBattleProceedClicked;
+import com.sz.zhsan2b.libgdx.BattleScreen.OnBattleProceedClicked;
 import com.sz.zhsan2b.libgdx.ContextMenu.Executable;
 
 public class WorldController extends InputAdapter {
@@ -47,9 +47,9 @@ public class WorldController extends InputAdapter {
 
 
 	public void update(float deltaTime) {
-		handleDebugInput(deltaTime);
+		//handleDebugInput(deltaTime);
 	
-		handleInputGame(deltaTime);
+		handleGameInput(deltaTime);
 		level.update(deltaTime);
 		cameraHelper.update(deltaTime);
 
@@ -110,7 +110,7 @@ public class WorldController extends InputAdapter {
 
 
 
-	private void handleInputGame(float deltaTime) {
+	private void handleGameInput(float deltaTime) {
 	
 	}
 
@@ -154,7 +154,7 @@ public class WorldController extends InputAdapter {
 			
 		
 		}
-
+		
 			
 		return stage.touchDown(screenX, screenY, pointer, button);
 	}
@@ -171,7 +171,7 @@ public class WorldController extends InputAdapter {
 				if (layerOperation.hasChildren()){
 					layerOperation.clear();
 				}else{
-					OnBattleProceedClicked onBattleProceedClicked = battleScreen.getBattleFieldOperationStage().new OnBattleProceedClicked();
+					OnBattleProceedClicked onBattleProceedClicked = battleScreen.new OnBattleProceedClicked();
 					
 					new ContextMenu(layerOperation, false, new MenuCommand("proceed", false, onBattleProceedClicked)).setPosition(cameraHelper.getPosition().x, cameraHelper.getPosition().y);
 					

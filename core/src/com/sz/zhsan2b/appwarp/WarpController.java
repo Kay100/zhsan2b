@@ -45,6 +45,10 @@ public class WarpController {
 	public static final int GAME_LOOSE = 6;
 	public static final int ENEMY_LEFT = 7;
 	
+	// Turn State constants
+	public static final int ONE_PLAYER_DONE = 8;
+	
+	
 	public WarpController() {
 		initAppwarp();
 		warpClient.addConnectionRequestListener(new ConnectionListener(this));
@@ -52,6 +56,7 @@ public class WarpController {
 		warpClient.addZoneRequestListener(new ZoneListener(this));
 		warpClient.addRoomRequestListener(new RoomListener(this));
 		warpClient.addNotificationListener(new NotificationListener(this));
+		warpClient.addUpdateRequestListener(new UpdateListener(this));
 	}
 	
 	public static WarpController getInstance(){
@@ -60,6 +65,10 @@ public class WarpController {
 		}
 		return instance;
 	}
+	public static WarpController reBuildInstance(){
+		instance = new WarpController();
+		return instance;
+	}	
 	
 	public void startApp(String localUser){
 		this.localUser = localUser;
@@ -90,16 +99,30 @@ public class WarpController {
 	public void sendGameUpdate(String msg){
 		if(isConnected){
 			if(isUDPEnabled){
-				warpClient.sendUDPUpdatePeers((localUser+"#@"+msg).getBytes());
+				//warpClient.sendUDPUpdatePeers((localUser+"#@"+msg).getBytes());
+				warpClient.sendChat(localUser+"#@"+msg);
 			}else{
-				warpClient.sendUpdatePeers((localUser+"#@"+msg).getBytes());
+				//warpClient.sendUpdatePeers((localUser+"#@"+msg).getBytes());
+				warpClient.sendChat(localUser+"#@"+msg);
 			}
 		}
 	}
 	
+	public void sendGameSynchronizeBytes(byte[] data){
+		if(isConnected){
+			if(isUDPEnabled){
+				warpClient.sendUDPUpdatePeers(data);
+			}else{
+				warpClient.sendUpdatePeers(data);
+			}
+		}
+	}	
+	
 	public void updateResult(int code, String msg){
 		if(isConnected){
-			STATE = COMPLETED;
+			if(code!=WarpController.ONE_PLAYER_DONE){
+				STATE = COMPLETED;
+			}
 			HashMap<String, Object> properties = new HashMap<String, Object>();
 			properties.put("result", code);
 			warpClient.lockProperties(properties);
@@ -109,11 +132,12 @@ public class WarpController {
 	public void onConnectDone(boolean status){
 		log("onConnectDone: "+status);
 		if(status){
-			warpClient.initUDP();
+			//warpClient.initUDP();
 			warpClient.joinRoomInRange(1, 1, false);
 		}else{
 			isConnected = false;
 			handleError();
+			warpListener.onError("Connection failed!");
 		}
 	}
 	
@@ -124,6 +148,7 @@ public class WarpController {
 	public void onRoomCreated(String roomId){
 		if(roomId!=null){
 			warpClient.joinRoom(roomId);
+			warpListener.onPlayerEntered(true);		
 		}else{
 			handleError();
 		}
@@ -137,7 +162,7 @@ public class WarpController {
 		}else if(event.getResult()==WarpResponseResultCode.RESOURCE_NOT_FOUND){// no such room found
 			HashMap<String, Object> data = new HashMap<String, Object>();
 			data.put("result", "");
-			warpClient.createRoom("superjumper", "shephertz", 2, data);
+			warpClient.createRoom(localUser, "zhsan2b", 2, data);
 		}else{
 			warpClient.disconnect();
 			handleError();
@@ -178,10 +203,13 @@ public class WarpController {
 		}
 	}
 
-	public void onSendChatDone(boolean status){
-		log("onSendChatDone: "+status);
+	public void onSendChatDone(byte result){
+		log("onSendChatDone: "+result);
 	}
-	
+	public void onSendUpdateDone(byte result) {
+		log("onSendUpdateDone: "+result);
+		
+	}	
 	public void onGameUpdateReceived(String message){
 //		log("onMoveUpdateReceived: message"+ message );
 		String userName = message.substring(0, message.indexOf("#@"));
@@ -190,6 +218,11 @@ public class WarpController {
 			warpListener.onGameUpdateReceived(data);
 		}
 	}
+	public void onGameStateDataReceived(byte[] data){
+		log("onGameStateDataReceived!");
+		warpListener.onGameStateDataReceived(data);
+		
+	}	
 	
 	public void onResultUpdateReceived(String userName, int code){
 		if(localUser.equals(userName)==false){
@@ -199,7 +232,16 @@ public class WarpController {
 			warpListener.onGameFinished(code, false);
 		}
 	}
-	
+	public void onFirstDoneReceived(String userName, int code) {
+		if(localUser.equals(userName)==true){
+			//warpListener.onWaitingOtherPlayerToFinishTurn(code);
+		}
+		
+	}
+	public void onLockFailed() {
+		warpListener.onCanCalculateBattle();
+		
+	}	
 	public void onUserLeftRoom(String roomId, String userName){
 		log("onUserLeftRoom "+userName+" in room "+roomId);
 		if(STATE==STARTED && !localUser.equals(userName)){// Game Started and other user left the room
@@ -253,4 +295,10 @@ public class WarpController {
 		warpClient.removeNotificationListener(new NotificationListener(this));
 		warpClient.disconnect();
 	}
+
+
+
+
+
+
 }

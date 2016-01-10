@@ -33,7 +33,8 @@ project(":core") {
 	    compile 'com.h2database:h2:1.3.172'
 	    compile 'org.apache.tomcat:tomcat-jdbc:7.0.42'
 	    compile 'org.json:json:20151123'	    
-	    compile ('com.underwaterapps.overlap2druntime:overlap2d-runtime-libgdx:0.0.8'){
+	    compile 'com.esotericsoftware:kryo:3.0.3'	    
+	    compile ('com.underwaterapps.overlap2druntime:overlap2d-runtime-libgdx:0.1.0'){
 	    	exclude  group: 'com.badlogicgames.gdx'
 	    }
 	}

@@ -3,24 +3,40 @@ package com.sz.zhsan2b.core;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.Metamodel;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.ByteBufferInputStream;
+import com.esotericsoftware.kryo.io.ByteBufferOutputStream;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
 import com.sz.zhsan2b.core.entity.BattleField;
+import com.sz.zhsan2b.core.entity.GameStateData;
 
 import com.sz.zhsan2b.core.entity.Troop;
+import com.sz.zhsan2b.core.entity.BattleField.SYN_TYPE;
 import com.sz.zhsan2b.core.entity.BattleField.State;
 
 @Component
 public class BattleFieldManager {
+	private static Logger logger = LoggerFactory.getLogger(BattleFieldManager.class);
 	private BattleField battleField = GameContext.getBattleField();
 	
+	
 	private TroopManager troopManager;
+	private Kryo kryo;
+	
 	@PersistenceContext
 	private EntityManager em;
 	
@@ -35,7 +51,12 @@ public class BattleFieldManager {
 		battleField.loadMaps();	
 		
 	}
-	
+	//开始一轮战斗
+	public void startBattle(){
+		battleField.clearStepActionList();
+		troopManager.refresh();
+		calculateBattle();
+	}
 
 	//进行一轮战斗
 	public void calculateBattle(){
@@ -93,13 +114,53 @@ public class BattleFieldManager {
 	private boolean isAllTroopsActioned() {
 		boolean allActioned = true;
 		for(Troop tr:battleField.getTroopList()){
-			if(!tr.getCommand().isCompeted){
+			if(tr.getCommand()!=null&&!tr.getCommand().isCompeted){
 				allActioned = false;
 			}
 		}
 		
 		
 		return allActioned;
+	}
+	
+	public void deleteDestroyedTroops(){
+		troopManager.deleteDestroyedTroops();
+	}
+	public byte[] buildGameStateData() {
+	    ByteArrayOutputStream serializedOutputStream = new ByteArrayOutputStream(); 
+	
+	    Output output = new Output(serializedOutputStream);
+	    GameStateData stateData = new GameStateData();
+	    stateData.setUserNameForWarp(GameContext.getCurrentUser().getName());
+	    stateData.setType(GameStateData.TYPE_BATTLEFIELD);
+	    stateData.setRemoteBattleField(battleField);
+	    kryo.writeObject(output, stateData);
+	    output.close();
+	    return serializedOutputStream.toByteArray();
+	}
+	public GameStateData rebuildGameStateData(byte[] data) {
+	    Input input = new Input(new ByteArrayInputStream(data));
+	    GameStateData remoteGameStateData = kryo.readObject(input,GameStateData.class);
+	    input.close();
+		return remoteGameStateData;
+	}	
+	public void updateBattleField(BattleField remoteBattleField) {
+		// TODO Auto-generated method stub
+		battleField.state=remoteBattleField.state;
+	}	
+	public SYN_TYPE updateBattleFieldRelatedData(String message) {
+		String dataType = message.substring(0, message.indexOf(Constants.SYN_DATA_SEPARATOR));
+		String data = message.substring(message.indexOf(Constants.SYN_DATA_SEPARATOR)+2, message.length());
+		switch(SYN_TYPE.valueOf(dataType)){
+		case BattlefieldData:
+			break;
+		case CommandData:
+			troopManager.updateLocalTroopCommandByJSON(data);
+			break;
+		default:
+			throw new RuntimeException("no such syn type!");
+		}
+		return SYN_TYPE.valueOf(dataType);
 	}
 
 	public TroopManager getTroopManager() {
@@ -109,4 +170,14 @@ public class BattleFieldManager {
 	public void setTroopManager(TroopManager troopManager) {
 		this.troopManager = troopManager;
 	}
+	@Autowired
+	public void setKryo(Kryo kryo) {
+		this.kryo = kryo;
+	}
+
+
+
+
+
+
 }

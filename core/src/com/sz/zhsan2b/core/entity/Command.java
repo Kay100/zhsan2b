@@ -11,19 +11,21 @@ public class Command {
 	public Troop object;
     public Position objectPosition;
     public boolean isCompeted;
-    //position must be needed. 默认构造函数被重载，不能使用
+    public Command(){
+    	this(ACTION_KIND.NONE,0,null,new Position(0, 0),true);
+    }
 	public Command(Position objectPosition) {
-		this(ACTION_KIND.MOVE,0,null,objectPosition);
+		this(ACTION_KIND.MOVE,0,null,objectPosition,false);
 	}
 
 	public Command(ACTION_KIND actionKind, long zhanfaId, Troop object,
-			Position objectPosition) {
+			Position objectPosition ,boolean isCompeted) {
 		super();
 		this.actionKind = actionKind;
 		this.zhanfaId = zhanfaId;
 		this.object = object;
 		this.objectPosition = objectPosition;
-		isCompeted = false;
+		this.isCompeted = isCompeted;
 	}
 
 	@Override

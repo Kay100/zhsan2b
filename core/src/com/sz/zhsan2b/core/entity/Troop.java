@@ -72,7 +72,9 @@ public class Troop{//增加adapter 实现hook
 	}
 	//每回合开始，战场会调用troop的refresh方法，来重置部队的状态。
 	public void refresh() {
-		command.isCompeted=false;
+		if(command!=null){
+			command.isCompeted=false;
+		}
 		this.leftMove=battleProperties.move;
 		isAttackCompleted=false;
 	}	

@@ -14,11 +14,7 @@ public class ChatListener implements ChatRequestListener{
 	}
 
 	public void onSendChatDone(byte result) {
-		if(result==WarpResponseResultCode.SUCCESS){
-			callBack.onSendChatDone(true);
-		}else{
-			callBack.onSendChatDone(false);
-		}
+		callBack.onSendChatDone(result);
 	}
 
 	@Override

@@ -11,16 +11,20 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.sz.zhsan2b.core.PLAYER_TYPE;
+
 
 @Entity
 @Table(name = "ss_user")
 public class User extends IdEntity {
 	private String loginName;
+	//use for appwarp's localuser
 	private String name;
 	private String plainPassword;
 	private String password;
 	private String salt;
 	private String roles;
+	private PLAYER_TYPE playerType;
 	private Date registerDate;
 
 	public User() {
@@ -96,6 +100,14 @@ public class User extends IdEntity {
 
 	public void setRegisterDate(Date registerDate) {
 		this.registerDate = registerDate;
+	}
+	@Transient
+	public PLAYER_TYPE getPlayerType() {
+		return playerType;
+	}
+
+	public void setPlayerType(PLAYER_TYPE playerType) {
+		this.playerType = playerType;
 	}
 
 	@Override
