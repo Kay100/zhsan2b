@@ -55,23 +55,13 @@ public class InitDialogScript implements IScript{
 	}
 
 	public void init(CompositeItem initScene) {
-		//build messageDialog
-		messageDialog= initScene.getCompositeById("messageDialog");
-		messageDialog.getImageById("confirm").setVisible(false);
-		messageDialog.getImageById("cancel").setVisible(false);
-		Label message = new Label("", uiSkin);
-		message.setWrap(true);
-		message.setWidth(350);
-		message.setColor(Color.BLACK);
-		message.setName("message");
-		message.setPosition(20, 68);
-		messageDialog.addActor(message);
-		
-		systembusy = initScene.getImageById("busy");
+		buildMessageDialog(initScene);
+		initDialog=initScene.getCompositeById("loginDialog");
+		initDialog.setVisible(false);
+		//buildInitDialog(initScene);
+	}
 
-		messageDialog.setVisible(false);
-		systembusy.setVisible(false);
-		
+	private void buildInitDialog(CompositeItem initScene) {		
 		text = new TextField("", uiSkin);
 		initDialog=initScene.getCompositeById("loginDialog");
 		yesButton = initDialog.getImageById("yes");
@@ -165,6 +155,25 @@ public class InitDialogScript implements IScript{
 		InputEvent inputEvent = new InputEvent();
 		inputEvent.setType(Type.touchUp);
 		yesButton.fire(inputEvent);
+	}
+
+	private void buildMessageDialog(CompositeItem initScene) {
+		//build messageDialog
+		messageDialog= initScene.getCompositeById("messageDialog");
+		messageDialog.getImageById("confirm").setVisible(false);
+		messageDialog.getImageById("cancel").setVisible(false);
+		Label message = new Label("", uiSkin);
+		message.setWrap(true);
+		message.setWidth(350);
+		message.setColor(Color.BLACK);
+		message.setName("message");
+		message.setPosition(20, 68);
+		messageDialog.addActor(message);
+		
+		systembusy = initScene.getImageById("busy");
+
+		messageDialog.setVisible(false);
+		systembusy.setVisible(false);
 	}
 	public void displayMessage(String mes){
 		((Label)messageDialog.findActor("message")).setText(mes);

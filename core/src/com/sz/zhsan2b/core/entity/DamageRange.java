@@ -1,7 +1,8 @@
 package com.sz.zhsan2b.core.entity;
 
+import java.util.ArrayList;
+import java.util.List;
 
-import com.badlogic.gdx.utils.Array;
 import com.sz.zhsan2b.core.BattleUtils;
 
 public class DamageRange {
@@ -102,8 +103,8 @@ public class DamageRange {
 	 * @param damageRange 伤害本身的范围，例如溅射
 	 * @return 所有的可能伤害位置
 	 */
-	public Array<Position> getDamageRangeList(){//notRange means cannot hit this area.
-		Array<Position> positionList = new Array<Position>(1);
+	public List<Position> getDamageRangeList(){//notRange means cannot hit this area.
+		List<Position> positionList = new ArrayList<Position>(1);
 		if(!BattleUtils.isObjectInAttackRange(object, origin, range, isXie)){
 			return positionList;
 		}
@@ -130,17 +131,17 @@ public class DamageRange {
 		return positionList;
 	}
 
-	private Array<Position> getArrowTowerDamageRangeList(Position origin2,
+	private List<Position> getArrowTowerDamageRangeList(Position origin2,
 			int range2, boolean isXie2, int notRange2) {
-		Array<Position> outerRangeAreaList = getNormalDamageRangeList(origin2, range2, isXie2);
-		Array<Position> innerRangeAreaList = getNormalDamageRangeList(origin2, notRange2, isXie2);
-			outerRangeAreaList.removeAll(innerRangeAreaList, false);
+		List<Position> outerRangeAreaList = getNormalDamageRangeList(origin2, range2, isXie2);
+		List<Position> innerRangeAreaList = getNormalDamageRangeList(origin2, notRange2, isXie2);
+			outerRangeAreaList.removeAll(innerRangeAreaList);
 		return outerRangeAreaList;
 	}
 
-	private Array<Position> getLineDamageRangeList(Position self,
+	private List<Position> getLineDamageRangeList(Position self,
 			Position object, int damageRange) {
-		Array<Position> returnList = new Array<Position>(damageRange * 10);
+		List<Position> returnList = new ArrayList<Position>(damageRange * 10);
 		returnList.add(new Position(object));
 		int ox = object.x;
 		int oy = object.y;
@@ -198,16 +199,13 @@ public class DamageRange {
 		return returnList;
 	}
 
-	private Array<Position> getCrossDamageRangeList(Position object,
+	private List<Position> getCrossDamageRangeList(Position object,
 			boolean isXie, int damageRange) {
 		return BattleUtils.getAttackRangeList(object, damageRange, isXie);
 	}
 
-	private Array<Position> getNormalDamageRangeList(Position origin,
+	private List<Position> getNormalDamageRangeList(Position origin,
 			int range, boolean isXie) {
 		return BattleUtils.getAttackRangeList(origin, range, isXie);
 	}
-	
-
-
 }

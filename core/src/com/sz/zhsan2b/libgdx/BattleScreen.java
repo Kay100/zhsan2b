@@ -4,8 +4,6 @@ import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
 
 import java.util.Iterator;
 
-import org.json.JSONObject;
-
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
@@ -20,19 +18,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
 import com.badlogic.gdx.utils.ObjectMap.Entry;
 
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-
-import com.sz.zhsan2b.appwarp.WarpController;
 import com.sz.zhsan2b.appwarp.WarpListener;
 import com.sz.zhsan2b.core.BattleFieldManager;
 import com.sz.zhsan2b.core.GameContext;
 import com.sz.zhsan2b.core.PLAYER_TYPE;
-import com.sz.zhsan2b.core.TroopManager;
 import com.sz.zhsan2b.core.entity.BattleField;
 import com.sz.zhsan2b.core.entity.BattleField.SYN_TYPE;
 import com.sz.zhsan2b.core.entity.BattleProperties;
@@ -43,15 +37,12 @@ import com.sz.zhsan2b.core.entity.Position;
 import com.sz.zhsan2b.core.entity.StepAction;
 import com.sz.zhsan2b.core.entity.Troop;
 import com.sz.zhsan2b.core.entity.BattleField.State;
-import com.sz.zhsan2b.core.entity.Command.ACTION_KIND;
 import com.sz.zhsan2b.core.entity.DamageRange.DamageRangeType;
 import com.sz.zhsan2b.core.entity.StepAction.TileEffect;
 import com.sz.zhsan2b.core.entity.User;
 import com.sz.zhsan2b.libgdx.ContextMenu.Executable;
 import com.sz.zhsan2b.libgdx.TroopActor.ACTION_LABEL;
 import com.uwsoft.editor.renderer.SceneLoader;
-import com.uwsoft.editor.renderer.actor.CompositeItem;
-import com.uwsoft.editor.renderer.actor.TextBoxItem;
 import com.uwsoft.editor.renderer.resources.ResourceManager;
 
 public class BattleScreen extends AbstractGameScreen implements WarpListener{	
@@ -60,14 +51,19 @@ public class BattleScreen extends AbstractGameScreen implements WarpListener{
 		@Override
 		public void execute() {
 			layerOperation.clear();
-			WarpController.getInstance().updateResult(WarpController.ONE_PLAYER_DONE, "already done!");
-			initDialog.displayMessage("等待另一名玩家行动");
+			battleFieldManager.startBattle();
+			startBattle();			
+//			WarpController.getInstance().updateResult(WarpController.ONE_PLAYER_DONE, "already done!");
+//			initDialog.displayMessage("等待另一名玩家行动");
 		}
 
 	}	
 	private static final String TAG = BattleScreen.class.getName();	
-	
+	//data
 	private User currentUser = GameContext.getCurrentUser();
+	private Array<TroopActor> troopActorList=new Array<TroopActor>(20);
+	
+	
 	//overlap2d
 	private ResourceManager resourceManager;
 	private SceneLoader initLoader;	
@@ -85,13 +81,7 @@ public class BattleScreen extends AbstractGameScreen implements WarpListener{
 	
 	//resource
 	private Skin skinLibgdx = Assets.instance.assetSkin.skinLibgdx;
-	private Skin skinMenu= Assets.instance.assetSkin.skinMenu;
-	
-	//wait for componenting
-	private Label mousePositionLabel;
-	private Label notification;	
-	private Array<TroopActor> troopActorList=new Array<TroopActor>(20);
-	
+	private Skin skinMenu= Assets.instance.assetSkin.skinMenu;	
 	//layer
 	private Table layerOperation;	
 	private Table layerAnimation;
@@ -100,14 +90,18 @@ public class BattleScreen extends AbstractGameScreen implements WarpListener{
 	
 	private final BattleField battleField = GameContext.getBattleField();
 	private BattleFieldManager battleFieldManager;	
-	private TroopManager troopManager;
 	
 	private boolean isBattleStart=true;
 	private boolean isOperateStart=true;
 	private StepAction currentStepAction;
 	private Iterator<StepAction> stepActionIter;
 	private boolean isPlanning;
-
+	
+	//component
+	private Label mousePositionLabel;
+	private Label notification;	
+	private UserCommandHandler userCommandHandler;
+	private TroopMenu troopMenu;
 	
 	// debug
 	private final float DEBUG_REBUILD_INTERVAL = 20f;
@@ -161,12 +155,12 @@ public class BattleScreen extends AbstractGameScreen implements WarpListener{
 //		com3.object=null;
 
 		Troop tr1= new Troop(new MilitaryKind(0), bp, new Position(6, 5),
-				com1, PLAYER_TYPE.PLAYER.AI);
+				com1, PLAYER_TYPE.AI);
 		
 		Troop tr2= new Troop(new MilitaryKind(1), bp2, new Position(1, 9),
-				com2, PLAYER_TYPE.PLAYER.PLAYER);
+				com2, PLAYER_TYPE.PLAYER);
 		Troop tr3= new Troop(new MilitaryKind(0), bp3, new Position(6, 4),
-				com3, PLAYER_TYPE.PLAYER.AI);		
+				com3, PLAYER_TYPE.AI);		
 		tr2.setStepAttack(true);
 		tr2.setMultiObject(true);
 
@@ -181,7 +175,6 @@ public class BattleScreen extends AbstractGameScreen implements WarpListener{
 		layerAnimation.setLayoutEnabled(false);
 		//layerAnimation.setTransform(false);
 		battleFieldManager=GameContext.getContext().getBean(BattleFieldManager.class);
-		troopManager=GameContext.getContext().getBean(TroopManager.class);
 	}	
 
 
@@ -300,7 +293,7 @@ public class BattleScreen extends AbstractGameScreen implements WarpListener{
 
 	@Override
 	public InputProcessor getInputProcessor() {
-			return uiStage;
+			return worldController;  //uiStage for initDialog
 		
 	}
 
@@ -338,7 +331,8 @@ public class BattleScreen extends AbstractGameScreen implements WarpListener{
 		// Initializing iScript MenuSceneScript that will be holding all menu logic, and passing this stage for later use
 		initDialog = new InitDialogScript(uiStage,initLoader);
 		initLoader.sceneActor.addScript(initDialog);
-		uiStage.addActor(initLoader.sceneActor);		
+		uiStage.addActor(initLoader.sceneActor);	
+		//initDialog.getInitDialog().setVisible(false);
 		synchronizeTroopLayer();
 		
 	}
@@ -442,7 +436,7 @@ public class BattleScreen extends AbstractGameScreen implements WarpListener{
         uiStage.draw();
 	}
 	public void startBattle(){
-		initDialog.displayMessage("本回合开始!", 1f);
+		//initDialog.displayMessage("本回合开始!", 1f);
 		battleField.state=State.BATTLE;
 		isBattleStart=true;
 		isPlanning=true;
@@ -500,7 +494,7 @@ public class BattleScreen extends AbstractGameScreen implements WarpListener{
 		worldRenderer = new WorldRenderer(worldController);
 		Gdx.input.setCatchBackKey(true);
 
-
+        
 
 		
 		//set debug
@@ -508,9 +502,14 @@ public class BattleScreen extends AbstractGameScreen implements WarpListener{
 			stage.setDebugAll(true);
 			uiStage.setDebugAll(true);
 		}
-
-		buildStage();
+		//battlescreen component start here
+		userCommandHandler = new UserCommandHandler();
+		troopMenu = new TroopMenu();
 		
+		
+		
+		buildStage();
+
 	
 
 	}
@@ -581,7 +580,7 @@ public class BattleScreen extends AbstractGameScreen implements WarpListener{
 			@Override
 			public void execute() {
 				initDialog.displayMessage("等待连接服务器!");
-				WarpController.getInstance().startApp(currentUser.getName());
+//				WarpController.getInstance().startApp(currentUser.getName());
 				
 			}
 		};
@@ -632,8 +631,8 @@ public class BattleScreen extends AbstractGameScreen implements WarpListener{
 	@Override
 	public void onCanCalculateBattle() {
 		battleFieldManager.startBattle();
-		byte[] data = battleFieldManager.buildGameStateData();
-		WarpController.getInstance().sendGameSynchronizeBytes(data);
+//		byte[] data = battleFieldManager.buildGameStateData();
+//		WarpController.getInstance().sendGameSynchronizeBytes(data);
 		startBattle();
 	}
 	
@@ -645,6 +644,7 @@ public class BattleScreen extends AbstractGameScreen implements WarpListener{
 		if(stateData.getUserNameForWarp()!=currentUser.getName()){
 			if(stateData.getType()==GameStateData.TYPE_BATTLEFIELD){
 				battleFieldManager.updateBattleField(stateData.getRemoteBattleField());
+				startBattle();
 			}
 		}
 	}
@@ -665,6 +665,18 @@ public class BattleScreen extends AbstractGameScreen implements WarpListener{
 	}
 	public void setCurrentStepAction(StepAction currentStepAction) {
 		this.currentStepAction = currentStepAction;
+	}
+	public UserCommandHandler getUserCommandHandler() {
+		return userCommandHandler;
+	}
+	public void setUserCommandHandler(UserCommandHandler userCommandHandler) {
+		this.userCommandHandler = userCommandHandler;
+	}
+	public TroopMenu getTroopMenu() {
+		return troopMenu;
+	}
+	public void setTroopMenu(TroopMenu troopMenu) {
+		this.troopMenu = troopMenu;
 	}
 
 }

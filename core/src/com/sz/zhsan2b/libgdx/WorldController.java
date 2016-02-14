@@ -172,8 +172,9 @@ public class WorldController extends InputAdapter {
 					layerOperation.clear();
 				}else{
 					OnBattleProceedClicked onBattleProceedClicked = battleScreen.new OnBattleProceedClicked();
-					
-					new ContextMenu(layerOperation, false, new MenuCommand("proceed", false, onBattleProceedClicked)).setPosition(cameraHelper.getPosition().x, cameraHelper.getPosition().y);
+					ContextMenu proceedMenu =new ContextMenu();
+					proceedMenu.loadMenuData(layerOperation, false, new MenuCommand("proceed", false, onBattleProceedClicked)).setPosition(cameraHelper.getPosition().x, cameraHelper.getPosition().y);
+					proceedMenu.show();
 					
 				}				
 			}

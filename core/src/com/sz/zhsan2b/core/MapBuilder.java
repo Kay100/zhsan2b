@@ -19,8 +19,8 @@ public class MapBuilder {
  	public static final int MAX_ROWS = Constants.BATTLE_FIELD_YCOUNT;
  	public static final int MAX_COLS = Constants.BATTLE_FIELD_XCOUNT;
 	
-	public static Map buildMap(long militaryKindId){
-		Map map = new Map();
+	public static GameMap buildMap(long militaryKindId){
+		GameMap map = new GameMap();
 		
  		Graph graph = new DefaultGraph("GraphOfMilitaryKind"+String.valueOf(militaryKindId));
 

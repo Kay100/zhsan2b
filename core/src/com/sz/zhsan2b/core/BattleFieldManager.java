@@ -11,6 +11,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.Metamodel;
+
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,7 +80,7 @@ public class BattleFieldManager {
 			}
 			//主循环
 			
-			for(int i= 0,size=battleField.getTroopList().size;i<size;i++){
+			for(int i= 0,size=battleField.getTroopList().size();i<size;i++){
 				Troop curTr = battleField.getTroopList().get(i);
 				if(curTr.getCommand().isCompeted==true)
 					continue;
@@ -146,6 +148,8 @@ public class BattleFieldManager {
 	}	
 	public void updateBattleField(BattleField remoteBattleField) {
 		// TODO Auto-generated method stub
+		logger.debug("battleField is synchronized!");
+		logger.debug(ToStringBuilder.reflectionToString(remoteBattleField));
 		battleField.state=remoteBattleField.state;
 	}	
 	public SYN_TYPE updateBattleFieldRelatedData(String message) {

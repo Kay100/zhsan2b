@@ -1,5 +1,7 @@
 package com.sz.zhsan2b.core.entity;
 
+import javax.validation.constraints.NotNull;
+
 
 public class Command {
 	public enum ACTION_KIND {

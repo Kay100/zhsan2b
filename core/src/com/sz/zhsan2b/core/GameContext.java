@@ -30,7 +30,7 @@ public abstract class GameContext {
 	public static User getCurrentUser() {
 		if(currentUser==null){
 			currentUser=new User();
-			currentUser.setPlayerType(PLAYER_TYPE.AI);
+			currentUser.setPlayerType(PLAYER_TYPE.PLAYER);
 			return currentUser;
 		}else{
 			return currentUser;

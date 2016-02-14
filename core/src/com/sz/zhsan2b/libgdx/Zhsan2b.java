@@ -58,7 +58,7 @@ public class Zhsan2b extends DirectedGame {
 		// Start game at menu screen
 		battleScreen=new BattleScreen(this);
 		setScreen(battleScreen);
-		WarpController.getInstance().setListener(battleScreen);		
+		//WarpController.getInstance().setListener(battleScreen);		
 		//kyro
 		initKyroRegister();
 		

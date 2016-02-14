@@ -1,18 +1,17 @@
 package com.sz.zhsan2b.core;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.graphstream.algorithm.AStar;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.Path;
-
-import com.badlogic.gdx.utils.Array;
 import com.rits.cloning.Cloner;
-import com.sz.zhsan2b.core.Map.MoveRangeAlgo.PositionEntry;
+import com.sz.zhsan2b.core.GameMap.MoveRangeAlgo.PositionEntry;
 import com.sz.zhsan2b.core.entity.Position;
 
 
-public class Map {
+public class GameMap {
 	public class MoveRangeAlgo {
 
 		public class PositionEntry {
@@ -25,21 +24,21 @@ public class Map {
 			
 
 		}
-		private Array<PositionEntry> moveRangeList = new Array<PositionEntry>();
-		private Array<PositionEntry> tempRangeList = new Array<PositionEntry>();
+		private List<PositionEntry> moveRangeList = new ArrayList<PositionEntry>();
+		private List<PositionEntry> tempRangeList = new ArrayList<PositionEntry>();
 		private int cursor = 0;
 		
-		public Array<PositionEntry> calculateMoveRangeList(Position orgin,int moveLong,Array<Position> unMovablePositions){
+		public List<PositionEntry> calculateMoveRangeList(Position orgin,int moveLong,List<Position> unMovablePositions){
 
 			moveRangeList.add(new PositionEntry(orgin, moveLong));
 			while(canFetchOne(cursor)){
 				PositionEntry curPE =  moveRangeList.get(cursor);
 				Position curOrigin =curPE.position;
-				Array<Position> tempPositionList = BattleUtils.getEightDirectionPosition(curOrigin);
-				Array<Position> removeUnMovableAndRepeatThenLeftPositions = calculateOneLoopPathPositions(tempPositionList,unMovablePositions,getPositionListByPositionEntryList(moveRangeList));
+				List<Position> tempPositionList = BattleUtils.getEightDirectionPosition(curOrigin);
+				List<Position> removeUnMovableAndRepeatThenLeftPositions = calculateOneLoopPathPositions(tempPositionList,unMovablePositions,getPositionListByPositionEntryList(moveRangeList));
 				a:
 				for(Position loopPathP:removeUnMovableAndRepeatThenLeftPositions){
-					Array<Position> tempRPList = getPositionListByPositionEntryList(tempRangeList);
+					List<Position> tempRPList = getPositionListByPositionEntryList(tempRangeList);
 					int cost =calculateNextNodeWeight(loopPathP);
 					if(cost>curPE.moveLeft){
 						continue;
@@ -67,7 +66,7 @@ public class Map {
 		}
 
 		private void replaceOrNotTempRangeListBy(PositionEntry pE) {
-			for(int i=0;i<tempRangeList.size;i++){
+			for(int i=0;i<tempRangeList.size();i++){
 				PositionEntry curPE = tempRangeList.get(i);
 				if(curPE.position.compareTo(pE.position)==0){
 					if(pE.moveLeft>curPE.moveLeft){
@@ -78,17 +77,17 @@ public class Map {
 			
 		}
 
-		private Array<Position> calculateOneLoopPathPositions(
-				Array<Position> tempPositionList,
-				Array<Position> unMovablePositions,
-				Array<Position> moveRangePositionList) {
-			for(int i=tempPositionList.size-1;i>=0;i--){
+		private List<Position> calculateOneLoopPathPositions(
+				List<Position> tempPositionList,
+				List<Position> unMovablePositions,
+				List<Position> moveRangePositionList) {
+			for(int i=tempPositionList.size()-1;i>=0;i--){
 				if(BattleUtils.contains(unMovablePositions, tempPositionList.get(i))){
-					tempPositionList.removeIndex(i);
+					tempPositionList.remove(i);
 					continue;
 				}
 				if(BattleUtils.contains(moveRangePositionList, tempPositionList.get(i))){
-					tempPositionList.removeIndex(i);
+					tempPositionList.remove(i);
 					continue;
 				}
 				
@@ -98,7 +97,7 @@ public class Map {
 
 		private boolean canFetchOne(int cursor) {
 			
-			return cursor>=moveRangeList.size?false:true;
+			return cursor>=moveRangeList.size()?false:true;
 		}
 
 		
@@ -115,8 +114,8 @@ public class Map {
 		this.graph = graph;
 	}
 
-	public Array<Position> calculatePositionPath(Position from,
-			Position to,Array<Position> occupiedPositions) {
+	public List<Position> calculatePositionPath(Position from,
+			Position to,List<Position> occupiedPositions) {
         //temp handle the question by cloning , but this is costly , someday ,should modify to use rebuild nodes which is just removed.
 		
 		Graph tempGraph = cloner.deepClone(graph);
@@ -134,11 +133,11 @@ public class Map {
  		AStar astar = new AStar(tempGraph);
  		astar.compute(String.valueOf(from.getId()), String.valueOf(to.getId()));
  		Path path = astar.getShortestPath();
- 		Array<Position> pathPositions =null;
+ 		List<Position> pathPositions =null;
  		
  		if(path!=null){
  			List<Node> nodeList = path.getNodePath();
- 			pathPositions= new Array<Position>(nodeList.size()+3);
+ 			pathPositions= new ArrayList<Position>(nodeList.size()+3);
  			for(Node n:nodeList){
  				pathPositions.add(new Position(n.getId()));
  			}
@@ -152,12 +151,12 @@ public class Map {
 		return graph.getNode(String.valueOf(to.getId())).getAttribute("weight");
 	}
 
-	public Array<Position> calculateMoveRangeList(Position orgin,int moveLong,Array<Position> unMovablePositions){
-		Array<PositionEntry> moveRangeList = new MoveRangeAlgo().calculateMoveRangeList(orgin, moveLong, unMovablePositions);
+	public List<Position> calculateMoveRangeList(Position orgin,int moveLong,List<Position> unMovablePositions){
+		List<PositionEntry> moveRangeList = new MoveRangeAlgo().calculateMoveRangeList(orgin, moveLong, unMovablePositions);
 		return getPositionListByPositionEntryList(moveRangeList);
 	}
-	private Array<Position> getPositionListByPositionEntryList(Array<PositionEntry> entryList){
-		Array<Position> returnArray = new Array<Position>();
+	private List<Position> getPositionListByPositionEntryList(List<PositionEntry> entryList){
+		List<Position> returnArray = new ArrayList<Position>();
 		for(PositionEntry pE:entryList){
 			returnArray.add(pE.position);
 		}

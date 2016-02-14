@@ -7,59 +7,44 @@ import static com.badlogic.gdx.scenes.scene2d.actions.Actions.run;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.parallel;
 
-import org.json.JSONObject;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.Actor;
+
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.scenes.scene2d.Stage;
+
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.RunnableAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Stack;
+
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.ObjectMap.Entry;
-import com.sz.zhsan2b.appwarp.WarpController;
+
 import com.sz.zhsan2b.core.GameContext;
 import com.sz.zhsan2b.core.PLAYER_TYPE;
 import com.sz.zhsan2b.core.TroopManager;
-import com.sz.zhsan2b.core.entity.Command;
 import com.sz.zhsan2b.core.entity.Position;
 import com.sz.zhsan2b.core.entity.StepAction;
 import com.sz.zhsan2b.core.entity.Troop;
 import com.sz.zhsan2b.core.entity.BattleField.State;
-import com.sz.zhsan2b.core.entity.Command.ACTION_KIND;
-import com.sz.zhsan2b.core.entity.StepAction.TileEffect;
-import com.sz.zhsan2b.libgdx.ConfirmationDialog.Confirmable;
-import com.sz.zhsan2b.libgdx.ContextMenu.Executable;
-import com.sz.zhsan2b.libgdx.TroopActor.ACTION_LABEL;
 
 
 public class TroopActor extends AnimatedImage {
-	public enum TroopInputState {
-		IDEL,CHOOSE_OBJECT
-	}
+
 	public enum ACTION_LABEL {
 		UNDONE,DONE,AUTO,AUTODONE
 	}
@@ -72,22 +57,20 @@ public class TroopActor extends AnimatedImage {
 	BattleScreen battleScreen = Zhsan2b.battleScreen;
 	private TroopManager troopManager;
 	
-	private final Vector2 tempCoords = new Vector2();
+
 	//game logic properties
 	private Troop troop;
-	private Array<TroopActor> affectedTroopList;
+	private List<TroopActor> affectedTroopList;
 	private boolean isDestoryed;
 	private Skin skinLibgdx = Assets.instance.assetSkin.skinLibgdx;
 	//for integration
 	private Vector2 position = new Vector2();	
 	private Table layerOperation = battleScreen.getLayerOperation();
 	private Table layerAnimation = battleScreen.getLayerAnimation();
-	private Stage stage = Zhsan2b.battleScreen.getStage();
-	//troop range
-	private Table troopAttackRange;
-	private Table troopMoveRange;
-	
-	private TroopInputState troopInputState = TroopInputState.IDEL;
+	private UserCommandHandler userCommandHandler;
+	private TroopMenu troopMenu;
+
+
 	
 	//troop title
 	
@@ -96,171 +79,15 @@ public class TroopActor extends AnimatedImage {
 	private Image actionLabel;
 	private Label hpVisualLabel;
 	private Skin skinTroopTitle= Assets.instance.assetSkin.skinTroopTitle;	
-	public abstract class OnTroopActionClicked implements Executable {
-
-		@Override
-		public void execute() {
-			layerOperation.findActor("menuList").remove();
-			if(isDisplayRange()){
-				displayRangeArea();
-			}
-			
-			Vector2 worldP = stage.screenToStageCoordinates(tempCoords.set(Gdx.input.getX(), Gdx.input.getY()));
-			final Image xuanze = new Image(Assets.instance.assetWangge.xuanze);
-			xuanze.setPosition(((int)(worldP.x/Constants.WANGGE_UNIT_WIDTH))*Constants.WANGGE_UNIT_WIDTH, ((int)(worldP.y/Constants.WANGGE_UNIT_HEIGHT))*Constants.WANGGE_UNIT_HEIGHT);
-			layerOperation.add(xuanze);
-			Gdx.input.setCursorImage(Assets.instance.assetArrow.select, 0, 0);
-			final InputListener inputListener = new InputListener(){
-
-				@Override
-				public boolean mouseMoved(InputEvent event, float x, float y) {
-					xuanze.setPosition(((int)(x/Constants.WANGGE_UNIT_WIDTH))*Constants.WANGGE_UNIT_WIDTH, ((int)(y/Constants.WANGGE_UNIT_HEIGHT))*Constants.WANGGE_UNIT_HEIGHT);
-					return super.mouseMoved(event, x, y);
-				}
-				
-			};
-			stage.addListener(inputListener);	
-			xuanze.addListener(new ClickListener(){
-
-				@Override
-				public void clicked(InputEvent event, float x, float y) {
-					Gdx.input.setCursorImage(Assets.instance.assetArrow.normal,
-							0, 0);
-					final Position xuanzePosition =  new Position(0, 0);
-					RenderUtils.toLogicPosition(xuanze.getX(), xuanze.getY(),xuanzePosition);
-					if(isSelectedRightPosition(xuanzePosition)){
-						stage.removeListener(inputListener);
-						
-						ConfirmationDialog conD = new ConfirmationDialog(
-								new Confirmable() {
-
-									@Override
-									public void confirm() {
-										Troop object = troopManager.getBattleField().getTroopByPosition(
-												xuanzePosition);
-
-										disposeToAddCommand(object,xuanzePosition);
-										synchronizeTroopCommand(troop);
-										setActionLabel(ACTION_LABEL.DONE);
-										//Gdx.app.debug(TAG, troop.getCommand().toString());
-										layerOperation.clear();
-									}
-
-									@Override
-									public void cancel() {
-										layerOperation.clear();
-									}
-								});						
-					layerOperation.add(
-							conD.combined);
-					conD.combined.setPosition(
-							stage.getCamera().position.x - 120,
-							stage.getCamera().position.y - 30);						
-						
-					}
-					
-					super.clicked(event, x, y);
-				}
-
-				
-
-
-				
-			});
-			
-			
-
-		}
-
-		abstract protected boolean isDisplayRange() ;
-		abstract protected void displayRangeArea();
-		abstract protected boolean isSelectedRightPosition(final Position xuanzePosition);
-		abstract protected void disposeToAddCommand(final Troop object,final Position xuanzePosition);
-
-	}	
-
-	public class OnTroopMoveClicked extends OnTroopActionClicked {
-
-		@Override
-		protected boolean isDisplayRange() {
-			return true;
-		}
-
-		@Override
-		protected void displayRangeArea() {
-			computerTroopMoveRange();
-			//Gdx.app.debug(TAG, String.valueOf(troopMoveRange.getChildren().size));
-			layerOperation.add(troopMoveRange);
-			
-		}
-
-		@Override
-		protected void disposeToAddCommand(final Troop object,final Position xuanzePosition) {
-
-			troop.getCommand().actionKind = ACTION_KIND.MOVE;
-			troop.getCommand().zhanfaId = 0;
-			if (object == null) {
-				troop.getCommand().object = null;
-				troop.getCommand().objectPosition = xuanzePosition;
-			} else {
-				troop.getCommand().object = object;
-			}
-		}
 
 
 
-		@Override
-		protected boolean isSelectedRightPosition(Position xuanzePosition) {
-			return true;
-		}
-
-	}
-	public class OnTroopAttackClicked extends OnTroopActionClicked {
-		@Override
-		protected boolean isSelectedRightPosition(final Position xuanzePosition) {
-			final Troop object = troopManager.getBattleField().getTroopByPosition(xuanzePosition);	
-			if(object!=null&&object.getOwner()==troop.getOwner()){
-				Zhsan2b.battleScreen.displayNotification("不能选择己方部队!");
-				return false;
-			}else{
-				return true;
-			}	
-		}		
-		@Override
-		public void disposeToAddCommand(final Troop object,final Position xuanzePosition) {
-			troop.getCommand().actionKind = ACTION_KIND.ATTACK;
-			troop.getCommand().zhanfaId = 0;
-			if (object == null) {
-				troop.getCommand().object = null;
-				troop.getCommand().objectPosition = xuanzePosition;
-			} else {
-				troop.getCommand().object = object;
-			}
-
-		}
-
-		@Override
-		protected boolean isDisplayRange() {
-			return false;
-		}
-
-		@Override
-		protected void displayRangeArea() {
-			computeTroopAttackRange();
-			layerOperation.add(troopAttackRange);			
-		}
-
-
-	}	
-
-	private void synchronizeTroopCommand(Troop troop) {
-		String data = troopManager.buildTroopCommandJSON(troop);
-		WarpController.getInstance().sendGameUpdate(data);
-	}
 	
 
 	public TroopActor(Troop troop) {
 		troopManager=GameContext.getContext().getBean(TroopManager.class);
+		userCommandHandler = Zhsan2b.battleScreen.getUserCommandHandler();
+		troopMenu = Zhsan2b.battleScreen.getTroopMenu();
 		this.troop = troop;
 		hpVisual=troop.getHp();
 		actionLabel = new Image(Assets.instance.assetTroop.actionUnDone);
@@ -285,53 +112,16 @@ public class TroopActor extends AnimatedImage {
 		troopTitle=buildTroopTitle();
 	}
 
-	public void computerTroopMoveRange() {
-		troopMoveRange = new Table();
-		troopMoveRange.setLayoutEnabled(false);
-		Array<Position> rangeList = troopManager.getMoveRangeList(troop,troop.getPosition(),troop.getBattleProperties().move,null);
-		for(Position p:rangeList){
-			Image curImg = new Image(Assets.instance.assetWangge.blue);
-			curImg.setSize(Constants.WANGGE_UNIT_WIDTH, Constants.WANGGE_UNIT_HEIGHT);
-			curImg.setPosition(RenderUtils.translate(p.x), RenderUtils.translate(p.y));
-			curImg.toBack();
-			troopMoveRange.add(curImg);
-		}
-		
-	}
 
-	public void computeTroopAttackRange() {
-		troopAttackRange = new Table();
-		troopAttackRange.setLayoutEnabled(false);
-		Array<Position> rangeList = troopManager.getAttackRangeList(troop);
-		for(Position p:rangeList){
-			Image curImg = new Image(Assets.instance.assetWangge.red);
-			curImg.setSize(Constants.WANGGE_UNIT_WIDTH, Constants.WANGGE_UNIT_HEIGHT);
-			curImg.setPosition(RenderUtils.translate(p.x), RenderUtils.translate(p.y));
-			curImg.toBack();
-			troopAttackRange.add(curImg);
-		}
-		
-	}
 
 	protected void onTroopClicked() {
-		if(GameContext.getCurrentUser().getPlayerType()!=troop.getOwner()){
-			logger.debug(GameContext.getCurrentUser().getPlayerType().toString()+":"+troop.getOwner());
-			return;
-		}
+//		if(GameContext.getCurrentUser().getPlayerType()!=troop.getOwner()){
+//			logger.debug(GameContext.getCurrentUser().getPlayerType().toString()+":"+troop.getOwner());
+//			return;
+//		}
 
 		if(troopManager.getBattleField().state==State.OPERATE){
-			layerOperation.clear();
-
-			computeTroopAttackRange();
-			layerOperation.add(troopAttackRange);				
-			
-			
-			MenuCommand attackCommand =new MenuCommand("attack", false, new OnTroopAttackClicked());
-			attackCommand.addMenuList(new MenuCommand("plan", false, null),new MenuCommand("occupy", false, null));
-			ContextMenu  menu = new ContextMenu(layerOperation,true,new MenuCommand("move", false, new OnTroopMoveClicked()),attackCommand,new MenuCommand("done", false, null));
-			//menu.disableButtonByName("move");
-			//((Button)menu.combined.findActor("move")).getStyle().pressedOffsetX=20f;
-			menu.setPosition(getX()+100,getY());	
+		   troopMenu.show(this);
 		}
 	
 		
@@ -398,11 +188,11 @@ public class TroopActor extends AnimatedImage {
 		return position;
 	}
 
-	public Array<TroopActor> getAffectedTroopList() {
+	public List<TroopActor> getAffectedTroopList() {
 		return affectedTroopList;
 	}
 
-	public void setAffectedTroopList(Array<TroopActor> affectedTroopList) {
+	public void setAffectedTroopList(List<TroopActor> affectedTroopList) {
 		this.affectedTroopList = affectedTroopList;
 	}
 
@@ -431,13 +221,13 @@ public class TroopActor extends AnimatedImage {
 			
 
 			TroopActor affectedTroopActor = null;
-			final Array<TroopActor> affectedTroopActors = new Array<TroopActor>(currentStepAction.affectedTroopList.size);
+			final List<TroopActor> affectedTroopActors = new ArrayList<TroopActor>(currentStepAction.affectedTroopList.size);
 			for(long i:currentStepAction.affectedTroopList){
 				affectedTroopActor= battleScreen.getTroopActorByTroopId(i);
 				affectedTroopActor.setAnimation(RenderUtils.getTroopAnimationBy(affectedTroopActor.getTroop().getMilitaryKind().getId(), RenderUtils.getOppositeFaceDirection(currentStepAction.faceDirection), TROOP_ANIMATION_TYPE.BE_ATTACKED));
 				affectedTroopActors.add(affectedTroopActor);
 			}
-			Array<Position> damageRangeList = (Array<Position>)currentStepAction.ext.get("damageRangeArea");
+			List<Position> damageRangeList = (List<Position>)currentStepAction.ext.get("damageRangeArea");
 			if(damageRangeList!=null){
 				for(Position p:damageRangeList){
 					Pixmap redBlock = RenderUtils.getRedBlockPixmap();

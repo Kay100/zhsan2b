@@ -1,11 +1,13 @@
 package com.sz.zhsan2b.core.entity;
-import org.apache.commons.lang.builder.ToStringBuilder;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.ArrayMap;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import com.esotericsoftware.kryo.serializers.DefaultSerializers.VoidSerializer;
 import com.esotericsoftware.kryo.serializers.FieldSerializer.Bind;
-import com.sz.zhsan2b.core.Map;
+import com.sz.zhsan2b.core.GameMap;
 import com.sz.zhsan2b.core.MapBuilder;
 
 public class BattleField{
@@ -15,11 +17,11 @@ public class BattleField{
 	public enum SYN_TYPE {
 		BattlefieldData,CommandData
 	}
-	private Array<Troop> troopList = new Array<Troop>();
+	private List<Troop> troopList = new ArrayList<Troop>();
 	public State state;
 	@Bind(VoidSerializer.class)
-	private ArrayMap<Long,Map> maps  = new ArrayMap<Long, Map>() ;
-	private final Array<StepAction> stepActionList = new Array<StepAction>(100);
+	private Map<Long,GameMap> maps  = new HashMap<Long, GameMap>() ;
+	private final List<StepAction> stepActionList = new ArrayList<StepAction>(100);
 
 	
 
@@ -79,8 +81,8 @@ public class BattleField{
 		return returnPo;
 	}
 
-	public Array<Position> getOccupiedPositions() {
-		Array<Position> positions = new Array<Position>(troopList.size+10);
+	public List<Position> getOccupiedPositions() {
+		List<Position> positions = new ArrayList<Position>(troopList.size()+10);
 		for(Troop tr:troopList){
 			positions.add(tr.getPosition());
 		}
@@ -97,23 +99,23 @@ public class BattleField{
 		return ToStringBuilder.reflectionToString(this);
 	}
 
-	public Array<Troop> getTroopList() {
+	public List<Troop> getTroopList() {
 		return troopList;
 	}
 
-	public Array<StepAction> getStepActionList() {
+	public List<StepAction> getStepActionList() {
 		return stepActionList;
 	}
 
-	public Map getMapByMilitaryKindId(long militaryKindId) {
+	public GameMap getMapByMilitaryKindId(long militaryKindId) {
 		return maps.get(militaryKindId);
 	}
 	//need to build 
-	public void setMaps(ArrayMap<Long, Map> maps) {
+	public void setMaps(Map<Long, GameMap> maps) {
 		this.maps = maps;
 	}
 
-	public ArrayMap<Long, Map> getMaps() {
+	public Map<Long, GameMap> getMaps() {
 		return maps;
 	}
 	public State getState() {

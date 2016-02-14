@@ -1,11 +1,12 @@
 package com.sz.zhsan2b.core;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
-import com.badlogic.gdx.utils.Array;
 import com.sz.zhsan2b.core.entity.BattleField;
 import com.sz.zhsan2b.core.entity.DamageRange;
 import com.sz.zhsan2b.core.entity.Position;
@@ -67,7 +68,7 @@ public class TroopManager {
 		stepAction.objectPosition.setPosition(origin.getPosition());
 		
 		
-		Array<StepAction> stepActionList = battleField.getStepActionList();
+		List<StepAction> stepActionList = battleField.getStepActionList();
 		stepActionList.add(stepAction);	
 		logger.debug(stepAction.toString());
 		origin.setAttackCompleted(true);
@@ -80,8 +81,8 @@ public class TroopManager {
 			}
 			
 			stepAction.ext.put("damageRangeArea", origin.getDamageRange().getDamageRangeList());
-			Array<Troop> allTroopsInDamageRange = getAllTroopsInDamageRange(origin);
-			if(allTroopsInDamageRange.size!=0){
+			List<Troop> allTroopsInDamageRange = getAllTroopsInDamageRange(origin);
+			if(allTroopsInDamageRange.size()!=0){
 				for(Troop tr:allTroopsInDamageRange){
 					beAttack(origin, tr, stepAction);
 				}
@@ -128,22 +129,22 @@ public class TroopManager {
 	/*
 	 * 默认取得敌方部队
 	 */
-	private Array<Troop> getAllTroopsInAttackRange(Troop troop) {
+	private List<Troop> getAllTroopsInAttackRange(Troop troop) {
 		return getAllTroopsInRange(BattleUtils.getAttackRangeList(troop.getPosition(), troop.getBattleProperties().range, troop.getBattleProperties().isXie),troop);
 	}
-	private Array<Troop> getAllTroopsInDamageRange(Troop troop) {
+	private List<Troop> getAllTroopsInDamageRange(Troop troop) {
 		if(troop.getDamageRange()==null){
 			throw new RuntimeException("damageRange was not initialized before");
 		}
 		return getAllTroopsInRange(troop.getDamageRange().getDamageRangeList(),troop);
 	}
-	private Array<Troop> getAllTroopsInRange(Array<Position> rangeList ,Troop troop) {
-		Array<Troop> tmpList = new Array<Troop>(10*troop.getBattleProperties().range);
+	private List<Troop> getAllTroopsInRange(List<Position> rangeList ,Troop troop) {
+		List<Troop> tmpList = new ArrayList<Troop>(10*troop.getBattleProperties().range);
 		for(Troop tr:battleField.getTroopList()){
 			if(tr.getBattleState()==BATTLE_STATE.IS_DESTROY){
 				continue;
 			}
-			if(tr.getOwner()!=troop.getOwner()&&rangeList.contains(tr.getPosition(), false)){
+			if(tr.getOwner()!=troop.getOwner()&&rangeList.contains(tr.getPosition())){
 				tmpList.add(tr);
 			}
 		}
@@ -152,11 +153,11 @@ public class TroopManager {
 	}
 
 	private Troop getFirstTroopInAttackRange(Troop troop) {
-		Array<Troop> tr =getAllTroopsInAttackRange(troop);
-		if(tr.size==0){
+		List<Troop> tr =getAllTroopsInAttackRange(troop);
+		if(tr.size()==0){
 			return null;
 		}
-		return tr.first();
+		return tr.iterator().next();
 	}	
 	//不能触发通知，即不能再反击。与attack逻辑有区别
 	public void beAttack(Troop damageFrom,Troop damageTo, StepAction stepAction) {
@@ -182,9 +183,9 @@ public class TroopManager {
 	public boolean moveToAttackPositionByOneStep(boolean isAttackFirst,Troop tr) {
 		//判断是否到达目的地和无法移动的情况。
 		//return null means no path calculated , return size 0 means already reached.
-		Map currentMap = battleField.getMapByMilitaryKindId(tr.getMilitaryKind().getId());
-		Array<Position> positionPath = currentMap.calculatePositionPath(tr.getPosition(),tr.getCommand().objectPosition,battleField.getOccupiedPositions());
-		if(positionPath==null||positionPath.size==0){
+		GameMap currentMap = battleField.getMapByMilitaryKindId(tr.getMilitaryKind().getId());
+		List<Position> positionPath = currentMap.calculatePositionPath(tr.getPosition(),tr.getCommand().objectPosition,battleField.getOccupiedPositions());
+		if(positionPath==null||positionPath.size()==0){
 			tr.setLeftMove(tr.getLeftMove()-tr.getMilitaryKind().getDefaultMoveWeight());
 			if(tr.getLeftMove()<=0){
 				tr.getCommand().isCompeted=true;
@@ -257,11 +258,11 @@ public class TroopManager {
 		attack(tr_r,tr);
 	}
 
-	public Array<Position> getAttackRangeList(Troop tr){
+	public List<Position> getAttackRangeList(Troop tr){
 		return BattleUtils.getAttackRangeList(tr.getPosition(), tr.getBattleProperties().range, tr.getBattleProperties().isXie);
 	}
-	public Array<Position> getMoveRangeList(Troop tr,Position orgin,int moveLong,Array<Position> unMovablePositions) {
-		Map map = battleField.getMapByMilitaryKindId(tr.getMilitaryKind().getId());
+	public List<Position> getMoveRangeList(Troop tr,Position orgin,int moveLong,ArrayList<Position> unMovablePositions) {
+		GameMap map = battleField.getMapByMilitaryKindId(tr.getMilitaryKind().getId());
 		return map.calculateMoveRangeList(orgin, moveLong, unMovablePositions);
 	}
 	
@@ -273,10 +274,10 @@ public class TroopManager {
 	}
 	public void deleteDestroyedTroops() {
 		Troop curTr = null;
-		for(int size=battleField.getTroopList().size,i=size-1;i>=0;i--){
+		for(int size=battleField.getTroopList().size(),i=size-1;i>=0;i--){
 			curTr=battleField.getTroopList().get(i);
 			if(curTr.getBattleState()==BATTLE_STATE.IS_DESTROY){
-				battleField.getTroopList().removeValue(curTr, true);
+				battleField.getTroopList().remove(curTr);
 			}
 		}
 		

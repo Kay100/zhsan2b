@@ -1,9 +1,10 @@
 package com.sz.zhsan2b.core;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.badlogic.gdx.utils.Array;
 import com.sz.zhsan2b.core.entity.Position;
 import com.sz.zhsan2b.core.entity.Troop;
 import com.sz.zhsan2b.core.entity.StepAction.FaceDirection;
@@ -29,16 +30,16 @@ public class BattleUtils {
 
 	public static boolean isObjectInAttackRange(Position object,
 			Position origin, int range, boolean isXie) {
-		Array<Position> rangeList = getAttackRangeList(origin, range, isXie);
+		List<Position> rangeList = getAttackRangeList(origin, range, isXie);
 		// 返回是否在队列中
 		boolean returnBool= contains(rangeList, object);
 		return returnBool;
 
 	}
 
-	public static Array<Position> getAttackRangeList(Position origin,
+	public static List<Position> getAttackRangeList(Position origin,
 			int range, boolean isXie) {
-		Array<Position> rangeList = new Array<Position>(range * 10);
+		List<Position> rangeList = new ArrayList<Position>(range * 10);
 		int minX = Math.max(0, origin.x - range);
 		int maxX = Math
 				.min(Constants.BATTLE_FIELD_XCOUNT - 1, origin.x + range);
@@ -74,12 +75,12 @@ public class BattleUtils {
 
 			}
 			// remove一个gdx array ，必须从后往前remove.否则会造成索引混乱
-			for (int index = rangeList.size - 1; index >= 0; index--) {
+			for (int index = rangeList.size() - 1; index >= 0; index--) {
 				Position p = rangeList.get(index);
 				if (isOutOfBound(p.x, 0, Constants.BATTLE_FIELD_XCOUNT - 1)
 						|| isOutOfBound(p.y, 0,
 								Constants.BATTLE_FIELD_YCOUNT - 1)) {
-					rangeList.removeIndex(index);
+					rangeList.remove(index);
 					//logger.debug(p.toString() + " is removed.");
 
 				}
@@ -88,10 +89,10 @@ public class BattleUtils {
 		return rangeList;
 	}
 
-	public static boolean contains(Array<Position> rangeList, Position object) {
+	public static boolean contains(List<Position> rangeList, Position object) {
 		boolean isContain = false;
 		if(rangeList==null||object==null){ return isContain;}
-		else if(rangeList.size==0){
+		else if(rangeList.size()==0){
 			return isContain;
 		}
 		for (Position p : rangeList) {
@@ -140,7 +141,7 @@ public class BattleUtils {
 		return curFaceDi;
 	}
 	//already consider the border problem.
-	public static Array<Position> getEightDirectionPosition(Position orgin) {
+	public static List<Position> getEightDirectionPosition(Position orgin) {
 		
 		return getAttackRangeList(orgin, 1, true);
 	}
