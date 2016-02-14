@@ -8,13 +8,13 @@ import org.junit.Test;
 import com.sz.zhsan2b.core.entity.DamageRange;
 import com.sz.zhsan2b.core.entity.Position;
 import com.sz.zhsan2b.core.entity.DamageRange.DamageRangeType;
-import com.sz.zhsan2b.core.Map;
+import com.sz.zhsan2b.core.GameMap;
 import com.sz.zhsan2b.core.MapBuilder;
 
 public class PositionTestCase {
 	
 	Position position;
-	Map map = MapBuilder.buildMap(1l);
+	GameMap map = MapBuilder.buildMap(1l);
 
 	@Test
 	public void test() {
@@ -42,7 +42,7 @@ public class PositionTestCase {
 	@Test
 	public void testDamageRange(){
 		DamageRange damageR = new DamageRange(DamageRangeType.LINE, new Position(2,2),null, 2, false, 1, 2);
-		assertEquals(damageR.getDamageRangeList().size, 0);
+		assertEquals(damageR.getDamageRangeList().size(), 0);
 		for(Position p:damageR.getDamageRangeList()){
 			
 			System.out.println(p.toString());
