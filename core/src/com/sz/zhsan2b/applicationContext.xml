@@ -22,6 +22,10 @@
 			<props>
 				<!-- 命名规则 My_NAME->MyName -->
 				<prop key="hibernate.ejb.naming_strategy">org.hibernate.cfg.ImprovedNamingStrategy</prop>
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.connection.autocommit">false</prop>
+				<prop key="hibernate.show_sql" >true</prop>      
+				<prop key="hibernate.hbm2ddl.auto" >update</prop>								
 			</props>
 		</property>
 	</bean>
@@ -87,7 +91,7 @@
 		</bean>
 		<!-- 初始化数据表结构 与默认数据 -->
 		<jdbc:initialize-database data-source="dataSource">
-			<jdbc:script location="classpath:com/sz/zhsan2b/core/resource/sql/schema.sql" />
+<!-- 			<jdbc:script location="classpath:com/sz/zhsan2b/core/resource/sql/schema.sql" /> -->
 			<jdbc:script location="classpath:com/sz/zhsan2b/core/resource/sql/import-data.sql"
 				encoding="UTF-8" />
 		</jdbc:initialize-database>

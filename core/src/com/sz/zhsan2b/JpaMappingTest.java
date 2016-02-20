@@ -31,6 +31,7 @@ import com.sz.zhsan2b.core.entity.Position;
 import com.sz.zhsan2b.core.entity.Troop;
 import com.sz.zhsan2b.core.entity.BattleField.SYN_TYPE;
 import com.sz.zhsan2b.core.entity.DamageRange.DamageRangeType;
+import com.sz.zhsan2b.core.repository.UserDao;
 
 import ch.qos.logback.classic.Level;
 
@@ -42,7 +43,10 @@ public class JpaMappingTest extends SpringTransactionalTestCase {
 	@PersistenceContext
 	private EntityManager em;
 	private Kryo kryo;
+	private UserDao userDao;
 	
+
+
 	public static void setLoggingLevel(ch.qos.logback.classic.Level level) {
 	    ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
 	    root.setLevel(level);
@@ -140,9 +144,22 @@ public class JpaMappingTest extends SpringTransactionalTestCase {
 		return battleField;
 		
 	}
+	@Test
+	public void testDao() throws Exception{
+		logger.info("userCount:"+userDao.count());
+		logger.info("loginName:"+userDao.findAll().iterator().next().getLoginName());
+		assertTrue(userDao.count()>0);
+		
+	}
+	
 
 	@Autowired
 	public void setKryo(Kryo kryo) {
 		this.kryo = kryo;
-	}	
+	}
+	@Autowired
+	public void setUserDao(UserDao userDao) {
+		this.userDao = userDao;
+	}
+	
 }

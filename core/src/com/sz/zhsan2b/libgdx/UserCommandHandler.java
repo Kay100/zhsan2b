@@ -1,9 +1,6 @@
 package com.sz.zhsan2b.libgdx;
 
 import java.util.List;
-
-import javax.validation.constraints.NotNull;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
