@@ -1,10 +1,12 @@
-package com.sz.zhsan2b.core;
+package com.sz.zhsan2b.core.util;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.sz.zhsan2b.core.Constants;
 import com.sz.zhsan2b.core.entity.Position;
 import com.sz.zhsan2b.core.entity.Troop;
 import com.sz.zhsan2b.core.entity.StepAction.FaceDirection;

@@ -5,8 +5,8 @@ import javax.persistence.Entity;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.sz.zhsan2b.core.PLAYER_TYPE;
 import com.sz.zhsan2b.core.entity.StepAction.FaceDirection;
+import com.sz.zhsan2b.core.entity.User.PLAYER_TYPE;
 
 
 public class Troop{//增加adapter 实现hook

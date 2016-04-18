@@ -22,7 +22,6 @@ import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.sz.zhsan2b.core.Constants;
 import com.sz.zhsan2b.core.GameContext;
-import com.sz.zhsan2b.core.PLAYER_TYPE;
 import com.sz.zhsan2b.core.entity.BattleField;
 import com.sz.zhsan2b.core.entity.BattleProperties;
 import com.sz.zhsan2b.core.entity.Command;
@@ -31,6 +30,7 @@ import com.sz.zhsan2b.core.entity.Position;
 import com.sz.zhsan2b.core.entity.Troop;
 import com.sz.zhsan2b.core.entity.BattleField.SYN_TYPE;
 import com.sz.zhsan2b.core.entity.DamageRange.DamageRangeType;
+import com.sz.zhsan2b.core.entity.User.PLAYER_TYPE;
 import com.sz.zhsan2b.core.repository.UserDao;
 
 import ch.qos.logback.classic.Level;

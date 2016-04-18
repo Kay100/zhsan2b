@@ -1,7 +1,7 @@
 package com.sz.zhsan2b.core.entity;
 
-import com.sz.zhsan2b.core.BattleUtils;
 import com.sz.zhsan2b.core.Constants;
+import com.sz.zhsan2b.core.util.BattleUtils;
 
 
 public class Position implements Comparable<Position> {

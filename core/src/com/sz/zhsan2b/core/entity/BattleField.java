@@ -7,8 +7,8 @@ import java.util.Map;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import com.esotericsoftware.kryo.serializers.DefaultSerializers.VoidSerializer;
 import com.esotericsoftware.kryo.serializers.FieldSerializer.Bind;
-import com.sz.zhsan2b.core.GameMap;
-import com.sz.zhsan2b.core.MapBuilder;
+import com.sz.zhsan2b.core.util.GameMap;
+import com.sz.zhsan2b.core.util.MapBuilder;
 
 public class BattleField{
 	public enum State {

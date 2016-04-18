@@ -3,6 +3,7 @@ package com.sz.zhsan2b.core;
 import org.springframework.context.ApplicationContext;
 import com.sz.zhsan2b.core.entity.BattleField;
 import com.sz.zhsan2b.core.entity.User;
+import com.sz.zhsan2b.core.entity.User.PLAYER_TYPE;
 /**
  * Environment class that holds references of instances.
  * @author Administrator

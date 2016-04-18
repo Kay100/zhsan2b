@@ -1,4 +1,4 @@
-package com.sz.zhsan2b.core;
+package com.sz.zhsan2b.core.util;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -11,6 +11,7 @@ import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.AbstractEdge;
 import org.graphstream.graph.implementations.DefaultGraph;
 
+import com.sz.zhsan2b.core.Constants;
 import com.sz.zhsan2b.core.entity.MilitaryKind;
 
 

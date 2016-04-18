@@ -11,12 +11,13 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.validator.constraints.NotBlank;
 
-import com.sz.zhsan2b.core.PLAYER_TYPE;
-
 
 @Entity
 @Table(name = "ss_user")
 public class User extends IdEntity {
+	public enum PLAYER_TYPE {
+		PLAYER,AI
+	}	
 	private String loginName;
 	//use for appwarp's localuser
 	private String name;

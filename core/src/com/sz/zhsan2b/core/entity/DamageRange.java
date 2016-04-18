@@ -3,7 +3,7 @@ package com.sz.zhsan2b.core.entity;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sz.zhsan2b.core.BattleUtils;
+import com.sz.zhsan2b.core.util.BattleUtils;
 
 public class DamageRange {
 	public enum DamageRangeType {

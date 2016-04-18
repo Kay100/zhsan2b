@@ -1,4 +1,4 @@
-package com.sz.zhsan2b.core;
+package com.sz.zhsan2b.core.service;
 
 
 import static org.junit.Assert.assertTrue;
@@ -23,6 +23,8 @@ import com.esotericsoftware.kryo.io.ByteBufferInputStream;
 import com.esotericsoftware.kryo.io.ByteBufferOutputStream;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
+import com.sz.zhsan2b.core.Constants;
+import com.sz.zhsan2b.core.GameContext;
 import com.sz.zhsan2b.core.entity.BattleField;
 import com.sz.zhsan2b.core.entity.GameStateData;
 

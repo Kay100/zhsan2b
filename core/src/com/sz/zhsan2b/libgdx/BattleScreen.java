@@ -24,9 +24,7 @@ import com.badlogic.gdx.utils.ObjectMap.Entry;
 
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.sz.zhsan2b.appwarp.WarpListener;
-import com.sz.zhsan2b.core.BattleFieldManager;
 import com.sz.zhsan2b.core.GameContext;
-import com.sz.zhsan2b.core.PLAYER_TYPE;
 import com.sz.zhsan2b.core.entity.BattleField;
 import com.sz.zhsan2b.core.entity.BattleField.SYN_TYPE;
 import com.sz.zhsan2b.core.entity.BattleProperties;
@@ -40,6 +38,8 @@ import com.sz.zhsan2b.core.entity.BattleField.State;
 import com.sz.zhsan2b.core.entity.DamageRange.DamageRangeType;
 import com.sz.zhsan2b.core.entity.StepAction.TileEffect;
 import com.sz.zhsan2b.core.entity.User;
+import com.sz.zhsan2b.core.entity.User.PLAYER_TYPE;
+import com.sz.zhsan2b.core.service.BattleFieldManager;
 import com.sz.zhsan2b.libgdx.ContextMenu.Executable;
 import com.sz.zhsan2b.libgdx.TroopActor.ACTION_LABEL;
 import com.uwsoft.editor.renderer.SceneLoader;

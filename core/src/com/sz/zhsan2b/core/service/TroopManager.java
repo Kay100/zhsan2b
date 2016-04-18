@@ -1,4 +1,4 @@
-package com.sz.zhsan2b.core;
+package com.sz.zhsan2b.core.service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,6 +7,9 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
+import com.sz.zhsan2b.core.Constants;
+import com.sz.zhsan2b.core.GameContext;
 import com.sz.zhsan2b.core.entity.BattleField;
 import com.sz.zhsan2b.core.entity.DamageRange;
 import com.sz.zhsan2b.core.entity.Position;
@@ -17,6 +20,8 @@ import com.sz.zhsan2b.core.entity.Command.ACTION_KIND;
 import com.sz.zhsan2b.core.entity.StepAction.TileEffect;
 import com.sz.zhsan2b.core.entity.Troop.BATTLE_STATE;
 import com.sz.zhsan2b.core.entity.Troop.TroopEvent;
+import com.sz.zhsan2b.core.util.BattleUtils;
+import com.sz.zhsan2b.core.util.GameMap;
 @Component
 public class TroopManager {
 	private static Logger logger = LoggerFactory.getLogger(TroopManager.class);

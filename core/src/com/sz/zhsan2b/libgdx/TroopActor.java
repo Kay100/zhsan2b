@@ -35,12 +35,12 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 import com.sz.zhsan2b.core.GameContext;
-import com.sz.zhsan2b.core.PLAYER_TYPE;
-import com.sz.zhsan2b.core.TroopManager;
 import com.sz.zhsan2b.core.entity.Position;
 import com.sz.zhsan2b.core.entity.StepAction;
 import com.sz.zhsan2b.core.entity.Troop;
 import com.sz.zhsan2b.core.entity.BattleField.State;
+import com.sz.zhsan2b.core.entity.User.PLAYER_TYPE;
+import com.sz.zhsan2b.core.service.TroopManager;
 
 
 public class TroopActor extends AnimatedImage {
